@@ -1,0 +1,821 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API FPI ",
+        "contact": {
+            "name": "Support Team",
+            "email": "viva@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/fpi/cortex/getListFakturCortex": {
+            "post": {
+                "tags": [
+                    "Faktur Cortex"
+                ],
+                "operationId": "ab42925f649fe3bcfed2813058a6d020",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "start_cdate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "end_cdate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-31"
+                                    },
+                                    "start_fdate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "end_fdate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-31"
+                                    },
+                                    "csv": {
+                                        "type": "string",
+                                        "example": "Y"
+                                    },
+                                    "pay": {
+                                        "type": "string",
+                                        "example": "N"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "List Faktur Cortex yang akan di export ke CSV",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/cortex/getListFakturCortexDtl": {
+            "post": {
+                "tags": [
+                    "Faktur Cortex"
+                ],
+                "operationId": "e866e39bd8ab43ebed39a1e90f67897c",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "faktur": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "baris": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "penjualanno": {
+                                                    "type": "string",
+                                                    "example": "ABC123"
+                                                },
+                                                "f_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2023-01-01"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "List Faktur Cortex Detail yang akan di export ke CSV",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/deposit/getListBankNote": {
+            "post": {
+                "tags": [
+                    "Deposit"
+                ],
+                "operationId": "98f5e3c323aa559deb2c9d893b2ee2c1",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "TrDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "TrDate2": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-31"
+                                    },
+                                    "FBank": {
+                                        "type": "string",
+                                        "example": "Bank ABC"
+                                    },
+                                    "FAccount": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    },
+                                    "Posting": {
+                                        "type": "string",
+                                        "example": "Y"
+                                    },
+                                    "tr_type": {
+                                        "type": "string",
+                                        "example": "CUSTOMER"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "List Bank Note yang akan di posting ke deposit",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/deposit/getListDeposit": {
+            "post": {
+                "tags": [
+                    "Deposit"
+                ],
+                "operationId": "e8ffb96110a3f302dc235bb5a33894c9",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-31"
+                                    },
+                                    "dp_id": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    },
+                                    "cust_id": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    },
+                                    "sisa": {
+                                        "type": "string",
+                                        "example": "Y"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "List Deposit yang sudah di simpan",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/deposit/getListInvoice": {
+            "post": {
+                "tags": [
+                    "Deposit"
+                ],
+                "operationId": "301723adc4277a372336fa497985e314",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "dp_id": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "List Invoice yang di posting dari deposit",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/deposit/saveDeposit": {
+            "post": {
+                "tags": [
+                    "Deposit"
+                ],
+                "operationId": "5f5679dc3aefa8ed7b8ab8cf625b95cf",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "dp_id": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Simpan Deposit",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/deposit/deleteDeposit": {
+            "post": {
+                "tags": [
+                    "Deposit"
+                ],
+                "operationId": "ee9daf5b9a9eea82df924fcb2a113551",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "dp_id": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Delete Deposit",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/deposit/getListPurchDeposit": {
+            "post": {
+                "tags": [
+                    "Deposit"
+                ],
+                "operationId": "096d4acf82111b01422717f3f05847ec",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-31"
+                                    },
+                                    "dp_id": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    },
+                                    "vendor_id": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    },
+                                    "sisa": {
+                                        "type": "string",
+                                        "example": "Y"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "List Purchase Deposit yang sudah di simpan",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/article/getArticle": {
+            "post": {
+                "tags": [
+                    "Master Article"
+                ],
+                "operationId": "656c70ad9c14a6a33a461294c82e94c0",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "article_id": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "cat_id": {
+                                        "type": "string",
+                                        "example": "XYZ"
+                                    },
+                                    "unit_meas": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "active_flag": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns get all article",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/article/getCategory": {
+            "post": {
+                "tags": [
+                    "Master Article"
+                ],
+                "operationId": "0de7fd2b9e4f63d9d669514102d6d0f5",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "cat_id": {
+                                        "type": "string",
+                                        "example": "XYZ"
+                                    },
+                                    "consume_able": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "active_flag": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns get all category",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/article/getUOM": {
+            "post": {
+                "tags": [
+                    "Master Article"
+                ],
+                "operationId": "658df1628af36141cd5cfdc91b9ec404",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "active_flag": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns get all UOM",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/article/getWhArticle": {
+            "post": {
+                "tags": [
+                    "Master Article"
+                ],
+                "operationId": "e988180dd82a6285ad940c16fccf8c5c",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "active_flag": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "article_id": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "barcode": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "berat": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "add_id": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "tor_id": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "length": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "BarangJadiId": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "cat_id": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "com_grp": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    },
+                                    "com_id": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns get all WH Article",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/article/getCommodity": {
+            "post": {
+                "tags": [
+                    "Master Article"
+                ],
+                "operationId": "6c54938e191121bbe8c9de70a6c9d675",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "cat_id": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns get all Commodity",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/master/commodity": {
+            "post": {
+                "tags": [
+                    "Master Commodity"
+                ],
+                "operationId": "a3bdda19bb97ecdf1d5deeb22c2f5c39",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns get all commodity",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/fpi/master/commodity/show": {
+            "post": {
+                "tags": [
+                    "Master Commodity"
+                ],
+                "operationId": "557e7993ae7434299bf0707023a6a32c",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "qc_trans_id": {
+                                        "type": "string",
+                                        "example": "ABC"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns get all commodity",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. When required parameters were not supplied."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Faktur Cortex",
+            "description": "Faktur Cortex"
+        },
+        {
+            "name": "Deposit",
+            "description": "Deposit"
+        },
+        {
+            "name": "Master Article",
+            "description": "Master Article"
+        },
+        {
+            "name": "Master Commodity",
+            "description": "Master Commodity"
+        }
+    ]
+}

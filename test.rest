@@ -1,0 +1,26 @@
+POST https://v2.kencana.org/api/login HTTP/1.1
+content-type: application/json
+Authorization: Bearer your_access_token
+
+{
+    "username": "09210002",
+    "password": "aaaa"
+}
+
+#########
+
+POST http://127.0.0.1:8000/api/fpi/InvoiceNonPo/getGrandTotal HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3YyLmtlbmNhbmEub3JnL2FwaS9sb2dpbiIsImlhdCI6MTc1NDUzODAyNCwiZXhwIjoxNzU0NjI0NDI0LCJuYmYiOjE3NTQ1MzgwMjQsImp0aSI6Ikh6bXFiWUp2WW96amtRSjMiLCJzdWIiOiI0MjUiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlcnMiOnsidXNlcl9udW0iOjQyNSwiZ2xvYmFsX2lkIjoiZGlrYTE2IiwidXNlcl9pZDIiOiJkaWthMTYiLCJ1c2VybmFtZSI6ImRpa2ExNiIsInVzZXJfcGFzcyI6ImFhYWEiLCJyZW1lbWJlcl90b2tlbiI6IiIsInZlcmlmaWVkX2F0IjoiMTkwMC0wMS0wMSAwMDowMDowMC4wMDAiLCJsYXN0X2FjdGl2ZSI6IjIwMjUtMDgtMDYgMTQ6NTk6MTAuNTU3IiwibmFtZTEiOiJESUtBIiwibmFtZTIiOiIiLCJuYW1lMyI6IiIsInJlZ19udW0iOiIiLCJwbGFudCI6IktQIiwiZGl2aXNpb24iOiIiLCJkZXB0IjoiSVQiLCJzZWN0aW9uIjoiSVQiLCJwb3NpdGlvbiI6ImFkbWluIiwidXNlcl9sZXZlbCI6IiIsImxvY2F0aW9uIjoiMyIsImNvc3RfY3RyIjoiMSIsInBob25lIjoiIiwiZmF4IjoiMDgxMjI0ODE3Nzc3IiwiZW1haWwiOiIiLCJ3ZWJfc2l0ZSI6IiIsIm5vdGUxIjoiIiwibm90ZTIiOiIiLCJkZXBsb3lfc2VydmVyIjoiIiwiYWN0aXZlX2ZsYWciOiJZIiwiY3JlYXRlZF9kYXRlIjoiMjAxOC0wMS0zMCAwODozMjowMC4wMDAiLCJkdF9tb2RpZmllZCI6IjIwMjItMTEtMTcgMTQ6MzY6NTMuMTQ3IiwiY3JlYXRlZF91c2VyIjoieW9zaSIsInVzZXJfaWQiOiJkaWthMTYiLCJkZXB0X2lkIjoiICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICIsIndhX2dyb3VwX2lkIjoiIiwib2xkX3VzZXJfaWQiOiJkaWthMTYiLCJhdmF0YXIiOiJMa1FTQ3NtaGE3TDJRQXUyNmhZQkdLV1I2WWdKbW9vSnRCY0t5ZERGLmpwZyIsImxhc3Rfc2hpZnRfaWQiOiIwIiwiaWRlbXBsb3llZSI6IjA5MjEwMDAyIiwidXBkYXRlZF9hdCI6IjIwMjMtMTEtMjAgMDQ6MDA6MDUuNjMzIiwiYXZhdGFyMiI6bnVsbH19.T1f9OG3MJeAHC-1ifpkZKekVX0feUoQx-1dsw90V7FM
+
+{
+  "TrId": "PIN25071545",
+  "OfficeId": "1",
+  "InvId": "PINVN25071545",
+  "AmtDisc": 0,
+  "tax1": true,
+  "tax2": true,
+  "tax4": false,
+  "tax3": false,
+  "AmtPph4": 0
+}
