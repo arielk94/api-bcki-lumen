@@ -40,7 +40,7 @@ class JurnalbySourceController extends Controller
             $sqlWhere .= " and source = '$source'";
         }
 
-       $data = DB::connection('sqlSrvFPI')->table('v_journal_by_source')
+       $data = DB::connection('sqlSrvBCKI')->table('v_journal_by_source')
                 ->whereRaw($sqlWhere)
                 ->orderBy('tr_date')
                 ->orderBy('source')

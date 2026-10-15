@@ -18,7 +18,7 @@ class BookApprovalController extends Controller
     public function index()
     {
         // -- get sites
-        $sites = DB::connection("sqlSrvFPI")
+        $sites = DB::connection("sqlSrvBCKI")
             ->table('site as st')
             ->join('city_list as lc', 'st.city', 'lc.city_code')
             ->where('stat', 'Y')
@@ -31,7 +31,7 @@ class BookApprovalController extends Controller
             ->get();
 
         // -- get province
-        $provinces = DB::connection("sqlSrvFPI")
+        $provinces = DB::connection("sqlSrvBCKI")
             ->table('province_list')
             ->selectRaw("
                 province_code as id_province,
@@ -40,7 +40,7 @@ class BookApprovalController extends Controller
             ->get();
 
         // -- get sales area
-        $salesArea = DB::connection("sqlSrvFPI")
+        $salesArea = DB::connection("sqlSrvBCKI")
             ->table('Sales_area')
             ->selectRaw("
                 id_area,
@@ -74,7 +74,7 @@ class BookApprovalController extends Controller
         $date_to = $request->date_to ?? date('Y-m-d');
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('CustomerBooking as cb')
                 ->selectRaw('
                     cb.*,
@@ -133,7 +133,7 @@ class BookApprovalController extends Controller
     public function getDiscountLimit(Request $request)
     {
         try {
-            $discount_limit = DB::connection("sqlSrvFPI")
+            $discount_limit = DB::connection("sqlSrvBCKI")
                 ->table('appl_constant')
                 ->where('key_code', 'DISC_LIMIT')
                 ->value("int1");
@@ -147,19 +147,19 @@ class BookApprovalController extends Controller
     public function approveBooking(Request $request)
     {
         
-        $discount_limit = DB::connection("sqlSrvFPI")
+        $discount_limit = DB::connection("sqlSrvBCKI")
             ->table('appl_constant')
             ->where('key_code', 'DISC_LIMIT')
             ->value("int1");
         // dd($discount_limit);
 
-        $book_type = DB::connection("sqlSrvFPI")
+        $book_type = DB::connection("sqlSrvBCKI")
             ->table('appl_constant')
             ->where('key_code', 'DISC_LIMIT')
             ->value("str1");
         // dd($book_type);
 
-        $order = DB::connection('sqlSrvFPI')
+        $order = DB::connection('sqlSrvBCKI')
                 ->table('CustomerBooking')
                 ->where('book_id', $request->book_id)
                 ->first();
@@ -168,7 +168,7 @@ class BookApprovalController extends Controller
             if($order->discount > $discount_limit){ //diskon diatas 5 juta, 2x approve
                 // dd('diskon diatas 5 juta');
                 if ($order->dt_aprv1 == '1900-01-01 00:00:00.000') {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                             ->table('CustomerBooking')
                             ->where('book_id', $request->book_id)
                             ->update([
@@ -186,7 +186,7 @@ class BookApprovalController extends Controller
         if($order->discount <= $discount_limit){ //diskon dibawah 5 juta, 1x approve
             // dd('diskon dibawah 5 juta');                
             if ($order->dt_aprv1 == '1900-01-01 00:00:00.000') {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                         ->table('CustomerBooking')
                         ->where('book_id', $request->book_id)
                         ->update([
@@ -195,7 +195,7 @@ class BookApprovalController extends Controller
                             'aprv1_by' => getAuth($request)->user_id2
                         ]);
                 
-                $saveHouseUnit = DB::connection('sqlSrvFPI')
+                $saveHouseUnit = DB::connection('sqlSrvBCKI')
                         ->table('house_unit')
                         ->where('id_house', $order->house_item)
                         ->update([
@@ -211,14 +211,14 @@ class BookApprovalController extends Controller
     
         public function approveBooking2(Request $request)
         {
-            $order = DB::connection('sqlSrvFPI')
+            $order = DB::connection('sqlSrvBCKI')
                     ->table('CustomerBooking')
                     ->where('book_id', $request->book_id)
                     ->first();
             // dd($order);
             if ($order) {
                 if ($order->dt_aprv2 == '1900-01-01 00:00:00.000') {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                             ->table('CustomerBooking')
                             ->where('book_id', $request->book_id)
                             ->update([
@@ -226,7 +226,7 @@ class BookApprovalController extends Controller
                                 'dt_aprv2' => now(),
                                 'aprv2_by' => getAuth($request)->user_id2
                             ]);
-                    $saveHouseUnit = DB::connection('sqlSrvFPI')
+                    $saveHouseUnit = DB::connection('sqlSrvBCKI')
                             ->table('house_unit')
                             ->where('id_house', $order->house_item)
                             ->update([
@@ -245,7 +245,7 @@ class BookApprovalController extends Controller
         {
         try {
 
-                $datas = DB::connection('sqlSrvFPI')
+                $datas = DB::connection('sqlSrvBCKI')
                 ->table('appl_constant')
                 ->where('key_code', 'APRVBOOKING')
                 ->get();
@@ -261,7 +261,7 @@ class BookApprovalController extends Controller
                     }
                 
 
-                $getLink = "FDPI" . Carbon::now()->format('ymdH') . rand(10000, 99999);
+                $getLink = "bcki" . Carbon::now()->format('ymdH') . rand(10000, 99999);
                 DB::connection('sqlsrv')
                 ->table('sec_reset_password')
                 ->insert([
@@ -323,14 +323,14 @@ class BookApprovalController extends Controller
 
     public function rejectBooking(Request $request)
     {
-        $order = DB::connection('sqlSrvFPI')
+        $order = DB::connection('sqlSrvBCKI')
                 ->table('CustomerBooking')
                 ->where('book_id', $request->book_id)
                 ->first();
         // dd($order);
         if ($order) {
             if ($order->dt_reject1 == '1900-01-01 00:00:00.000') {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                         ->table('CustomerBooking')
                         ->where('book_id', $request->book_id)
                         ->update([
@@ -340,7 +340,7 @@ class BookApprovalController extends Controller
                             'reject1_by' => getAuth($request)->user_id2,
                             'reject2_by' => getAuth($request)->user_id2
                         ]);
-                $saveHouseUnit = DB::connection('sqlSrvFPI')
+                $saveHouseUnit = DB::connection('sqlSrvBCKI')
                         ->table('house_unit')
                         ->where('id_house', $order->house_item)
                         ->update([
@@ -357,14 +357,14 @@ class BookApprovalController extends Controller
 
     public function rejectBooking2(Request $request)
     {
-        $order = DB::connection('sqlSrvFPI')
+        $order = DB::connection('sqlSrvBCKI')
                 ->table('CustomerBooking')
                 ->where('book_id', $request->book_id)
                 ->first();
         // dd($order);
         if ($order) {
             if ($order->dt_reject2 == '1900-01-01 00:00:00.000') {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                         ->table('CustomerBooking')
                         ->where('book_id', $request->book_id)
                         ->update([
@@ -374,7 +374,7 @@ class BookApprovalController extends Controller
                             'reject1_by' => getAuth($request)->user_id2,
                             'reject2_by' => getAuth($request)->user_id2
                         ]);
-                $saveHouseUnit = DB::connection('sqlSrvFPI')
+                $saveHouseUnit = DB::connection('sqlSrvBCKI')
                         ->table('house_unit')
                         ->where('id_house', $order->house_item)
                         ->update([

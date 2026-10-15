@@ -87,7 +87,7 @@ class KasbonAprvController extends Controller
                 $sqlWhere = $sqlWhere . "and kb_hdr.stat = 'C'";
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->selectRaw("
                                     kb_hdr.office_id,
@@ -128,7 +128,7 @@ class KasbonAprvController extends Controller
     }
 
     public function getKasbonDetail(Request $request){
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('kb_dtl')
                 ->selectRaw("
                     ROW_NUMBER() OVER (ORDER BY kb_dtl.tr_id) AS no,
@@ -159,7 +159,7 @@ class KasbonAprvController extends Controller
     }
 
     public function aprv1Kasbon(Request $request){
-        $order = DB::connection('sqlSrvFPI')
+        $order = DB::connection('sqlSrvBCKI')
                 ->table('kb_hdr')
                 ->where('tr_id', $request->tr_id)
                 ->first();
@@ -169,7 +169,7 @@ class KasbonAprvController extends Controller
         if ($order) {
 
             if ($order->dt_aprv1 == '1900-01-01 00:00:00.000') {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                         ->table('kb_hdr')
                         ->where('tr_id', $request->tr_id)
                         ->update([
@@ -188,14 +188,14 @@ class KasbonAprvController extends Controller
     }
 
     public function aprv2Kasbon(Request $request){
-        $order = DB::connection('sqlSrvFPI')
+        $order = DB::connection('sqlSrvBCKI')
                     ->table('kb_hdr')
                     ->where('tr_id', $request->tr_id)
                     ->first();
 
         if ($order) {
             if ($order->dt_aprv2 == '1900-01-01 00:00:00.000') {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                         ->table('kb_hdr')
                         ->where('tr_id', $request->tr_id)
                         ->update([
@@ -228,7 +228,7 @@ class KasbonAprvController extends Controller
             //         ->get();
             $getEmp = ''; 
             if($type=='BON'){
-                $getEmp = DB::connection('sqlSrvFPI')
+                $getEmp = DB::connection('sqlSrvBCKI')
                     ->table('department')
                     ->selectRaw('nik_pr2')
                     ->whereRaw("dept_id = '" . $dept_id . "'")
@@ -243,7 +243,7 @@ class KasbonAprvController extends Controller
             //         $sqlWhere = "idemployee = '" . $idemployee . "'";
             //     }
             if($type=='BON'){
-                $getPhone = DB::connection('sqlSrvFPI')
+                $getPhone = DB::connection('sqlSrvBCKI')
                             ->table('department')
                             ->selectRaw('pr2')
                             // ->whereRaw($sqlWhere)
@@ -272,7 +272,7 @@ class KasbonAprvController extends Controller
 
                 // $message = '*FASINDO PROPERTI INDONESIA*'.'\n\n'.'Silahkan lakukan Approval 2 untuk '.$type_name.' Nomor : ' . $po_id . '\n' . 'Silahkan login pada https://viva.kencana.org/approve untuk Approval 2. Terima kasih '; 
                 // /https://viva.kencana.org/approve/09210216/VIVA23081509mardian4673958770904091
-                $getLink = "FDPI" . now()->format('ymdH') . rand(10000, 99999);
+                $getLink = "bcki" . now()->format('ymdH') . rand(10000, 99999);
                 DB::connection('sqlsrv')
                 ->table('sec_reset_password')
                 ->insert([
@@ -350,7 +350,7 @@ class KasbonAprvController extends Controller
         }
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('vendor as v')
                 ->selectRaw("
                         DISTINCT
@@ -375,7 +375,7 @@ class KasbonAprvController extends Controller
                                 ->table('sec_env_conf')
                                 ->selectRaw("var_value")
                                 ->where('user_id2',getAuth($request)->user_id2)
-                                ->where('entity_id','FDPI')
+                                ->where('entity_id','bcki')
                                 ->where('appl_id','MOBILE')
                                 ->where('var_id','APPROVALBON1')
                                 ->where('active_flag','Y')
@@ -385,7 +385,7 @@ class KasbonAprvController extends Controller
                                 ->table('sec_env_conf')
                                 ->selectRaw("var_value")
                                 ->where('user_id2',getAuth($request)->user_id2)
-                                ->where('entity_id','FDPI')
+                                ->where('entity_id','bcki')
                                 ->where('appl_id','MOBILE')
                                 ->where('var_id','APPROVALBON2')
                                 ->where('active_flag','Y')
@@ -395,7 +395,7 @@ class KasbonAprvController extends Controller
                                 ->table('sec_env_conf')
                                 ->selectRaw("var_value")
                                 ->where('user_id2',getAuth($request)->user_id2)
-                                ->where('entity_id','FDPI')
+                                ->where('entity_id','bcki')
                                 ->where('appl_id','MOBILE')
                                 ->where('var_id','APPROVALBON3')
                                 ->where('active_flag','Y')
@@ -405,7 +405,7 @@ class KasbonAprvController extends Controller
                                 ->table('sec_env_conf')
                                 ->selectRaw("var_value")
                                 ->where('user_id2',getAuth($request)->user_id2)
-                                ->where('entity_id','FDPI')
+                                ->where('entity_id','bcki')
                                 ->where('appl_id','MOBILE')
                                 ->where('var_id','APPROVALBON4')
                                 ->where('active_flag','Y')
@@ -451,7 +451,7 @@ class KasbonAprvController extends Controller
             }
 
             // dd($sqlWhere);
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->selectRaw("
                                     kb_hdr.office_id,
@@ -560,7 +560,7 @@ class KasbonAprvController extends Controller
             }
 
             if($type_aprv == 'approve1'){
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', $tr_id)
                                 ->selectRaw("FORMAT(dt_aprv1, 'yyyy-MM-dd') as dt_aprv1")
@@ -569,7 +569,7 @@ class KasbonAprvController extends Controller
                 if ($cekAprv !== '1900-01-01') {
                     return $this->sendError("Sudah di approve 1", 'Error', 500);
                 }else{
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('kb_hdr')
                         ->where('tr_id', '=', $tr_id)
                         ->update([
@@ -578,7 +578,7 @@ class KasbonAprvController extends Controller
                         ]);
                     
                     if($response){
-                        $user = DB::connection('sqlSrvFPI')
+                        $user = DB::connection('sqlSrvBCKI')
                                         ->table('spk_aprv_env')
                                         ->selectRaw('aprv_2, no_hp_2, nama_employee_2')
                                         ->where('doc_type', '=', 'KB')
@@ -620,7 +620,7 @@ class KasbonAprvController extends Controller
                     }
                 }
             }else if($type_aprv == 'approve2'){
-                $cekAprv2 = DB::connection("sqlSrvFPI")
+                $cekAprv2 = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', $tr_id)
                                 ->selectRaw("FORMAT(dt_aprv2, 'yyyy-MM-dd') as dt_aprv2")
@@ -629,7 +629,7 @@ class KasbonAprvController extends Controller
                 if ($cekAprv2 !== '1900-01-01') {
                     return $this->sendError("Sudah di approve 2", 'Error', 500);
                 }else{
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('kb_hdr')
                         ->where('tr_id', '=', $tr_id)
                         ->update([
@@ -638,7 +638,7 @@ class KasbonAprvController extends Controller
                         ]);
                     
                     if($response){
-                        $user = DB::connection('sqlSrvFPI')
+                        $user = DB::connection('sqlSrvBCKI')
                                         ->table('spk_aprv_env')
                                         ->selectRaw('aprv_3, no_hp_3, nama_employee_3')
                                         ->where('doc_type', '=', 'KB')
@@ -680,7 +680,7 @@ class KasbonAprvController extends Controller
                     }
                 }
             }else if($type_aprv == 'approve3'){
-                $cekAprv3 = DB::connection("sqlSrvFPI")
+                $cekAprv3 = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', $tr_id)
                                 ->selectRaw("FORMAT(dt_aprv3, 'yyyy-MM-dd') as dt_aprv3")
@@ -689,7 +689,7 @@ class KasbonAprvController extends Controller
                 if ($cekAprv3 !== '1900-01-01') {
                     return $this->sendError("Sudah di approve 3", 'Error', 500);
                 }else{
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('kb_hdr')
                         ->where('tr_id', '=', $tr_id)
                         ->update([
@@ -698,7 +698,7 @@ class KasbonAprvController extends Controller
                         ]);
                     
                     if($response){
-                        $user = DB::connection('sqlSrvFPI')
+                        $user = DB::connection('sqlSrvBCKI')
                                         ->table('spk_aprv_env')
                                         ->selectRaw('aprv_4, no_hp_4, nama_employee_4')
                                         ->where('doc_type', '=', 'KB')
@@ -740,7 +740,7 @@ class KasbonAprvController extends Controller
                     }
                 }
             }else if($type_aprv == 'approve4'){
-                $cekAprv4 = DB::connection("sqlSrvFPI")
+                $cekAprv4 = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', '=', $tr_id)
                                 ->selectRaw("FORMAT(dt_aprv4, 'yyyy-MM-dd') as dt_aprv4")
@@ -749,7 +749,7 @@ class KasbonAprvController extends Controller
                 if ($cekAprv4 !== '1900-01-01') {
                     return $this->sendError("Sudah di approve 4", 'Error', 500);
                 }else{
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('kb_hdr')
                         ->where('tr_id', '=', $tr_id)
                         ->update([
@@ -772,20 +772,20 @@ class KasbonAprvController extends Controller
             $type_aprv = $request->type_aprv;
 
             if($type_aprv == 'approve1'){
-                $cekStatus = DB::connection("sqlSrvFPI")
+                $cekStatus = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', '=', $tr_id)
                                 ->selectRaw("stat as stat")
                                 ->value('stat');
 
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', '=', $tr_id)
                                 ->selectRaw("FORMAT(dt_aprv1, 'yyyy-MM-dd') as dt_reject")
                                 ->value('dt_reject');
 
                 if($cekStatus == 'O' && $cekAprv == '1900-01-01'){
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('kb_hdr')
                         ->where('tr_id', '=', $tr_id)
                         ->update([
@@ -802,20 +802,20 @@ class KasbonAprvController extends Controller
                 }
                 return $this->sendResponse($response, 'Successfully Reject 1 Kasbon');
             }elseif($type_aprv == 'approve2'){
-                $cekStatus = DB::connection("sqlSrvFPI")
+                $cekStatus = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', '=', $tr_id)
                                 ->selectRaw("stat as stat")
                                 ->value('stat');
 
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', '=', $tr_id)
                                 ->selectRaw("FORMAT(dt_aprv2, 'yyyy-MM-dd') as dt_reject")
                                 ->value('dt_reject');
 
                 if($cekStatus == 'O' && $cekAprv == '1900-01-01'){
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('kb_hdr')
                         ->where('tr_id', '=', $tr_id)
                         ->update([
@@ -832,20 +832,20 @@ class KasbonAprvController extends Controller
                 }
                 return $this->sendResponse($response, 'Successfully Reject 2 Kasbon');
             }elseif($type_aprv == 'approve3'){
-                $cekStatus = DB::connection("sqlSrvFPI")
+                $cekStatus = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', '=', $tr_id)
                                 ->selectRaw("stat as stat")
                                 ->value('stat');
 
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', '=', $tr_id)
                                 ->selectRaw("FORMAT(dt_aprv3, 'yyyy-MM-dd') as dt_reject")
                                 ->value('dt_reject');
 
                 if($cekStatus == 'O' && $cekAprv == '1900-01-01'){
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('kb_hdr')
                         ->where('tr_id', '=', $tr_id)
                         ->update([
@@ -862,20 +862,20 @@ class KasbonAprvController extends Controller
                 }
                 return $this->sendResponse($response, 'Successfully Reject 3 Kasbon');
             }elseif($type_aprv == 'approve4'){
-                $cekStatus = DB::connection("sqlSrvFPI")
+                $cekStatus = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', '=', $tr_id)
                                 ->selectRaw("stat as stat")
                                 ->value('stat');
 
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                                 ->table('kb_hdr')
                                 ->where('tr_id', '=', $tr_id)
                                 ->selectRaw("FORMAT(dt_aprv4, 'yyyy-MM-dd') as dt_reject")
                                 ->value('dt_reject');
 
                 if($cekStatus == 'O' && $cekAprv == '1900-01-01'){
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('kb_hdr')
                         ->where('tr_id', '=', $tr_id)
                         ->update([
@@ -900,7 +900,7 @@ class KasbonAprvController extends Controller
     private function sendNotifApproval($spkId, $getEmp, $getPhone)
     {
         try {
-            $getLink = "FDPI" . now()->format('ymdH') . rand(10000, 99999);
+            $getLink = "bcki" . now()->format('ymdH') . rand(10000, 99999);
 
             DB::connection('sqlsrv')
             ->table('sec_reset_password')

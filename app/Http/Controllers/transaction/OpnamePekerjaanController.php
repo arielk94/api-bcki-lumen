@@ -61,7 +61,7 @@ class OpnamePekerjaanController extends Controller
             }
         }
 
-        // $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        // $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
         //     SELECT
         //         site.id_site,
         //         site.site_name + ' ' + site.site_address AS site_name,
@@ -94,7 +94,7 @@ class OpnamePekerjaanController extends Controller
 
         // "));
 
-        $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
                 SELECT
                     site.id_site,
                     site.site_name + ' ' + site.site_address AS site_name,
@@ -163,7 +163,7 @@ class OpnamePekerjaanController extends Controller
             $sqlWhere.= " and site_cluster.id_cluster = '$id_cluster'";
         }
 
-        $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
             SELECT
                 site.id_site,
                 site.site_name + ' ' + site.site_address AS site_name,
@@ -234,7 +234,7 @@ class OpnamePekerjaanController extends Controller
             $sqlWhere.= " and commodity.com_id = $com_id";
         }
 
-        $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
                 SELECT
                     site.id_site,
                     site.site_name + ' ' + site.site_address AS site_name,
@@ -284,13 +284,13 @@ class OpnamePekerjaanController extends Controller
 
     public function store(Request $request)
     {
-        $spk_hdr = DB::connection('sqlSrvFPI')->selectOne("
+        $spk_hdr = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT * FROM spk_hdr WITH (NOLOCK)
             WHERE id_spk = ?
         ", [trim($request->spk_id)]);
 
         if ($spk_hdr) {
-            $sum_closing = DB::connection('sqlSrvFPI')->selectOne("
+            $sum_closing = DB::connection('sqlSrvBCKI')->selectOne("
                         SELECT 
                             SUM(CASE WHEN check2 = 'Y' THEN 1 ELSE 0 END) AS total_checked,
                             SUM(CASE WHEN check3 = 'Y' THEN 1 ELSE 0 END) AS total_qc
@@ -298,7 +298,7 @@ class OpnamePekerjaanController extends Controller
                         WHERE spk_id = ? AND qc_trans_id = ?  AND com_id = ? AND opname_id = ' '
                     ", [trim($request->spk_id), trim($request->qc_trans_id), $request->com_id]);
 
-            $sum_trans_dtl = DB::connection('sqlSrvFPI')->selectOne("
+            $sum_trans_dtl = DB::connection('sqlSrvBCKI')->selectOne("
                         SELECT 
                             SUM(CASE WHEN qtl.dt_aprv2 IS NOT NULL THEN 1 ELSE 0 END) AS total_checked,
                             SUM(CASE WHEN qtl.dt_aprv3 IS NOT NULL THEN 1 ELSE 0 END) AS total_qc
@@ -325,25 +325,25 @@ class OpnamePekerjaanController extends Controller
                     }
                     
                     if ($closing_total_checked >= $trans_total_checked && $closing_total_checked > 0) {
-                        $cek2 = DB::connection("sqlSrvFPI")->table('qc_opname_dtl')->where('tr_id', $transId)->where('spk_id', $request->spk_id)->where('qc_trans_id', $request->qc_trans_id)->where('com_id', $request->com_id)->where('type', 2)->first();
+                        $cek2 = DB::connection("sqlSrvBCKI")->table('qc_opname_dtl')->where('tr_id', $transId)->where('spk_id', $request->spk_id)->where('qc_trans_id', $request->qc_trans_id)->where('com_id', $request->com_id)->where('type', 2)->first();
                         if($cek2) {
                             return $this->sendError('Commodity dan yang sudah di cek PC sudah ada', 'Error', 500);
                         }
                     }
 
                     if ($closing_total_qc >= $trans_total_qc && $closing_total_qc > 0) {
-                        $cek3 = DB::connection("sqlSrvFPI")->table('qc_opname_dtl')->where('tr_id', $transId)->where('spk_id', $request->spk_id)->where('qc_trans_id', $request->qc_trans_id)->where('com_id', $request->com_id)->where('type', 3)->first();
+                        $cek3 = DB::connection("sqlSrvBCKI")->table('qc_opname_dtl')->where('tr_id', $transId)->where('spk_id', $request->spk_id)->where('qc_trans_id', $request->qc_trans_id)->where('com_id', $request->com_id)->where('type', 3)->first();
                         if($cek3) {
                             return $this->sendError('Commodity dan yang sudah di cek QC PC sudah ada', 'Error', 500);
                         }
                     }
 
-                    DB::connection('sqlSrvFPI')->beginTransaction();
+                    DB::connection('sqlSrvBCKI')->beginTransaction();
 
                     try {
 
                         if ($request->tr_id){
-                            DB::connection('sqlSrvFPI')
+                            DB::connection('sqlSrvBCKI')
                             ->table('qc_opname')
                             ->where('tr_id', $transId)
                             ->where('spk_id', $request->spk_id)
@@ -352,7 +352,7 @@ class OpnamePekerjaanController extends Controller
                                 'description' => $request->description
                             ]);
                         } else {
-                            DB::connection('sqlSrvFPI')
+                            DB::connection('sqlSrvBCKI')
                             ->table('qc_opname')
                             ->insert([
                                 'tr_id' => $transId,
@@ -381,14 +381,14 @@ class OpnamePekerjaanController extends Controller
 
                         if ($closing_total_checked >= $trans_total_checked && $closing_total_checked > 0) {
                             $total_final = 0.75 * $total_original;
-                            $item_num = DB::connection("sqlSrvFPI")->table('qc_opname_dtl')
+                            $item_num = DB::connection("sqlSrvBCKI")->table('qc_opname_dtl')
                                         ->select('item_num')
                                         ->where('tr_id', $transId)
                                         ->where('spk_id', $request->spk_id)
                                         ->where('qc_trans_id', $request->qc_trans_id)
                                         ->max('item_num');
 
-                            DB::connection('sqlSrvFPI')
+                            DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->insert([
                                 'tr_id' => $transId,
@@ -407,7 +407,7 @@ class OpnamePekerjaanController extends Controller
 
                         if ($closing_total_qc >= $trans_total_qc && $closing_total_qc > 0) {
                             $total_final = 0.25 * $total_original;
-                            $item_num = DB::connection("sqlSrvFPI")
+                            $item_num = DB::connection("sqlSrvBCKI")
                                         ->table('qc_opname_dtl')
                                         ->select('item_num')
                                         ->where('tr_id', $transId)
@@ -415,7 +415,7 @@ class OpnamePekerjaanController extends Controller
                                         ->where('qc_trans_id', $request->qc_trans_id)
                                         ->max('item_num');
 
-                            DB::connection('sqlSrvFPI')
+                            DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->insert([
                                 'tr_id' => $transId,
@@ -431,7 +431,7 @@ class OpnamePekerjaanController extends Controller
                             ]);
                         }
 
-                        DB::connection('sqlSrvFPI')->commit();
+                        DB::connection('sqlSrvBCKI')->commit();
 
                         $this->updateOpnameHdr($transId, trim($request->spk_id), trim($request->qc_trans_id), $request);
 
@@ -439,7 +439,7 @@ class OpnamePekerjaanController extends Controller
 
                     }
                     catch (\Exception $e) {
-                        DB::connection('sqlSrvFPI')->rollBack();
+                        DB::connection('sqlSrvBCKI')->rollBack();
                         return $this->sendError($e->getMessage(), 'Error', 500);
                     }
 
@@ -457,13 +457,13 @@ class OpnamePekerjaanController extends Controller
 
     public function closeSpk(Request $request)
     {
-        $spk_hdr = DB::connection('sqlSrvFPI')->selectOne("
+        $spk_hdr = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT * FROM spk_hdr WITH (NOLOCK)
             WHERE id_spk = ?
         ", [trim($request->spk_id)]);
 
         if ($spk_hdr) {
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('spk_hdr')
             ->where('id_spk', trim($request->spk_id))
             ->update([
@@ -479,7 +479,7 @@ class OpnamePekerjaanController extends Controller
     public function update(Request $request)
     {
         try {
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('qc_opname')
             ->where('tr_id', $request->tr_id)
             ->where('spk_id', $request->spk_id)
@@ -501,7 +501,7 @@ class OpnamePekerjaanController extends Controller
     {
         try {
 
-            $opname = DB::connection('sqlSrvFPI')
+            $opname = DB::connection('sqlSrvBCKI')
             ->table('qc_opname')
             ->where('tr_id', $request->tr_id)
             ->where('spk_id', $request->spk_id)
@@ -512,7 +512,7 @@ class OpnamePekerjaanController extends Controller
                 if ($opname->dt_confirmed != '1900-01-01 00:00:00.000') {
                     return $this->sendError('Maaf tidak bisa adjust, sudah di confirm', 'Error', 500);
                 }
-                $sum_amt = DB::connection('sqlSrvFPI')->selectOne("
+                $sum_amt = DB::connection('sqlSrvBCKI')->selectOne("
                             SELECT 
                                 SUM(amt) as amt,
                                 SUM(amt_retensi) as amt_retensi,
@@ -522,7 +522,7 @@ class OpnamePekerjaanController extends Controller
                         ", [trim($request->tr_id), trim($request->spk_id), trim($request->qc_trans_id)]);
                 $amt_final = $sum_amt ? ($sum_amt->amt_final ? $sum_amt->amt_final : 0) : 0;
                 $total_final = $amt_final + $request->amt_adj;
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('qc_opname')
                 ->where('tr_id', $request->tr_id)
                 ->where('spk_id', $request->spk_id)
@@ -552,7 +552,7 @@ class OpnamePekerjaanController extends Controller
         $spk_id = $request->spk_id;
         $qc_trans_id = $request->qc_trans_id;
 
-        $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
                 SELECT
                     qc_opname_dtl.*,
                     commodity.com_desc,
@@ -575,7 +575,7 @@ class OpnamePekerjaanController extends Controller
         $tr_id = $request->tr_id;
         $kasbons = [];
 
-        $qc_opname = DB::connection('sqlSrvFPI')->selectOne("
+        $qc_opname = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT qc_opname.*
             FROM qc_opname as qc_opname WITH (NOLOCK)
             WHERE qc_opname.tr_id = ? AND qc_opname.spk_id = ?
@@ -583,7 +583,7 @@ class OpnamePekerjaanController extends Controller
 
         if ($qc_opname) {
             if ($qc_opname->dt_confirmed != '1900-01-01 00:00:00.000') {
-                $kasbons = DB::connection('sqlSrvFPI')->select("
+                $kasbons = DB::connection('sqlSrvBCKI')->select("
                 SELECT hdr.tr_id, hdr.dt_kb, hdr.remark, SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
                 JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'EX'
@@ -592,7 +592,7 @@ class OpnamePekerjaanController extends Controller
                 GROUP by hdr.tr_id, hdr.dt_kb, hdr.remark
                 ", [trim($spk_id), trim($tr_id)]);
             } else {
-                $kasbons = DB::connection('sqlSrvFPI')->select("
+                $kasbons = DB::connection('sqlSrvBCKI')->select("
                 SELECT hdr.tr_id, hdr.dt_kb, hdr.remark, SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
                 JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'EX'
@@ -614,7 +614,7 @@ class OpnamePekerjaanController extends Controller
         $tr_id = $request->tr_id;
         $kasbon = 0;
 
-        $qc_opname = DB::connection('sqlSrvFPI')->selectOne("
+        $qc_opname = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT qc_opname.*
             FROM qc_opname as qc_opname WITH (NOLOCK)
             WHERE qc_opname.tr_id = ? AND qc_opname.spk_id = ?
@@ -622,7 +622,7 @@ class OpnamePekerjaanController extends Controller
 
         if ($qc_opname) {
             if ($qc_opname->dt_confirmed != '1900-01-01 00:00:00.000') {
-                $sum_kasbon = DB::connection('sqlSrvFPI')->selectOne("
+                $sum_kasbon = DB::connection('sqlSrvBCKI')->selectOne("
                 SELECT 
                 SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
@@ -632,7 +632,7 @@ class OpnamePekerjaanController extends Controller
                 ", [trim($spk_id), trim($tr_id)]);
                 $kasbon = $sum_kasbon ? ($sum_kasbon->kasbon ? $sum_kasbon->kasbon : 0) : 0;
             } else {
-                $sum_kasbon = DB::connection('sqlSrvFPI')->selectOne("
+                $sum_kasbon = DB::connection('sqlSrvBCKI')->selectOne("
                 SELECT 
                 SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
@@ -655,7 +655,7 @@ class OpnamePekerjaanController extends Controller
         $tr_id = $request->tr_id;
         $kasbons = [];
 
-        $qc_opname = DB::connection('sqlSrvFPI')->selectOne("
+        $qc_opname = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT qc_opname.*
             FROM qc_opname as qc_opname WITH (NOLOCK)
             WHERE qc_opname.tr_id = ? AND qc_opname.spk_id = ?
@@ -663,7 +663,7 @@ class OpnamePekerjaanController extends Controller
 
         if ($qc_opname) {
             if ($qc_opname->dt_confirmed != '1900-01-01 00:00:00.000') {
-                $kasbons = DB::connection('sqlSrvFPI')->select("
+                $kasbons = DB::connection('sqlSrvBCKI')->select("
                 SELECT hdr.tr_id, hdr.dt_kb, hdr.remark, SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
                 JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'EX'
@@ -672,7 +672,7 @@ class OpnamePekerjaanController extends Controller
                 GROUP By hdr.tr_id, hdr.dt_kb, hdr.remark
                 ", [trim($spk_id), trim($tr_id)]);
             } else {
-                $kasbons = DB::connection('sqlSrvFPI')->select("
+                $kasbons = DB::connection('sqlSrvBCKI')->select("
                 SELECT  hdr.tr_id, hdr.dt_kb, hdr.remark, SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
                 JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'EX'
@@ -694,7 +694,7 @@ class OpnamePekerjaanController extends Controller
         $tr_id = $request->tr_id;
         $kasbon = 0;
 
-        $qc_opname = DB::connection('sqlSrvFPI')->selectOne("
+        $qc_opname = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT qc_opname.*
             FROM qc_opname as qc_opname WITH (NOLOCK)
             WHERE qc_opname.tr_id = ? AND qc_opname.spk_id = ?
@@ -702,7 +702,7 @@ class OpnamePekerjaanController extends Controller
 
         if ($qc_opname) {
             if ($qc_opname->dt_confirmed != '1900-01-01 00:00:00.000') {
-                $sum_kasbon = DB::connection('sqlSrvFPI')->selectOne("
+                $sum_kasbon = DB::connection('sqlSrvBCKI')->selectOne("
                 SELECT 
                 SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
@@ -712,7 +712,7 @@ class OpnamePekerjaanController extends Controller
                 ", [trim($spk_id), trim($tr_id)]);
                 $kasbon = $sum_kasbon ? ($sum_kasbon->kasbon ? $sum_kasbon->kasbon : 0) : 0;
             } else {
-                $sum_kasbon = DB::connection('sqlSrvFPI')->selectOne("
+                $sum_kasbon = DB::connection('sqlSrvBCKI')->selectOne("
                 SELECT 
                 SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
@@ -735,7 +735,7 @@ class OpnamePekerjaanController extends Controller
         $tr_id = $request->tr_id;
         $kasbons = [];
 
-        $qc_opname = DB::connection('sqlSrvFPI')->selectOne("
+        $qc_opname = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT qc_opname.*
             FROM qc_opname as qc_opname WITH (NOLOCK)
             WHERE qc_opname.tr_id = ? AND qc_opname.spk_id = ?
@@ -743,7 +743,7 @@ class OpnamePekerjaanController extends Controller
 
         if ($qc_opname) {
             if ($qc_opname->dt_confirmed != '1900-01-01 00:00:00.000') {
-                $kasbons = DB::connection('sqlSrvFPI')->select("
+                $kasbons = DB::connection('sqlSrvBCKI')->select("
                 SELECT hdr.tr_id, hdr.dt_kb, hdr.remark, SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
                 JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'OT'
@@ -752,7 +752,7 @@ class OpnamePekerjaanController extends Controller
                 GROUP By hdr.tr_id, hdr.dt_kb, hdr.remark
                 ", [trim($spk_id), trim($tr_id)]);
             } else {
-                $kasbons = DB::connection('sqlSrvFPI')->select("
+                $kasbons = DB::connection('sqlSrvBCKI')->select("
                 SELECT hdr.tr_id, hdr.dt_kb, hdr.remark, SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
                 JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'OT'
@@ -774,7 +774,7 @@ class OpnamePekerjaanController extends Controller
         $tr_id = $request->tr_id;
         $kasbon = 0;
 
-        $qc_opname = DB::connection('sqlSrvFPI')->selectOne("
+        $qc_opname = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT qc_opname.*
             FROM qc_opname as qc_opname WITH (NOLOCK)
             WHERE qc_opname.tr_id = ? AND qc_opname.spk_id = ?
@@ -782,7 +782,7 @@ class OpnamePekerjaanController extends Controller
 
         if ($qc_opname) {
             if ($qc_opname->dt_confirmed != '1900-01-01 00:00:00.000') {
-                $sum_kasbon = DB::connection('sqlSrvFPI')->selectOne("
+                $sum_kasbon = DB::connection('sqlSrvBCKI')->selectOne("
                 SELECT 
                 SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
@@ -792,7 +792,7 @@ class OpnamePekerjaanController extends Controller
                 ", [trim($spk_id), trim($tr_id)]);
                 $kasbon = $sum_kasbon ? ($sum_kasbon->kasbon ? $sum_kasbon->kasbon : 0) : 0;
             } else {
-                $sum_kasbon = DB::connection('sqlSrvFPI')->selectOne("
+                $sum_kasbon = DB::connection('sqlSrvBCKI')->selectOne("
                 SELECT 
                 SUM(dtl.amt) as kasbon 
                 FROM kb_dtl as dtl 
@@ -811,31 +811,31 @@ class OpnamePekerjaanController extends Controller
 
     public function destroy(Request $request)
     {
-        $spk_hdr = DB::connection('sqlSrvFPI')->selectOne("
+        $spk_hdr = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT * FROM spk_hdr WITH (NOLOCK)
             WHERE id_spk = ?
         ", [trim($request->spk_id)]);
 
         if ($spk_hdr) {
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('qc_opname_dtl')
                 ->where('tr_id', $request->tr_id)
                 ->where('spk_id', $request->spk_id)
                 ->where('qc_trans_id', $request->qc_trans_id)
                 ->delete();
 
-                DB::connection('sqlSrvFPI')->update(
+                DB::connection('sqlSrvBCKI')->update(
                     "UPDATE qc_closing_weekly
                      SET opname_id = ' '
                      WHERE spk_id = ? AND qc_trans_id = ?  AND opname_id = ?",
                     [trim($request->spk_id), trim($request->qc_trans_id), trim($request->tr_id)]
                 ); 
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 $this->updateOpname($request->tr_id, trim($request->spk_id), trim($request->qc_trans_id), $request);
 
@@ -843,7 +843,7 @@ class OpnamePekerjaanController extends Controller
 
             }
             catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
         } else {
@@ -858,7 +858,7 @@ class OpnamePekerjaanController extends Controller
         $dateDay = date("d");
         $gen_tr_id = '';
 
-        $getLastTrID =  DB::connection('sqlSrvFPI')
+        $getLastTrID =  DB::connection('sqlSrvBCKI')
                         ->table('qc_opname')
                         ->where('tr_id', 'like', "%".'9'.$dateYear.$dateMonth.$dateDay."%")
                         ->max('tr_id');
@@ -875,7 +875,7 @@ class OpnamePekerjaanController extends Controller
 
     private function updateOpnameHdr($transId, $spk_id, $qc_trans_id, $request){  
 
-        $sum_amt = DB::connection('sqlSrvFPI')->selectOne("
+        $sum_amt = DB::connection('sqlSrvBCKI')->selectOne("
                         SELECT 
                             SUM(amt) as amt
                         FROM qc_opname_dtl WITH (NOLOCK)
@@ -885,14 +885,14 @@ class OpnamePekerjaanController extends Controller
         $amt = $sum_amt ? ($sum_amt->amt ? $sum_amt->amt : 0) : 0;
         $terbilang = terbilang($amt);
 
-        DB::connection('sqlSrvFPI')->update(
+        DB::connection('sqlSrvBCKI')->update(
             "UPDATE qc_opname
              SET amt_total = ?, terbilang = ? 
              WHERE tr_id = ?  AND spk_id = ? AND qc_trans_id = ?", 
             [$amt, $terbilang, trim($transId), trim($spk_id), trim($qc_trans_id)]
         );   
 
-        DB::connection('sqlSrvFPI')->update(
+        DB::connection('sqlSrvBCKI')->update(
             "UPDATE qc_closing_weekly
              SET opname_id = ?
              WHERE spk_id = ? AND qc_trans_id = ?  AND com_id = ? AND opname_id = ' '",
@@ -902,7 +902,7 @@ class OpnamePekerjaanController extends Controller
 
     private function updateOpname($transId, $spk_id, $qc_trans_id, $request){  
 
-        $sum_amt = DB::connection('sqlSrvFPI')->selectOne("
+        $sum_amt = DB::connection('sqlSrvBCKI')->selectOne("
                         SELECT 
                             SUM(amt) as amt
                         FROM qc_opname_dtl WITH (NOLOCK)
@@ -912,7 +912,7 @@ class OpnamePekerjaanController extends Controller
         $amt = $sum_amt ? ($sum_amt->amt ? $sum_amt->amt : 0) : 0;
         $terbilang = terbilang($amt);
 
-        DB::connection('sqlSrvFPI')->update(
+        DB::connection('sqlSrvBCKI')->update(
             "UPDATE qc_opname
              SET amt_total = ?, terbilang = ? 
              WHERE tr_id = ?  AND spk_id = ? AND qc_trans_id = ?", 

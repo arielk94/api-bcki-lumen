@@ -11,7 +11,7 @@ trait getFilterTrait
     {
         $data =  DB::connection("sqlsrv")
             ->table('sec_env_conf')
-            ->where('entity_id', 'FDPI')
+            ->where('entity_id', 'bcki')
             ->where('appl_id', $appl_id)
             ->where('var_id', $var_id)
             ->where('active_flag', 'Y');
@@ -29,7 +29,7 @@ trait getFilterTrait
         $group = DB::connection('sqlsrv')
                     ->table('sec_group')
                     ->select('group_id')
-                    ->where('entity_id', '=', 'FDPI' )
+                    ->where('entity_id', '=', 'bcki' )
                     ->where('appl_id', '=', 'SALES' )
                     ->where('user_id2', '=', getAuth($request)->user_id2 )
                     ->where('active_flag', '=', 'Y')
@@ -45,7 +45,7 @@ trait getFilterTrait
             
             case "DEVELOPMENT":
 
-                $region = DB::connection('sqlSrvFPI')
+                $region = DB::connection('sqlSrvBCKI')
                             ->table('branch_office')
                             ->select('region')
                             ->where('active_flag', 'Y' )
@@ -57,7 +57,7 @@ trait getFilterTrait
 
             case "MANAGEMENT":
                 
-                $region = DB::connection('sqlSrvFPI')
+                $region = DB::connection('sqlSrvBCKI')
                             ->table('branch_office')
                             ->select('region')
                             ->where('active_flag', 'Y' )
@@ -67,7 +67,7 @@ trait getFilterTrait
 
             break;
 
-            case "RM FDPI":
+            case "RM bcki":
 
                 $salesid = DB::connection('sqlsrvHrd')
                             ->table('employee')
@@ -75,7 +75,7 @@ trait getFilterTrait
                             ->where('user_id2', '=', getAuth($request)->user_id2 )
                             ->value('salesid');
 
-                $region = DB::connection('sqlSrvFPI')
+                $region = DB::connection('sqlSrvBCKI')
                             ->table('branch_office')
                             ->select('region')
                             ->where('rm', '=', $salesid )
@@ -92,13 +92,13 @@ trait getFilterTrait
                 $officeEnv = DB::connection('sqlsrv')
                             ->table('sec_env_conf')
                             ->select('var_value')
-                            ->where('entity_id', '=', 'FDPI')
+                            ->where('entity_id', '=', 'bcki')
                             ->where('appl_id', '=', 'SALES')
                             ->where('var_id', '=', 'OFFICEID' )
                             ->where('user_id2', '=', getAuth($request)->user_id2 )
                             ->value('var_value');
 
-                $office = DB::connection('sqlSrvFPI')
+                $office = DB::connection('sqlSrvBCKI')
                             ->table('Sales')
                             ->select('office_id')
                             ->where('active_flag', '=', 'Y')
@@ -106,7 +106,7 @@ trait getFilterTrait
                             ->orderBy('NamaSales', 'asc')                
                             ->first();
 
-                $region = DB::connection('sqlSrvFPI')
+                $region = DB::connection('sqlSrvBCKI')
                             ->table('branch_office')
                             ->select('region')
                             ->where('active_flag', '=', 'Y')
@@ -118,7 +118,7 @@ trait getFilterTrait
             
             break;
 
-            case "KACAB FDPI":
+            case "KACAB bcki":
 
                 $salesid = DB::connection('sqlsrvHrd')
                             ->table('employee')
@@ -126,7 +126,7 @@ trait getFilterTrait
                             ->where('user_id2', '=', getAuth($request)->user_id2 )
                             ->value('salesid');
 
-                $office = DB::connection('sqlSrvFPI')
+                $office = DB::connection('sqlSrvBCKI')
                             ->table('Sales')
                             ->select('office_id')
                             ->where('active_flag', '=', 'Y')
@@ -134,7 +134,7 @@ trait getFilterTrait
                             ->orderBy('NamaSales', 'asc')                
                             ->first();
 
-                $region = DB::connection('sqlSrvFPI')
+                $region = DB::connection('sqlSrvBCKI')
                             ->table('branch_office')
                             ->select('region')
                             ->where('active_flag', '=', 'Y')
@@ -146,7 +146,7 @@ trait getFilterTrait
             
             break;
             
-            case "SALES FDPI":
+            case "SALES bcki":
 
                 $salesid = DB::connection('sqlsrvHrd')
                             ->table('employee')
@@ -154,7 +154,7 @@ trait getFilterTrait
                             ->where('user_id2', '=', getAuth($request)->user_id2 )
                             ->value('salesid');
 
-                $office = DB::connection('sqlSrvFPI')
+                $office = DB::connection('sqlSrvBCKI')
                             ->table('Sales')
                             ->select('office_id')
                             ->where('active_flag', '=', 'Y')
@@ -162,7 +162,7 @@ trait getFilterTrait
                             ->orderBy('NamaSales', 'asc')               
                             ->first();
 
-                $region = DB::connection('sqlSrvFPI')
+                $region = DB::connection('sqlSrvBCKI')
                             ->table('branch_office')
                             ->select('region')
                             ->where('active_flag', '=', 'Y')
@@ -173,7 +173,7 @@ trait getFilterTrait
             
             break;
 
-            case "RM PROJECT FDPI":
+            case "RM PROJECT bcki":
 
                 $salesid = DB::connection('sqlsrvHrd')
                             ->table('employee')
@@ -181,7 +181,7 @@ trait getFilterTrait
                             ->where('user_id2', '=', getAuth($request)->user_id2 )
                             ->value('salesid');
 
-                $region = DB::connection('sqlSrvFPI')
+                $region = DB::connection('sqlSrvBCKI')
                             ->table('branch_office')
                             ->select('region')
                             ->where('active_flag', '=', 'Y')
@@ -204,7 +204,7 @@ trait getFilterTrait
         switch ($group) {
             case "DEVELOPMENT":
                 
-                $office = DB::connection('sqlSrvFPI')
+                $office = DB::connection('sqlSrvBCKI')
                                 ->table('branch_office')
                                 ->selectRaw("office_id, concat(trim(office), '(', office_id, ')' ) as office, lng, lat")
                                 ->where('active_flag', '=', 'Y')
@@ -217,7 +217,7 @@ trait getFilterTrait
 
             case "MANAGEMENT":
                 
-                $office = DB::connection('sqlSrvFPI')
+                $office = DB::connection('sqlSrvBCKI')
                                 ->table('branch_office')
                                 ->selectRaw("office_id, concat(trim(office), '(', office_id, ')' ) as office, lng, lat")
                                 ->where('active_flag', '=', 'Y')
@@ -228,18 +228,18 @@ trait getFilterTrait
 
             break;
 
-            case "RM FDPI":
+            case "RM bcki":
 
                 $salesid = DB::connection('sqlsrv')
                                 ->table('sec_env_conf')
                                 ->select('var_value')
-                                ->where('entity_id', '=', 'FDPI')
+                                ->where('entity_id', '=', 'bcki')
                                 ->where('appl_id', '=', 'SALES')
                                 ->where('var_id', '=', 'SALESID' )
                                 ->where('user_id2', '=', getAuth($request)->user_id2 )
                                 ->value('var_value');
 
-                $office = DB::connection('sqlSrvFPI')
+                $office = DB::connection('sqlSrvBCKI')
                                 ->table('branch_office')
                                 ->selectRaw("office_id, concat(trim(office), '(', office_id, ')' ) as office, lng, lat")
                                 ->where('active_flag', '=', 'Y')
@@ -251,18 +251,18 @@ trait getFilterTrait
 
             break;
 
-            case "KACAB FDPI":
+            case "KACAB bcki":
 
                 $salesid = DB::connection('sqlsrv')
                                 ->table('sec_env_conf')
                                 ->select('var_value')
-                                ->where('entity_id', '=', 'FDPI')
+                                ->where('entity_id', '=', 'bcki')
                                 ->where('appl_id', '=', 'SALES')
                                 ->where('var_id', '=', 'SALESID' )
                                 ->where('user_id2', '=', getAuth($request)->user_id2 )
                                 ->value('var_value');
 
-                $office = DB::connection('sqlSrvFPI')
+                $office = DB::connection('sqlSrvBCKI')
                                 ->table('branch_office')
                                 ->selectRaw("office_id, concat(trim(office), '(', office_id, ')' ) as office, lng, lat")
                                 ->where('active_flag', '=', 'Y')
@@ -274,18 +274,18 @@ trait getFilterTrait
             
             break;
             
-            case "SALES FDPI":
+            case "SALES bcki":
 
                 $salesid = DB::connection('sqlsrv')
                             ->table('sec_env_conf')
                             ->select('var_value')
-                            ->where('entity_id', '=', 'FDPI')
+                            ->where('entity_id', '=', 'bcki')
                             ->where('appl_id', '=', 'SALES')
                             ->where('var_id', '=', 'SALESID' )
                             ->where('user_id2', '=', getAuth($request)->user_id2 )
                             ->value('var_value');
 
-                $office = DB::connection('sqlSrvFPI')
+                $office = DB::connection('sqlSrvBCKI')
                                 ->table('branch_office as a')
                                 ->join('Sales as b', 'a.office_id', '=', 'b.office_id')
                                 ->select('a.office_id', 'a.office', 'a.lng', 'a.lat')
@@ -303,13 +303,13 @@ trait getFilterTrait
                 $salesid = DB::connection('sqlsrv')
                             ->table('sec_env_conf')
                             ->select('var_value')
-                            ->where('entity_id', '=', 'FDPI')
+                            ->where('entity_id', '=', 'bcki')
                             ->where('appl_id', '=', 'SALES')
                             ->where('var_id', '=', 'SALESID' )
                             ->where('user_id2', '=', getAuth($request)->user_id2 )
                             ->value('var_value');
 
-                $offRegion = DB::connection("sqlSrvFPI")
+                $offRegion = DB::connection("sqlSrvBCKI")
                             ->table('branch_office')
                             ->select('office_id')
                             ->where('rm','=', $salesid)
@@ -317,7 +317,7 @@ trait getFilterTrait
                             ->pluck('office_id')
                             ->toArray();
 
-                $office = DB::connection('sqlSrvFPI')
+                $office = DB::connection('sqlSrvBCKI')
                                 ->table('branch_office')
                                 ->selectRaw("office_id, concat(trim(office), '(', office_id, ')' ) as office, lng, lat")
                                 ->where('active_flag', '=', 'Y')
@@ -341,7 +341,7 @@ trait getFilterTrait
         switch ($group) {
             case "DEVELOPMENT":
                 
-                $sales = DB::connection('sqlSrvFPI')
+                $sales = DB::connection('sqlSrvBCKI')
                                 ->table('Sales')
                                 ->selectRaw("SalesId,(NamaSales + ' (' + SalesId + ')') as NamaSales")
                                 ->where('active_flag', '=', 'Y')
@@ -354,7 +354,7 @@ trait getFilterTrait
 
             case "MANAGEMENT":
                 
-                $sales = DB::connection('sqlSrvFPI')
+                $sales = DB::connection('sqlSrvBCKI')
                                 ->table('Sales')
                                 ->selectRaw("SalesId,(NamaSales + ' (' + SalesId + ')') as NamaSales")
                                 ->where('active_flag', '=', 'Y')
@@ -365,25 +365,25 @@ trait getFilterTrait
 
             break;
 
-            case "RM FDPI":
+            case "RM bcki":
 
                 $salesid = DB::connection('sqlsrv')
                             ->table('sec_env_conf')
                             ->select('var_value')
-                            ->where('entity_id', '=', 'FDPI')
+                            ->where('entity_id', '=', 'bcki')
                             ->where('appl_id', '=', 'SALES')
                             ->where('var_id', '=', 'SALESID' )
                             ->where('user_id2', '=', getAuth($request)->user_id2 )
                             ->value('var_value');
 
-                $regionGet = DB::connection('sqlSrvFPI')
+                $regionGet = DB::connection('sqlSrvBCKI')
                             ->table('branch_office')
                             ->select('region')
                             ->where('rm', '=', $salesid )
                             ->where('active_flag', '=', 'Y')
                             ->value('region');
 
-                $offRegion = DB::connection("sqlSrvFPI")
+                $offRegion = DB::connection("sqlSrvBCKI")
                             ->table('branch_office')
                             ->select('office_id')
                             ->where('region','=', $regionGet)
@@ -391,7 +391,7 @@ trait getFilterTrait
                             ->pluck('office_id')
                             ->toArray();
 
-                $sales = DB::connection('sqlSrvFPI')
+                $sales = DB::connection('sqlSrvBCKI')
                             ->table('Sales')
                             ->selectRaw("SalesId,(NamaSales + ' (' + SalesId + ')') as NamaSales")
                             ->where('active_flag', '=', 'Y')
@@ -403,25 +403,25 @@ trait getFilterTrait
 
             break;
 
-            case "KACAB FDPI":
+            case "KACAB bcki":
 
                 $salesid = DB::connection('sqlsrv')
                             ->table('sec_env_conf')
                             ->select('var_value')
-                            ->where('entity_id', '=', 'FDPI')
+                            ->where('entity_id', '=', 'bcki')
                             ->where('appl_id', '=', 'SALES')
                             ->where('var_id', '=', 'SALESID' )
                             ->where('user_id2', '=', getAuth($request)->user_id2 )
                             ->value('var_value');
 
-                $office = DB::connection('sqlSrvFPI')
+                $office = DB::connection('sqlSrvBCKI')
                             ->table('branch_office')
                             ->select('office_id', 'office')
                             ->where('active_flag', '=', 'Y')
                             ->where('ka_cab', '=', $salesid)
                             ->first();
 
-                $sales = DB::connection('sqlSrvFPI')
+                $sales = DB::connection('sqlSrvBCKI')
                             ->table('Sales')
                             ->selectRaw("SalesId,(NamaSales + ' (' + SalesId + ')') as NamaSales")
                             ->where('active_flag', '=', 'Y')
@@ -433,18 +433,18 @@ trait getFilterTrait
             
             break;
             
-            case "SALES FDPI":
+            case "SALES bcki":
 
                 $salesid = DB::connection('sqlsrv')
                             ->table('sec_env_conf')
                             ->select('var_value')
-                            ->where('entity_id', '=', 'FDPI')
+                            ->where('entity_id', '=', 'bcki')
                             ->where('appl_id', '=', 'SALES')
                             ->where('var_id', '=', 'SALESID' )
                             ->where('user_id2', '=', getAuth($request)->user_id2 )
                             ->value('var_value');
 
-                $sales = DB::connection('sqlSrvFPI')
+                $sales = DB::connection('sqlSrvBCKI')
                             ->table('Sales')
                             ->selectRaw("SalesId,(NamaSales + ' (' + SalesId + ')') as NamaSales")
                             ->where('active_flag', '=', 'Y')
@@ -456,25 +456,25 @@ trait getFilterTrait
             
             break;
 
-            case "RM PROJECT FDPI":
+            case "RM PROJECT bcki":
 
                 $salesid = DB::connection('sqlsrv')
                             ->table('sec_env_conf')
                             ->select('var_value')
-                            ->where('entity_id', '=', 'FDPI')
+                            ->where('entity_id', '=', 'bcki')
                             ->where('appl_id', '=', 'SALES')
                             ->where('var_id', '=', 'SALESID' )
                             ->where('user_id2', '=', getAuth($request)->user_id2 )
                             ->value('var_value');
 
-                $region = DB::connection('sqlSrvFPI')
+                $region = DB::connection('sqlSrvBCKI')
                             ->table('v_region_mapping')
                             ->select('Region_Proyek as region')
                             ->where('Rm_Proyek', '=', $salesid)
                             ->distinct('Region_Proyek')
                             ->get();
 
-                $sales = DB::connection('sqlSrvFPI')
+                $sales = DB::connection('sqlSrvBCKI')
                             ->table('v_region_mapping')
                             ->selectRaw("SalesId,(NamaSales + ' (' + SalesId + ')') as NamaSales")
                             ->where('Region_Proyek', '=', $region[0]->region)

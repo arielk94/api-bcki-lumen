@@ -21,7 +21,7 @@ class SalesFeeController extends Controller
         $sqlWhere .= " and a.salesid = '" . $request->sales_id . "'";
       }
 
-      $datas = DB::connection('sqlSrvFPI')
+      $datas = DB::connection('sqlSrvBCKI')
         ->table('fee_sales_param_new as a')
         ->selectRaw('a.salesid as sales,
           a.channel_id,
@@ -70,7 +70,7 @@ class SalesFeeController extends Controller
   public function getSales(Request $request)
   {
     try {
-      $datas = DB::connection('sqlSrvFPI')
+      $datas = DB::connection('sqlSrvBCKI')
         ->select(DB::raw("
                     select NamaSales, salesId
                     FROM sales"));
@@ -84,7 +84,7 @@ class SalesFeeController extends Controller
   public function getChannel(Request $request)
   {
     try {
-      $datas = DB::connection('sqlSrvFPI')
+      $datas = DB::connection('sqlSrvBCKI')
         ->table('channel_fee_sales')
         ->selectRaw("channel_id, channel_name")
         ->where('active_flag', 'Y')
@@ -98,14 +98,14 @@ class SalesFeeController extends Controller
   public function storeFee(Request $request)
   {
     try {
-      $datas = DB::connection('sqlSrvFPI')
+      $datas = DB::connection('sqlSrvBCKI')
         ->table('fee_sales_param_new')
         ->where('salesid', $request->sales)
         ->where('utj_type', $request->utj_type)
         ->first();
 
       if ($datas) {
-        $update = DB::connection('sqlSrvFPI')
+        $update = DB::connection('sqlSrvBCKI')
           ->table('fee_sales_param_new')
           ->where('salesid', $request->sales)
           ->where('utj_type', $request->utj_type)
@@ -138,7 +138,7 @@ class SalesFeeController extends Controller
             'fee_commision_manager_smd' => $request->fee_commision_manager_smd ?? 0
           ]);
       } else {
-        $insert = DB::connection('sqlSrvFPI')
+        $insert = DB::connection('sqlSrvBCKI')
           ->table('fee_sales_param_new')
           ->insert([
             'salesid' => $request->sales ?? '',
@@ -178,7 +178,7 @@ class SalesFeeController extends Controller
   public function storeCopyFeeSales(Request $request)
   {
     try {
-      $datas = DB::connection('sqlSrvFPI')
+      $datas = DB::connection('sqlSrvBCKI')
         ->table('fee_sales_param_new')
         ->select('*')
         ->where('salesid', $request->sales)
@@ -222,9 +222,9 @@ class SalesFeeController extends Controller
       })->toArray();
 
 
-      DB::connection('sqlSrvFPI')->transaction(function () use ($insertData) {
+      DB::connection('sqlSrvBCKI')->transaction(function () use ($insertData) {
         foreach ($insertData as $row) {
-          DB::connection('sqlSrvFPI')
+          DB::connection('sqlSrvBCKI')
             ->table('fee_sales_param_new')
             ->updateOrInsert(
               [ // kondisi pengecekan (WHERE)
@@ -271,13 +271,13 @@ class SalesFeeController extends Controller
   {
     try {
       // 1. Ambil semua sales aktif
-      $allSales = DB::connection('sqlSrvFPI')
+      $allSales = DB::connection('sqlSrvBCKI')
         ->table('sales')
         ->where('active_flag', 'Y')
         ->pluck('sales_id'); // ambil salesid saja
 
       // 2. Ambil salesid yang sudah punya fee (1 query)
-      $existingSalesIds = DB::connection('sqlSrvFPI')
+      $existingSalesIds = DB::connection('sqlSrvBCKI')
         ->table('fee_sales_param_new')
         ->whereIn('salesid', $allSales)
         ->pluck('salesid')
@@ -289,7 +289,7 @@ class SalesFeeController extends Controller
       $userId = getAuth($request)->user_id2;
       $now    = now('Asia/Jakarta');
 
-      DB::connection('sqlSrvFPI')->transaction(function () use (
+      DB::connection('sqlSrvBCKI')->transaction(function () use (
         $newSalesIds,
         $existingSalesIds,
         $request,
@@ -327,14 +327,14 @@ class SalesFeeController extends Controller
             'fee_commision_manager_smd'       => $request->fee_commision_manager_smd ?? 0
           ])->values()->toArray();
 
-          DB::connection('sqlSrvFPI')
+          DB::connection('sqlSrvBCKI')
             ->table('fee_sales_param_new')
             ->insert($insertData);
         }
 
         // 5. Bulk update untuk sales yang sudah ada (1 query)
         if (!empty($existingSalesIds)) {
-          DB::connection('sqlSrvFPI')
+          DB::connection('sqlSrvBCKI')
             ->table('fee_sales_param_new')
             ->whereIn('salesid', $existingSalesIds)
             ->where('utj_type', $request->utj_type ?? '')
@@ -407,7 +407,7 @@ class SalesFeeController extends Controller
               }
           }
 
-          $data = DB::connection('sqlSrvFPI')
+          $data = DB::connection('sqlSrvBCKI')
             ->table('v_sales_fee')
             ->select('*')
             ->whereRaw($whereClause, $bindings)
@@ -520,7 +520,7 @@ class SalesFeeController extends Controller
         DB::beginTransaction();
 
         if (!empty($insertData)) {
-            DB::connection('sqlSrvFPI')->table('fee')->insert($insertData);
+            DB::connection('sqlSrvBCKI')->table('fee')->insert($insertData);
         }
 
         DB::commit();
@@ -574,7 +574,7 @@ class SalesFeeController extends Controller
               }
           }
 
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
         ->table('v_sales_fee')
         ->select('*')
         ->whereRaw($whereClause, $bindings)
@@ -628,19 +628,19 @@ class SalesFeeController extends Controller
       }
 
       try {
-          // Gunakan koneksi sqlSrvFPI untuk transaksi
-          DB::connection('sqlSrvFPI')->beginTransaction();
+          // Gunakan koneksi sqlSrvBCKI untuk transaksi
+          DB::connection('sqlSrvBCKI')->beginTransaction();
 
           if (!empty($upsertData)) {
               // Parameter 1: Data yang dimasukkan
               // Parameter 2: Kolom acuan unik (order_id + tr_type)
               // Parameter 3: Kolom yang di-update jika data sudah ada
-              DB::connection('sqlSrvFPI')
+              DB::connection('sqlSrvBCKI')
                   ->table('fee')
                   ->upsert($upsertData, ['order_id', 'tr_type'], ['dt_closing']);
           }
 
-          DB::connection('sqlSrvFPI')->commit();
+          DB::connection('sqlSrvBCKI')->commit();
 
           return response()->json([
               'status'  => 'success',
@@ -648,7 +648,7 @@ class SalesFeeController extends Controller
           ], 200);
 
       } catch (\Exception $e) {
-          DB::connection('sqlSrvFPI')->rollBack();
+          DB::connection('sqlSrvBCKI')->rollBack();
 
           return response()->json([
               'status'  => 'error',
@@ -689,7 +689,7 @@ class SalesFeeController extends Controller
               }
           }
 
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
         ->table('v_sales_fee')
         ->select('*')
         ->whereRaw($whereClause, $bindings)
@@ -742,19 +742,19 @@ class SalesFeeController extends Controller
       }
 
       try {
-          // Gunakan koneksi sqlSrvFPI untuk transaksi
-          DB::connection('sqlSrvFPI')->beginTransaction();
+          // Gunakan koneksi sqlSrvBCKI untuk transaksi
+          DB::connection('sqlSrvBCKI')->beginTransaction();
 
           if (!empty($upsertData)) {
               // Parameter 1: Data yang dimasukkan
               // Parameter 2: Kolom acuan unik (order_id + tr_type)
               // Parameter 3: Kolom yang di-update jika data sudah ada
-              DB::connection('sqlSrvFPI')
+              DB::connection('sqlSrvBCKI')
                   ->table('fee')
                   ->upsert($upsertData, ['order_id', 'tr_type'], ['dt_closing']);
           }
 
-          DB::connection('sqlSrvFPI')->commit();
+          DB::connection('sqlSrvBCKI')->commit();
 
           return response()->json([
               'status'  => 'success',
@@ -762,7 +762,7 @@ class SalesFeeController extends Controller
           ], 200);
 
       } catch (\Exception $e) {
-          DB::connection('sqlSrvFPI')->rollBack();
+          DB::connection('sqlSrvBCKI')->rollBack();
 
           return response()->json([
               'status'  => 'error',
@@ -800,12 +800,12 @@ class SalesFeeController extends Controller
       }
 
       try {
-          // Gunakan koneksi sqlSrvFPI untuk transaksi
-          DB::connection('sqlSrvFPI')->beginTransaction();
+          // Gunakan koneksi sqlSrvBCKI untuk transaksi
+          DB::connection('sqlSrvBCKI')->beginTransaction();
 
           if (!empty($deleteData)) {
               foreach ($deleteData as $data) {
-                  DB::connection('sqlSrvFPI')
+                  DB::connection('sqlSrvBCKI')
                       ->table('fee')
                       ->where('order_id', $data['order_id'])
                       ->where('tr_type', $data['tr_type'])
@@ -813,7 +813,7 @@ class SalesFeeController extends Controller
               }
           }
 
-          DB::connection('sqlSrvFPI')->commit();
+          DB::connection('sqlSrvBCKI')->commit();
 
           return response()->json([
               'status'  => 'success',
@@ -821,7 +821,7 @@ class SalesFeeController extends Controller
           ], 200);
 
       } catch (\Exception $e) {
-          DB::connection('sqlSrvFPI')->rollBack();
+          DB::connection('sqlSrvBCKI')->rollBack();
 
           return response()->json([
               'status'  => 'error',

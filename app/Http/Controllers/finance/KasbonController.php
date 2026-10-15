@@ -39,7 +39,7 @@ class KasbonController extends Controller
         }
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('spk_hdr as sh')
                 ->selectRaw("
                         sh.id_spk,
@@ -84,7 +84,7 @@ class KasbonController extends Controller
 
     public function getKasbonDetail(Request $request)
     {
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
             ->table('kb_dtl')
             ->selectRaw("
                     ROW_NUMBER() OVER (ORDER BY kb_dtl.tr_id) AS no,
@@ -147,12 +147,12 @@ class KasbonController extends Controller
         }
 
         try {
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             $tr_id = $this->generateTrId($request);
             // dd($tr_id);
 
-            $save_hdr = DB::connection('sqlSrvFPI')
+            $save_hdr = DB::connection('sqlSrvBCKI')
                 ->table('kb_hdr')
                 ->insert([
                     'office_id' => 1,
@@ -169,7 +169,7 @@ class KasbonController extends Controller
                     'tr_id_ref' => $id_spk
                 ]);
 
-            $save_dtl = DB::connection('sqlSrvFPI')
+            $save_dtl = DB::connection('sqlSrvBCKI')
                 ->table('kb_dtl')
                 ->insert([
                     'office_id' => 1,
@@ -186,14 +186,14 @@ class KasbonController extends Controller
                 ]);
 
             if ($save_hdr && $save_dtl) {
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
                 return $this->sendResponse(true, 'Successfully saved KasBon');
             } else {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError('Failed to save either header or detail data.', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -205,7 +205,7 @@ class KasbonController extends Controller
         $month = date('m');  // contoh: 05
 
         // Ambil record terakhir berdasarkan tahun (bukan bulan)
-        // $last = DB::connection("sqlSrvFPI")
+        // $last = DB::connection("sqlSrvBCKI")
         //             ->table('kb_hdr')
         //             ->whereRaw("SUBSTRING(tr_id, 5, 2) = ?", [$year])
         //             ->whereRaw("SUBSTRING(tr_id, 1, 3) = 'KBE'")
@@ -213,7 +213,7 @@ class KasbonController extends Controller
         //             ->first('tr_id');
 
         // Ambil record terakhir berdasarkan bulan
-        $last = DB::connection("sqlSrvFPI")
+        $last = DB::connection("sqlSrvBCKI")
             ->table('kb_hdr')
             ->whereRaw("SUBSTRING(tr_id, 5, 2) = ?", [$year])     // ambil YY
             ->whereRaw("SUBSTRING(tr_id, 8, 2) = ?", [$month])    // ambil MM
@@ -270,7 +270,7 @@ class KasbonController extends Controller
         }
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('vendor as v')
                 ->selectRaw("
                         DISTINCT
@@ -302,7 +302,7 @@ class KasbonController extends Controller
         $month =  Carbon::parse($tgl)->format('m');  // contoh: 05
 
         // Ambil record terakhir berdasarkan tahun dan bulan
-        $last = DB::connection("sqlSrvFPI")
+        $last = DB::connection("sqlSrvBCKI")
             ->table('kb_hdr')
             // ->selectRaw("top 1 tr_id")
             ->whereRaw("SUBSTRING(tr_id, 5, 2) = ?", [$year])
@@ -330,7 +330,7 @@ class KasbonController extends Controller
     public function getLastSeqKB($tr_id)
     {
         // Ambil record terakhir berdasarkan tahun dan bulan
-        $last = DB::connection("sqlSrvFPI")
+        $last = DB::connection("sqlSrvBCKI")
             ->table('kb_dtl')
             ->where('tr_id', $tr_id)
             ->orderByDesc('seq_num')
@@ -409,7 +409,7 @@ class KasbonController extends Controller
             }
             // }
 
-            $getListKBHdr = DB::connection("sqlSrvFPI")
+            $getListKBHdr = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select a.office_id, a.tipe, a.tr_type, 
                                     a.dt_kb, a.tr_id, 
                                     a.req_id, a.req_name, 
@@ -450,7 +450,7 @@ class KasbonController extends Controller
             $sqlWhere .= "and a.office_id = '$request->office_id'";
             $sqlWhere .= "and a.tr_id  = '$request->tr_id'";
 
-            $getListKBDtl = DB::connection("sqlSrvFPI")
+            $getListKBDtl = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("
                                 select a.office_id, 
                                         a.tr_id, 
@@ -489,13 +489,13 @@ class KasbonController extends Controller
     {
         try {
 
-            //DB::connection('sqlSrvFPI')->beginTransaction();
+            //DB::connection('sqlSrvBCKI')->beginTransaction();
             // save hdr
             $tr_id = $request->tr_id;
             $office_id = $request->office_id;
             $amt_paid = $request->amt_paid ?? 0;
 
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('kb_hdr')
                 ->where('tr_id', $tr_id)
                 ->first();
@@ -511,17 +511,17 @@ class KasbonController extends Controller
                 $data['amt_paid'] =  (float)$amt_paid;
                 $data['dt_complete'] = Carbon::now();
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('kb_hdr')
                     ->where('tr_id', $tr_id)
                     ->update($data);
             }
-            //DB::connection('sqlSrvFPI')->commit();
+            //DB::connection('sqlSrvBCKI')->commit();
 
             return $this->sendResponse($data, 'Successfully save KasBon');
             //return response()->json(['return' => $data]);
         } catch (\Throwable $e) {
-            //DB::connection('sqlSrvFPI')->rollBack();
+            //DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -530,9 +530,9 @@ class KasbonController extends Controller
     {
         try {
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
             // save hdr
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('kb_hdr')
                 ->where('tr_id', $tr_id)
                 ->first();
@@ -548,17 +548,17 @@ class KasbonController extends Controller
                 $data['amt_paid'] = 0;
                 $data['dt_complete'] = "1900-01-01 00:00:00";
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('kb_hdr')
                     ->where('tr_id', $tr_id)
                     ->update($data);
             }
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
 
             return $this->sendResponse($data, 'Successfully delete Pengembalian');
             //return response()->json(['return' => $data]);
         } catch (\Throwable $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -600,13 +600,13 @@ class KasbonController extends Controller
             if ($seq_num <= 0) {
                 $seq_num  = $this->getLastSeqKB($tr_id);
             }
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             if ((trim($tr_type) != "IN" && trim($ac_num) != "")) {
                 // gak lapo lapo
             } else {
                 // save Dtl
-                $cekDoc = DB::connection("sqlSrvFPI")
+                $cekDoc = DB::connection("sqlSrvBCKI")
                     ->table('kb_dtl')
                     ->where('tr_id', $tr_id)
                     ->where('seq_num', $seq_num)
@@ -628,7 +628,7 @@ class KasbonController extends Controller
                     $data['dt_modified'] = Carbon::now();
                     $data['user_id'] = getAuth($request)->user_id2;
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('kb_dtl')
                         ->where('tr_id', $tr_id)
                         ->where('seq_num', $seq_num)
@@ -640,14 +640,14 @@ class KasbonController extends Controller
                     $data['dt_modified'] = Carbon::now();
                     $data['user_id'] = getAuth($request)->user_id2;
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('kb_dtl')
                         ->insert($data);
                 }
             }
 
             // save hdr
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('kb_hdr')
                 ->where('tr_id', $tr_id)
                 ->first();
@@ -674,7 +674,7 @@ class KasbonController extends Controller
                 $data['dt_modified'] = Carbon::now();
                 $data['user_id'] = getAuth($request)->user_id2;
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('kb_hdr')
                     ->where('tr_id', $tr_id)
                     ->update($data);
@@ -686,11 +686,11 @@ class KasbonController extends Controller
                 $data['dt_modified'] = Carbon::now();
                 $data['user_id'] = getAuth($request)->user_id2;
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('kb_hdr')
                     ->insert($data);
             }
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
 
             if (trim($tr_type) == "IN") {
 
@@ -710,7 +710,7 @@ class KasbonController extends Controller
                 }
             }
 
-            $user = DB::connection('sqlSrvFPI')
+            $user = DB::connection('sqlSrvBCKI')
               ->table('spk_aprv_env')
               ->selectRaw('aprv_1, no_hp_1, nama_employee_1')
               ->where('doc_type', '=', 'KB')
@@ -727,7 +727,7 @@ class KasbonController extends Controller
             return $this->sendResponse($data, 'Successfully save KasBon');
             //return response()->json(['return' => $data]);
         } catch (\Throwable $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -747,14 +747,14 @@ class KasbonController extends Controller
 
         if ($tr_id && ($seq_num  > 0)) {
 
-            $delete = DB::connection("sqlSrvFPI")
+            $delete = DB::connection("sqlSrvBCKI")
                 ->table('kb_dtl')
                 ->where('tr_id', $tr_id)
                 ->where('seq_num', $seq_num)
                 ->first();
 
             if ($delete) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('kb_dtl')
                     ->where('tr_id',  $tr_id)
                     ->where('seq_num', $seq_num)
@@ -765,7 +765,7 @@ class KasbonController extends Controller
                 }
             }
 
-            $cekDocHdr = DB::connection("sqlSrvFPI")
+            $cekDocHdr = DB::connection("sqlSrvBCKI")
                 ->table('kb_hdr')
                 ->where('tr_id', $tr_id)
                 ->first();
@@ -776,20 +776,20 @@ class KasbonController extends Controller
                 $office_id = $cekDocHdr->office_id;
             }
 
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('kb_dtl')
                 ->where('tr_id', $tr_id)
                 ->first();
 
             if ($cekDoc) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->statement(DB::raw("update kb_hdr set 
                                 kb_amt = (select isnull(sum(amt),0) from kb_dtl where tr_id = '$tr_id'), 
                                 dt_modified = getdate(), 
                                 user_id = '" . getAuth($request)->user_id2 . "' 
                                 where tr_id = '$tr_id' "));
             } else {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('kb_hdr')
                     ->where('tr_id',  $tr_id)
                     ->delete();
@@ -813,19 +813,19 @@ class KasbonController extends Controller
 
         if ($tr_id) {
 
-            $delete = DB::connection("sqlSrvFPI")
+            $delete = DB::connection("sqlSrvBCKI")
                 ->table('kb_dtl')
                 ->where('tr_id', $tr_id)
                 ->first();
 
             if ($delete) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('kb_dtl')
                     ->where('tr_id',  $tr_id)
                     ->delete();
             }
 
-            $cekDocHdr = DB::connection("sqlSrvFPI")
+            $cekDocHdr = DB::connection("sqlSrvBCKI")
                 ->table('kb_hdr')
                 ->where('tr_id', $tr_id)
                 ->first();
@@ -836,20 +836,20 @@ class KasbonController extends Controller
                 $office_id = $cekDocHdr->office_id;
             }
 
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('kb_dtl')
                 ->where('tr_id', $tr_id)
                 ->first();
 
             if ($cekDoc) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->statement(DB::raw("update kb_hdr set 
                                 kb_amt = (select isnull(sum(amt),0) from kb_dtl where tr_id = '$tr_id'), 
                                 dt_modified = getdate(), 
                                 user_id = '" . getAuth($request)->user_id2 . "' 
                                 where tr_id = '$tr_id' "));
             } else {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('kb_hdr')
                     ->where('tr_id',  $tr_id)
                     ->delete();
@@ -869,14 +869,14 @@ class KasbonController extends Controller
         // save kb_mast
         if ($tr_type == 'IN') {
 
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('kb_mast')
                 ->where('idemployee', $idemployee)
                 ->first();
 
 
             if ($cekDoc) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->statement(DB::raw("update kb_mast set 
                                     amt_bal = (select isnull(sum(amt),0) 
                                                 from kb_dtl a
@@ -898,7 +898,7 @@ class KasbonController extends Controller
                     'user_id' => $user_id2
                 ];
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('kb_mast')
                     ->insert($data);
             }
@@ -930,11 +930,11 @@ class KasbonController extends Controller
 
         try {
             // Mulai transaksi untuk memastikan atomicity
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             // 1. **DAPATKAN DAFTAR TR_ID LAMA**
             // Ambil semua tr_id dari kb_hdr yang memiliki other_pay_ref yang sama.
-            $old_tr_ids = DB::connection('sqlSrvFPI')
+            $old_tr_ids = DB::connection('sqlSrvBCKI')
                 ->table('kb_hdr')
                 ->where('other_pay_ref', $other_pay_ref)
                 ->pluck('tr_id')
@@ -945,26 +945,26 @@ class KasbonController extends Controller
 
             // 2. **HAPUS DATA LAMA (KB_DTL, KB_HDR, RECAP_BREAKDOWN)**
             // if (!empty($old_tr_ids)) {
-            //     DB::connection('sqlSrvFPI')
+            //     DB::connection('sqlSrvBCKI')
             //         ->table('kb_dtl')
             //         ->whereIn('tr_id', $old_tr_ids)
             //         ->delete();
             // }
 
-            // DB::connection('sqlSrvFPI')
+            // DB::connection('sqlSrvBCKI')
             //     ->table('kb_hdr')
             //     ->where('other_pay_ref', $other_pay_ref)
             //     ->delete();
 
             // Hapus dari recap_breakdown
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('recap_breakdown')
                 ->where('other_pay_ref', $other_pay_ref)
                 ->delete();
 
             // 3. **HAPUS DATA LAMA DARI KB_HDR**
             // Hapus semua baris di kb_hdr yang memiliki other_pay_ref yang sama
-            // $delete_hdr = DB::connection('sqlSrvFPI')
+            // $delete_hdr = DB::connection('sqlSrvBCKI')
             //     ->table('kb_hdr')
             //     ->where('other_pay_ref', $other_pay_ref)
             //     ->delete();
@@ -984,7 +984,7 @@ class KasbonController extends Controller
                 // STRATEGI: Pertahankan data KB_HDR & KB_DTL jika kasbon_ref ada di DB
                 if (!empty($kasbon_ref_client) && in_array($kasbon_ref_client, $old_tr_ids)) {
                     // --- UPDATE KB DATA ---
-                    DB::connection('sqlSrvFPI')->table('kb_hdr')
+                    DB::connection('sqlSrvBCKI')->table('kb_hdr')
                         ->where('tr_id', $kasbon_ref_client)
                         ->update([
                             'vendor_id'   => $vendor_id,
@@ -996,8 +996,8 @@ class KasbonController extends Controller
                         ]);
 
                     // Refresh detail (Delete-Insert detail agar simple tapi Header tetap)
-                    DB::connection('sqlSrvFPI')->table('kb_dtl')->where('tr_id', $kasbon_ref_client)->delete();
-                    DB::connection('sqlSrvFPI')->table('kb_dtl')->insert([
+                    DB::connection('sqlSrvBCKI')->table('kb_dtl')->where('tr_id', $kasbon_ref_client)->delete();
+                    DB::connection('sqlSrvBCKI')->table('kb_dtl')->insert([
                         'office_id'  => $office_id,
                         'tr_id'      => $kasbon_ref_client,
                         'seq_num'    => 1,
@@ -1016,7 +1016,7 @@ class KasbonController extends Controller
                     // --- INSERT KB BARU ---
                     $final_kb_id = $this->generateTrId($request);
                     
-                    DB::connection('sqlSrvFPI')->table('kb_hdr')->insert([
+                    DB::connection('sqlSrvBCKI')->table('kb_hdr')->insert([
                         'office_id'     => $office_id,
                         'tr_id'         => $final_kb_id,
                         'tr_type'       => 'OT',
@@ -1036,7 +1036,7 @@ class KasbonController extends Controller
                         'dt_aprv4' => $now, 'user_aprv4' => $user_id
                     ]);
 
-                    DB::connection('sqlSrvFPI')->table('kb_dtl')->insert([
+                    DB::connection('sqlSrvBCKI')->table('kb_dtl')->insert([
                         'office_id'  => $office_id,
                         'tr_id'      => $final_kb_id,
                         'seq_num'    => 1,
@@ -1052,7 +1052,7 @@ class KasbonController extends Controller
                 }
                 $processedKbIds[] = $final_kb_id;
             }
-                DB::connection('sqlSrvFPI')->table('recap_breakdown')->insert([
+                DB::connection('sqlSrvBCKI')->table('recap_breakdown')->insert([
                 'office_id'     => $office_id,
                 'tr_id'         => $this->generateTrIdRecap(),
                 'tr_date'       => $item['date'],
@@ -1077,15 +1077,15 @@ class KasbonController extends Controller
         // Hapus KB yang sudah tidak ada di list frontend (user menghapus baris di UI)
         $toDelete = array_diff($old_tr_ids, $processedKbIds);
         if (!empty($toDelete)) {
-            DB::connection('sqlSrvFPI')->table('kb_dtl')->whereIn('tr_id', $toDelete)->delete();
-            DB::connection('sqlSrvFPI')->table('kb_hdr')->whereIn('tr_id', $toDelete)->delete();
+            DB::connection('sqlSrvBCKI')->table('kb_dtl')->whereIn('tr_id', $toDelete)->delete();
+            DB::connection('sqlSrvBCKI')->table('kb_hdr')->whereIn('tr_id', $toDelete)->delete();
         }
             // 4. **COMMIT TRANSAKSI**
             // Commit HANYA jika operasi DELETE dan SEMUA operasi INSERT berhasil
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
             return $this->sendResponse(true, 'Successfully synchronized breakdowns (Recap refreshed, KB preserved)');
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Database Error', 500);
         }
     }
@@ -1094,7 +1094,7 @@ class KasbonController extends Controller
     public function GetOtherPaymentBreakdown(Request $request)
     {
         $tr_id = $request->tr_id;
-        // $data = DB::connection('sqlSrvFPI')
+        // $data = DB::connection('sqlSrvBCKI')
         //     ->table('kb_hdr', 'a')
         //     ->join('kb_dtl as b', 'a.tr_id', '=', 'b.tr_id')
         //     ->join('vendor as c', 'a.vendor_id', '=', 'c.vendor_id')
@@ -1113,7 +1113,7 @@ class KasbonController extends Controller
         //             END AS sudahDN,
         //             b.*
         //         ")
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             // ->table('kb_hdr', 'a')
             // ->join('kb_dtl as b', 'a.tr_id', '=', 'b.tr_id')
             ->table('recap_breakdown as a')
@@ -1142,16 +1142,16 @@ class KasbonController extends Controller
             return $this->sendError('Transaction ID (tr_id) is required for deletion.', 'Validation Error', 400);
         }
         try {
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
             // 1. Cek item di recap_breakdown untuk menentukan apakah KasBon dibuat
-            $recapItem = DB::connection('sqlSrvFPI')
+            $recapItem = DB::connection('sqlSrvBCKI')
                 ->table('recap_breakdown')
                 ->select('kasbon_ref')
                 ->where('tr_id', $tr_id)
                 ->first();
 
             if (!$recapItem) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 // Jika record tidak ditemukan, kembalikan error not found
                 return $this->sendError('Record not found in breakdown.', 'Not Found', 404);
             }
@@ -1163,28 +1163,28 @@ class KasbonController extends Controller
             // 2. Penghapusan Bersyarat (Jika KasBon Header/Detail pernah dibuat)
             if ($kasbonRefExists) {
                 // Hapus detail kb_dtl
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('kb_dtl')
                     ->where('tr_id', $recapItem->kasbon_ref)
                     ->delete();
 
                 // Hapus header kb_hdr
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('kb_hdr')
                     ->where('tr_id', $recapItem->kasbon_ref)
                     ->delete();
             }
 
             // 3. Selalu hapus dari recap_breakdown
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('recap_breakdown')
                 ->where('tr_id', $tr_id)
                 ->delete();
 
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
             return $this->sendResponse(true, 'Successfully deleted Other Payment Breakdown');
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -1196,7 +1196,7 @@ class KasbonController extends Controller
         $month = date('m');  // contoh: 05
 
         // Ambil record terakhir berdasarkan tahun (bukan bulan)
-        // $last = DB::connection("sqlSrvFPI")
+        // $last = DB::connection("sqlSrvBCKI")
         //             ->table('kb_hdr')
         //             ->whereRaw("SUBSTRING(tr_id, 5, 2) = ?", [$year])
         //             ->whereRaw("SUBSTRING(tr_id, 1, 3) = 'KBE'")
@@ -1204,7 +1204,7 @@ class KasbonController extends Controller
         //             ->first('tr_id');
 
         // Ambil record terakhir berdasarkan bulan
-        $last = DB::connection("sqlSrvFPI")
+        $last = DB::connection("sqlSrvBCKI")
             ->table('recap_breakdown')
             ->whereRaw("SUBSTRING(tr_id, 5, 2) = ?", [$year])     // ambil YY
             ->whereRaw("SUBSTRING(tr_id, 8, 2) = ?", [$month])    // ambil MM
@@ -1246,7 +1246,7 @@ class KasbonController extends Controller
     private function cekDebitNote($tr_id)
     {
 
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             ->table('recap_breakdown as a')
             ->leftjoin('vendor as c', 'a.vendor_id', '=', 'c.vendor_id')
             ->leftJoin('bank_note as d', function ($join) {
@@ -1267,7 +1267,7 @@ class KasbonController extends Controller
     private function sendNotifApproval($kb_id, $getEmp, $getPhone)
     {
       try {
-        $getLink = "FDPI" . now()->format('ymdH') . rand(10000, 99999);
+        $getLink = "bcki" . now()->format('ymdH') . rand(10000, 99999);
 
         DB::connection('sqlsrv')
           ->table('sec_reset_password')

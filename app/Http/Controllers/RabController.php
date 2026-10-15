@@ -43,7 +43,7 @@ class RabController extends Controller
             }
         }
 
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                 ->table('project_hdr')
                 ->selectRaw("project_hdr.*, list_province.province, list_city.city, list_district.district, list_village.village")
                 ->leftJoin('province_list AS list_province',function($join){
@@ -75,12 +75,12 @@ class RabController extends Controller
     public function store(Request $request)
     {
 
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
             $id_project = $this->generateProjectID($request);
 
-            $header = DB::connection('sqlSrvFPI')
+            $header = DB::connection('sqlSrvBCKI')
                     ->table('project_hdr')
                     ->insert([
                         'entity_id' => $request->entity_id,
@@ -108,13 +108,13 @@ class RabController extends Controller
             $this->storeArticleUsage($id_project, $request);
             $this->storeImages($id_project, $request);
 
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
 
             return $this->sendResponse('Success', 'Successfully saved');
 
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -122,14 +122,14 @@ class RabController extends Controller
     private function storeArticleUsage($id_project, $request)
     {
         foreach ($request->products as $key => $value) {
-            $item_num = DB::connection("sqlSrvFPI")
+            $item_num = DB::connection("sqlSrvBCKI")
                     ->table('article_usage')
                     ->select('item_num')
                     ->where('entity_id', $request->entity_id)
                     ->where('id_project', $id_project)
                     ->max('item_num');
             
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('article_usage')
             ->insert([
                 'entity_id' => $request->entity_id,
@@ -157,7 +157,7 @@ class RabController extends Controller
     private function storeImages($id_project, $request)
     {
         foreach ($request->images as $gambar) {
-            $item_num = DB::connection("sqlSrvFPI")
+            $item_num = DB::connection("sqlSrvBCKI")
                         ->table('project_file')
                         ->select('item_num')
                         ->where('entity_id', $request->entity_id)
@@ -169,7 +169,7 @@ class RabController extends Controller
 
             Storage::disk('public')->put('fpis/' . $nameFinal, $medium->__toString());
 
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('project_file')
             ->insert([
                 'entity_id' => $request->entity_id,
@@ -186,14 +186,14 @@ class RabController extends Controller
 
     private function storeDetail($id_project, $request)
     {
-        $item_num = DB::connection("sqlSrvFPI")
+        $item_num = DB::connection("sqlSrvBCKI")
                     ->table('project_dtl')
                     ->select('id_step')
                     ->where('entity_id', $request->entity_id)
                     ->where('id_project', $id_project)
                     ->max('id_step');
 
-        DB::connection('sqlSrvFPI')
+        DB::connection('sqlSrvBCKI')
         ->table('project_dtl')
         ->insert([
             'entity_id' => $request->entity_id,
@@ -214,14 +214,14 @@ class RabController extends Controller
     private function storeDetailStep($id_project, $request) 
     {
         foreach ($request->steps as $key => $value) {
-            $item_num = DB::connection("sqlSrvFPI")
+            $item_num = DB::connection("sqlSrvBCKI")
                         ->table('project_dtl')
                         ->select('id_step')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $id_project)
                         ->max('id_step');
 
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('project_dtl')
             ->insert([
                 'entity_id' => $request->entity_id,
@@ -247,7 +247,7 @@ class RabController extends Controller
         $dateDay = date("d");
         $gen_tr_id = '';
 
-        $getLastTrID =  DB::connection('sqlSrvFPI')
+        $getLastTrID =  DB::connection('sqlSrvBCKI')
                         ->table('project_hdr')
                         ->where('id_project', 'like', "%".trim($request->entity_id).$dateYear.$dateMonth.$dateDay."%")
                         ->max('id_project');
@@ -264,7 +264,7 @@ class RabController extends Controller
 
     public function show(Request $request)
     {
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('project_dtl')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
@@ -276,7 +276,7 @@ class RabController extends Controller
 
     public function showArticleUsage(Request $request)
     {
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('article_usage')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
@@ -289,7 +289,7 @@ class RabController extends Controller
     public function showImage(Request $request)
     {
         $arrayReusable = [];
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('project_file')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
@@ -300,7 +300,7 @@ class RabController extends Controller
                 'entity_id' => $value->entity_id,
                 'id_project' => $value->id_project,
                 'file_dir' => $value->file_dir,
-                'image' => config('image.fpi') . $value->file_dir,
+                'image' => config('image.bcki') . $value->file_dir,
                 'item_num' => $value->item_num
             ]);
         }
@@ -311,11 +311,11 @@ class RabController extends Controller
 
     public function deleteImage(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $data =  DB::connection("sqlSrvFPI")
+            $data =  DB::connection("sqlSrvBCKI")
                     ->table('project_file')
                     ->where('entity_id', $request->entity_id)
                     ->where('id_project', $request->id_project)
@@ -330,14 +330,14 @@ class RabController extends Controller
 
                     Storage::disk('public')->delete('rabs/' . $data->file_dir);
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                     ->table('project_file')
                     ->where('entity_id', $request->entity_id)
                     ->where('id_project', $request->id_project)
                     ->where('item_num', $request->item_num)
                     ->delete();
 
-                    DB::connection('sqlSrvFPI')->commit();
+                    DB::connection('sqlSrvBCKI')->commit();
 
                     return $this->sendResponse('Success', 'Successfully deleted');
 
@@ -350,18 +350,18 @@ class RabController extends Controller
             }
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function update(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $data =  DB::connection("sqlSrvFPI")
+            $data =  DB::connection("sqlSrvBCKI")
                     ->table('project_hdr')
                     ->where('entity_id', $request->entity_id)
                     ->where('id_project', $request->id_project)
@@ -370,7 +370,7 @@ class RabController extends Controller
             if ($data) {
                 $id_project = $request->id_project;
 
-                $header = DB::connection("sqlSrvFPI")
+                $header = DB::connection("sqlSrvBCKI")
                         ->table('project_hdr')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $request->id_project)
@@ -395,7 +395,7 @@ class RabController extends Controller
                 $this->updateArticleUsage($id_project, $request);
                 $this->storeImages($id_project, $request);
     
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
     
                 return $this->sendResponse('Success', 'Successfully saved');
 
@@ -405,7 +405,7 @@ class RabController extends Controller
             }
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -413,7 +413,7 @@ class RabController extends Controller
     private function updateArticleUsage($id_project, $request)
     {
         foreach ($request->products as $key => $value) {
-            $art_usage = DB::connection("sqlSrvFPI")
+            $art_usage = DB::connection("sqlSrvBCKI")
                         ->table('article_usage')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $id_project)
@@ -421,7 +421,7 @@ class RabController extends Controller
                         ->first();
 
             if ($art_usage) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('article_usage')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $id_project)
@@ -444,14 +444,14 @@ class RabController extends Controller
                     'modified_by' => getAuth($request)->user_id2,
                 ]);
             } else {
-                $item_num = DB::connection("sqlSrvFPI")
+                $item_num = DB::connection("sqlSrvBCKI")
                         ->table('article_usage')
                         ->select('item_num')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $id_project)
                         ->max('item_num');
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('article_usage')
                 ->insert([
                     'entity_id' => $request->entity_id,
@@ -481,16 +481,16 @@ class RabController extends Controller
 
     public function approve(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
-            $data =  DB::connection("sqlSrvFPI")
+            $data =  DB::connection("sqlSrvBCKI")
                     ->table('project_hdr')
                     ->where('entity_id', $request->entity_id)
                     ->where('id_project', $request->id_project)
                     ->first();
             if ($data) {
-                $header = DB::connection("sqlSrvFPI")
+                $header = DB::connection("sqlSrvBCKI")
                         ->table('project_hdr')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $request->id_project)
@@ -500,7 +500,7 @@ class RabController extends Controller
 
                 $id_project = $request->id_project;
 
-                $art_usage = DB::connection("sqlSrvFPI")
+                $art_usage = DB::connection("sqlSrvBCKI")
                             ->table('article_usage')
                             ->where('entity_id', $request->entity_id)
                             ->where('id_project', $id_project)
@@ -508,7 +508,7 @@ class RabController extends Controller
                             ->first();
 
                 if ($art_usage) {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                     ->table('article_usage')
                     ->where('entity_id', $request->entity_id)
                     ->where('id_project', $id_project)
@@ -521,14 +521,14 @@ class RabController extends Controller
                     ]);
 
                 } else {
-                    $item_num = DB::connection("sqlSrvFPI")
+                    $item_num = DB::connection("sqlSrvBCKI")
                             ->table('article_usage')
                             ->select('item_num')
                             ->where('entity_id', $request->entity_id)
                             ->where('id_project', $id_project)
                             ->max('item_num');
 
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                     ->table('article_usage')
                     ->insert([
                         'entity_id' => $request->entity_id,
@@ -556,7 +556,7 @@ class RabController extends Controller
                     ]);
                 }
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success', 'Successfully saved');
 
@@ -567,21 +567,21 @@ class RabController extends Controller
 
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function getArticleUsageDtl(Request $request)
     {
-        $data =  DB::connection("sqlSrvFPI")
+        $data =  DB::connection("sqlSrvBCKI")
                 ->table('project_hdr')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
                 ->first();
 
         if ($data) {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
             ->table('article_usage_dtl')
             ->where('entity_id', $request->entity_id)
             ->where('id_project', $request->id_project)
@@ -597,7 +597,7 @@ class RabController extends Controller
 
     public function saveArticleUsageDtl(Request $request)
     {
-        $data =  DB::connection("sqlSrvFPI")
+        $data =  DB::connection("sqlSrvBCKI")
                 ->table('project_hdr')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
@@ -605,11 +605,11 @@ class RabController extends Controller
 
         if ($data) {
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('article_usage_dtl')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
@@ -617,7 +617,7 @@ class RabController extends Controller
                 ->delete();
 
                 foreach ($request->products as $key => $value) {
-                    $item_num = DB::connection("sqlSrvFPI")
+                    $item_num = DB::connection("sqlSrvBCKI")
                                 ->table('article_usage_dtl')
                                 ->select('item_num')
                                 ->where('entity_id', $request->entity_id)
@@ -625,7 +625,7 @@ class RabController extends Controller
                                 ->where('item_num_usage', $request->item_num)
                                 ->max('item_num');
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                     ->table('article_usage_dtl')
                     ->insert([
                         'entity_id' => $request->entity_id,
@@ -646,12 +646,12 @@ class RabController extends Controller
 
                 }
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success', 'Successfully saved');
             }
             catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
 
@@ -662,14 +662,14 @@ class RabController extends Controller
 
     public function getJasaUsageDtl(Request $request)
     {
-        $data =  DB::connection("sqlSrvFPI")
+        $data =  DB::connection("sqlSrvBCKI")
                 ->table('project_hdr')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
                 ->first();
 
         if ($data) {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
             ->table('article_usage_jasa_step')
             ->where('entity_id', $request->entity_id)
             ->where('id_project', $request->id_project)
@@ -685,7 +685,7 @@ class RabController extends Controller
 
     public function saveJasaUsageDtl(Request $request)
     {
-        $data =  DB::connection("sqlSrvFPI")
+        $data =  DB::connection("sqlSrvBCKI")
                 ->table('project_hdr')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
@@ -693,13 +693,13 @@ class RabController extends Controller
 
         if ($data) {
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
 
                 foreach ($request->products as $key => $value) {
 
-                    $jasa =  DB::connection("sqlSrvFPI")
+                    $jasa =  DB::connection("sqlSrvBCKI")
                             ->table('article_usage_jasa_step')
                             ->where('entity_id', $request->entity_id)
                             ->where('id_project', $request->id_project)
@@ -708,7 +708,7 @@ class RabController extends Controller
                             ->first();
 
                     if ($jasa) {
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                         ->table('article_usage_jasa_step')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $request->id_project)
@@ -722,7 +722,7 @@ class RabController extends Controller
                         ]);
 
                     } else {
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                         ->table('article_usage_jasa_step')
                         ->insert([
                             'entity_id' => $request->entity_id,
@@ -740,12 +740,12 @@ class RabController extends Controller
 
                 }
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success', 'Successfully saved');
             }
             catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
 
@@ -756,7 +756,7 @@ class RabController extends Controller
 
     public function deleteJasaUsageDtl(Request $request)
     {
-        $data =  DB::connection("sqlSrvFPI")
+        $data =  DB::connection("sqlSrvBCKI")
                 ->table('project_hdr')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
@@ -764,13 +764,13 @@ class RabController extends Controller
 
         if ($data) {
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
 
                 foreach ($request->products as $value) {
 
-                    $jasa =  DB::connection("sqlSrvFPI")
+                    $jasa =  DB::connection("sqlSrvBCKI")
                             ->table('article_usage_jasa_step')
                             ->where('entity_id', $request->entity_id)
                             ->where('id_project', $request->id_project)
@@ -780,7 +780,7 @@ class RabController extends Controller
 
                     if ($jasa) {
 
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                         ->table('article_usage_jasa_step_dtl')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $request->id_project)
@@ -788,7 +788,7 @@ class RabController extends Controller
                         ->where('item_num_usage_step', $value)
                         ->delete();
 
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                         ->table('article_usage_jasa_step')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $request->id_project)
@@ -799,12 +799,12 @@ class RabController extends Controller
 
                 }
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success', 'Successfully deleted');
             }
             catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
 
@@ -814,7 +814,7 @@ class RabController extends Controller
     }
     public function getSumTotalJasaUsageStepDtl(Request $request)
     {
-        $total = DB::connection("sqlSrvFPI")
+        $total = DB::connection("sqlSrvBCKI")
         ->table('article_usage_jasa_step_dtl')
         ->selectRaw("SUM(progress_total) as total")
         ->where('entity_id', $request->entity_id)
@@ -828,14 +828,14 @@ class RabController extends Controller
 
     public function getJasaUsageStepDtl(Request $request)
     {
-        $data =  DB::connection("sqlSrvFPI")
+        $data =  DB::connection("sqlSrvBCKI")
                 ->table('project_hdr')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
                 ->first();
 
         if ($data) {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
             ->table('article_usage_jasa_step_dtl')
             ->where('entity_id', $request->entity_id)
             ->where('id_project', $request->id_project)
@@ -852,7 +852,7 @@ class RabController extends Controller
 
     public function saveJasaUsageStepDtl(Request $request)
     {
-        $data =  DB::connection("sqlSrvFPI")
+        $data =  DB::connection("sqlSrvBCKI")
                 ->table('project_hdr')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
@@ -860,13 +860,13 @@ class RabController extends Controller
 
         if ($data) {
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
 
                 foreach ($request->products as $key => $value) {
 
-                    $jasa =  DB::connection("sqlSrvFPI")
+                    $jasa =  DB::connection("sqlSrvBCKI")
                             ->table('article_usage_jasa_step_dtl')
                             ->where('entity_id', $request->entity_id)
                             ->where('id_project', $request->id_project)
@@ -876,7 +876,7 @@ class RabController extends Controller
                             ->first();
 
                     if ($jasa) {
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                         ->table('article_usage_jasa_step_dtl')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $request->id_project)
@@ -894,7 +894,7 @@ class RabController extends Controller
                         ]);
 
                     } else {
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                         ->table('article_usage_jasa_step_dtl')
                         ->insert([
                             'entity_id' => $request->entity_id,
@@ -916,12 +916,12 @@ class RabController extends Controller
 
                 }
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success', 'Successfully saved');
             }
             catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
 
@@ -932,7 +932,7 @@ class RabController extends Controller
 
     public function deleteJasaUsageStepDtl(Request $request)
     {
-        $data =  DB::connection("sqlSrvFPI")
+        $data =  DB::connection("sqlSrvBCKI")
                 ->table('project_hdr')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
@@ -940,13 +940,13 @@ class RabController extends Controller
 
         if ($data) {
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
 
                 foreach ($request->products as $value) {
 
-                    $jasa =  DB::connection("sqlSrvFPI")
+                    $jasa =  DB::connection("sqlSrvBCKI")
                             ->table('article_usage_jasa_step_dtl')
                             ->where('entity_id', $request->entity_id)
                             ->where('id_project', $request->id_project)
@@ -957,7 +957,7 @@ class RabController extends Controller
 
                     if ($jasa) {
 
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                         ->table('article_usage_jasa_step_dtl')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $request->id_project)
@@ -970,12 +970,12 @@ class RabController extends Controller
 
                 }
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success', 'Successfully deleted');
             }
             catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
 
@@ -986,10 +986,10 @@ class RabController extends Controller
 
     public function destroy(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
-            $data =  DB::connection("sqlSrvFPI")
+            $data =  DB::connection("sqlSrvBCKI")
                     ->table('project_hdr')
                     ->where('entity_id', $request->entity_id)
                     ->where('id_project', $request->id_project)
@@ -998,37 +998,37 @@ class RabController extends Controller
             if ($data) {
                 $id_project = $request->id_project;
 
-                $detil = DB::connection("sqlSrvFPI")
+                $detil = DB::connection("sqlSrvBCKI")
                         ->table('project_dtl')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $id_project)
                         ->delete();
 
-                $art_usage = DB::connection("sqlSrvFPI")
+                $art_usage = DB::connection("sqlSrvBCKI")
                             ->table('article_usage')
                             ->where('entity_id', $request->entity_id)
                             ->where('id_project', $id_project)
                             ->delete();
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('article_usage_dtl')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $id_project)
                 ->delete();
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('article_usage_jasa_step')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $id_project)
                 ->delete();
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('article_usage_jasa_step_dtl')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $id_project)
                 ->delete();
 
-                $images = DB::connection("sqlSrvFPI")
+                $images = DB::connection("sqlSrvBCKI")
                         ->table('project_file')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $id_project)
@@ -1040,7 +1040,7 @@ class RabController extends Controller
                     if ($exists) {
                         Storage::disk('public')->delete('rabs/' . $value->file_dir);
 
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                         ->table('project_file')
                         ->where('entity_id', $request->entity_id)
                         ->where('id_project', $id_project)
@@ -1049,13 +1049,13 @@ class RabController extends Controller
                     }
                 }
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('project_hdr')
                 ->where('entity_id', $request->entity_id)
                 ->where('id_project', $request->id_project)
                 ->delete();
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
         
                 return $this->sendResponse('Success', 'Successfully deleted');
 
@@ -1066,7 +1066,7 @@ class RabController extends Controller
 
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }

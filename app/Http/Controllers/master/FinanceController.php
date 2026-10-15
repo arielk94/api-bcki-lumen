@@ -13,7 +13,7 @@ class FinanceController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getFinanceReport",
+     *     path="/api/bcki/master/getFinanceReport",
      *     tags={"Master Finance"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -58,7 +58,7 @@ class FinanceController extends Controller
             $sqlWhere.= " and glf.report_name = '$report_name'";
         }
 
-        $data =  DB::connection('sqlSrvFPI')
+        $data =  DB::connection('sqlSrvBCKI')
             ->table('g_ledger_finance as glf')
             ->selectRaw("TRIM(glf.report_name) as report_name,
                         TRIM(glf.entity_id) as entity_id,
@@ -81,7 +81,7 @@ class FinanceController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getReportName",
+     *     path="/api/bcki/master/getReportName",
      *     tags={"Master Finance"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -103,7 +103,7 @@ class FinanceController extends Controller
      */
     public function getReportName(Request $request)
     {
-        $data =  DB::connection('sqlSrvFPI')
+        $data =  DB::connection('sqlSrvBCKI')
             ->table('g_ledger_finance as glf')
             ->selectRaw("DISTINCT(TRIM(glf.report_name)) as report_name")
             ->get();
@@ -113,7 +113,7 @@ class FinanceController extends Controller
     
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getEntity",
+     *     path="/api/bcki/master/getEntity",
      *     tags={"Master Finance"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -143,7 +143,7 @@ class FinanceController extends Controller
             $sqlWhere .= " and glf.report_name = '$report_name'";
         }
 
-        $data =  DB::connection('sqlSrvFPI')
+        $data =  DB::connection('sqlSrvBCKI')
             ->table('g_ledger_finance as glf')
             ->selectRaw("DISTINCT(TRIM(glf.entity_id)) as entity_id,
                         TRIM(glf.report_name) as report_name")
@@ -155,7 +155,7 @@ class FinanceController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getGroup",
+     *     path="/api/bcki/master/getGroup",
      *     tags={"Master Finance"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -192,7 +192,7 @@ class FinanceController extends Controller
             $sqlWhere .= " and glf.entity_id = '$entity_id'";
         }
 
-        $data =  DB::connection('sqlSrvFPI')
+        $data =  DB::connection('sqlSrvBCKI')
             ->table('g_ledger_finance as glf')
             ->selectRaw("DISTINCT(TRIM(glf.group_id)) as group_id, glf.entity_id, glf.report_name")
             ->whereRaw($sqlWhere)
@@ -203,7 +203,7 @@ class FinanceController extends Controller
 
         /**
      * @OA\Post(
-     *     path="/api/fpi/master/getAcNum",
+     *     path="/api/bcki/master/getAcNum",
      *     tags={"Master Finance"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -236,7 +236,7 @@ class FinanceController extends Controller
         if($ac_type) {
             $sqlWhere .= " and TRIM(gl.ac_type) = '$ac_type'";
         }
-        $data =  DB::connection('sqlSrvFPI')
+        $data =  DB::connection('sqlSrvBCKI')
             ->table('g_ledger as gl')
             ->selectRaw("TRIM(gl.ac_num) as ac_num, TRIM(gl.ac_name) as ac_name")
             ->whereRaw($sqlWhere)
@@ -249,12 +249,12 @@ class FinanceController extends Controller
     // {
     //     try
     //     {
-    //             $datas = DB::connection('sqlSrvFPI') 
+    //             $datas = DB::connection('sqlSrvBCKI') 
     //                 ->table('office')
     //                 ->selectRaw("MAX(office.office_id)+1 as office_id")
     //                 ->first(); 
 
-    //             $insert = DB::connection('sqlSrvFPI')
+    //             $insert = DB::connection('sqlSrvBCKI')
     //                 ->table('office')
     //                 ->insert([
     //                     'office_id' => $datas->office_id,
@@ -283,7 +283,7 @@ class FinanceController extends Controller
                     
     //         if($data){
 
-    //             $insert = DB::connection('sqlSrvFPI')
+    //             $insert = DB::connection('sqlSrvBCKI')
     //             ->table('office')
     //             ->where('office_id', $request->office_id)
     //             ->update([
@@ -309,14 +309,14 @@ class FinanceController extends Controller
     public function insertAcNum(Request $request)
     {
         try {
-            // $data = DB::connection('sqlSrvFPI')
+            // $data = DB::connection('sqlSrvBCKI')
             //     ->table('g_ledger_finance')
             //     ->where('ac_num', $request->ac_num)
             //     ->first();
 
             // if ($data) {
             //     // Update existing record
-            //     DB::connection('sqlSrvFPI')
+            //     DB::connection('sqlSrvBCKI')
             //         ->table('g_ledger_finance')
             //         ->where('ac_num', $request->ac_num)
             //         ->update([
@@ -343,7 +343,7 @@ class FinanceController extends Controller
             //         ]);
             // } else {
                 // Insert new record
-                $data = DB::connection('sqlSrvFPI')
+                $data = DB::connection('sqlSrvBCKI')
                     ->table('g_ledger_finance')
                     ->insert([
                         'office_id' => 1, // Assuming office_id is always 1, adjust as necessary
@@ -368,7 +368,7 @@ class FinanceController extends Controller
     public function deleteAcNum(Request $request)
     {
         try {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger_finance')                
                 ->where('report_name', $request->report_name)
                 ->where('entity_id', $request->entity_id)

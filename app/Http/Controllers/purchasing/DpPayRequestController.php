@@ -61,7 +61,7 @@ class DpPayRequestController extends Controller
     public function GetPo(Request $request)
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select a.po_id, a.dt_po, a.pay_term_id, a.curr_id, a.amt_net,
                     isnull((select sum(b.req_dp_amt) from purc_dp_req_dtl b where b.po_id = a.po_id),0) as amt_req 
                     from po_hdr a where a.vendor_id = '$request->vendorid' and a.office_id = '$request->officeid' and a.stat != 'C' order by a.dt_po desc"));

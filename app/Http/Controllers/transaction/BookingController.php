@@ -48,7 +48,7 @@ class BookingController extends Controller
             }
 
             // dd($sqlWhere);
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('CustomerBooking')
                 ->selectRaw("
                                 CustomerBooking.*, 
@@ -95,14 +95,14 @@ class BookingController extends Controller
             $exp_date = 0;
         }
 
-        $salesId = DB::connection("sqlSrvFPI")
+        $salesId = DB::connection("sqlSrvBCKI")
                 ->table('Sales')
                 ->whereRaw("idemployee = " . "'" . getAuth($request)->user_id2 . "'")
                 ->value("SalesId");
         
         // dd($salesId);
         
-        $telpSPV = DB::connection("sqlSrvFPI")
+        $telpSPV = DB::connection("sqlSrvBCKI")
                 ->table('Sales as S')
                 ->join('Sales_area as SA', 'S.area', '=', 'SA.id_area')
                 ->join('Sales as S2', 'SA.spv_area', '=', 'S2.SalesId')
@@ -113,13 +113,13 @@ class BookingController extends Controller
         $idSPV = $telpSPV->idemployee ?? null;
         $phoneSPV = $telpSPV->Telepon ?? null;
 
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
             $book_id = $this->generateBookID($request);
             // dd($book_id);
 
-            $save = DB::connection('sqlSrvFPI')
+            $save = DB::connection('sqlSrvBCKI')
                 ->table('CustomerBooking')
                 ->insert([
                     'book_id' => $book_id,
@@ -141,7 +141,7 @@ class BookingController extends Controller
                     'active_flag' => 'Y',
                     'remark' => $request->remark ?? ''
                 ]);
-            // DB::connection('sqlSrvFPI')->commit();
+            // DB::connection('sqlSrvBCKI')->commit();
             
             $book_id = trim($book_id);
             $getEmp = trim($idSPV);
@@ -157,7 +157,7 @@ class BookingController extends Controller
                     return $this->sendResponse($whatsapp['msg'], 'Successfully saved Nego');
                 }
             }else{
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                         ->table('house_unit')
                         ->where('id_house', $request->house_item)
                         ->update([
@@ -167,7 +167,7 @@ class BookingController extends Controller
                 return $this->sendResponse($save, 'Successfully saved Book');
             }
         } catch (\Exception $e) {
-            // DB::connection('sqlSrvFPI')->rollBack();
+            // DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -180,7 +180,7 @@ class BookingController extends Controller
         $dateDay = date("d");
         $book_id = '';
 
-        $getLastTrID = DB::connection('sqlSrvFPI')
+        $getLastTrID = DB::connection('sqlSrvBCKI')
             ->table('CustomerBooking')
             ->where('book_id', 'like', "%" . $dateYear . $dateMonth . $dateDay . "%")
             ->max('book_id');
@@ -200,7 +200,7 @@ class BookingController extends Controller
     public function sendNotifBookingApproval($book_id, $getEmp, $getPhone)
     {
         try {
-            $getLink = "FDPI" . now()->format('ymdH') . rand(10000, 99999);
+            $getLink = "bcki" . now()->format('ymdH') . rand(10000, 99999);
             DB::connection('sqlsrv')
             ->table('sec_reset_password')
             ->insert([

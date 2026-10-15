@@ -14,7 +14,7 @@ class CommodityController extends Controller
 {
      /**
      * @OA\Post(
-     *     path="/api/fpi/master/commodity",
+     *     path="/api/bcki/master/commodity",
      *     tags={"Master Commodity"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -36,7 +36,7 @@ class CommodityController extends Controller
      */
     public function index(Request $request)
     {
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
             ->table('qc_item_commodity')
             ->selectRaw("com_id, TRIM(com_desc) as com_desc, active_flag")
             ->where('active_flag', 'Y')
@@ -48,7 +48,7 @@ class CommodityController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/commodity/show",
+     *     path="/api/bcki/master/commodity/show",
      *     tags={"Master Commodity"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -72,7 +72,7 @@ class CommodityController extends Controller
     public function show(Request $request)
     {
         $qc_trans_id = trim($request->qc_trans_id);
-        $commodities = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $commodities = DB::connection('sqlSrvBCKI')->select(DB::raw("
                                 SELECT
                                     DISTINCT commodity.com_desc,
                                     commodity.com_id, commodity.no_urut, commodity.[percent]

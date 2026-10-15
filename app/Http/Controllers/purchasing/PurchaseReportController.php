@@ -169,7 +169,7 @@ class PurchaseReportController extends Controller
             }
 
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('v_purchase_history')
                 ->whereRaw($sqlWhere)
                 ->orderBy('dt_pr', 'asc')
@@ -186,7 +186,7 @@ class PurchaseReportController extends Controller
     public function UpdateProgressPr(Request $request)
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('pr_item')
                 ->where('pr_id', $request->pr_id)
                 ->where('pr_item', $request->pr_item)
@@ -205,7 +205,7 @@ class PurchaseReportController extends Controller
     public function UpdateProgressPo(Request $request)
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('po_item')
                 ->where('po_id', $request->po_id)
                 ->where('po_item', $request->po_item)
@@ -226,7 +226,7 @@ class PurchaseReportController extends Controller
         try {
             $pr_id = $request->pr_id ?? '';
 
-            $connection = DB::connection("sqlSrvFPI");
+            $connection = DB::connection("sqlSrvBCKI");
 
             // === PR ===
             $pr = $connection->select(DB::raw("

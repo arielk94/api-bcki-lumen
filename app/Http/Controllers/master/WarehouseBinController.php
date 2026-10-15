@@ -13,7 +13,7 @@ class WarehouseBinController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/fpi/whouse/bin",
+     *     path="/api/bcki/whouse/bin",
      *     tags={"Master Warehouse Bin"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -83,7 +83,7 @@ class WarehouseBinController extends Controller
             $where = $where . "and bin_id = ". "'" . $bin_id . "'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
                 ->table('wh_bin')
                 ->selectRaw('office_id, 
                 TRIM(wh_id) as wh_id, 

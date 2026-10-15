@@ -40,7 +40,7 @@ class JurnalbyAccountController extends Controller
             $sqlWhere .= " and (ac_num_dr = '$ac_num' or ac_num_cr = '$ac_num')";
         }
 
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             ->table('v_journal_by_ac_num')
             ->selectRaw("*")
             ->whereRaw($sqlWhere)
@@ -70,7 +70,7 @@ class JurnalbyAccountController extends Controller
             $sqlWhere .= " and (ac_num_dr = '$ac_num' or ac_num_cr = '$ac_num')";
         }
 
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             ->table('v_journal_by_ac_num')
             ->whereRaw($sqlWhere)
             ->orderBy('tr_date')

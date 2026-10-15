@@ -13,7 +13,7 @@ class WarehouseController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/fpi/whouse",
+     *     path="/api/bcki/whouse",
      *     tags={"Master Warehouse"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -68,7 +68,7 @@ class WarehouseController extends Controller
             $where = $where . " and wh_id = ". "'" . $wh_id . "'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
                 ->table('whouse')
                 ->selectRaw('office_id, 
                 TRIM(wh_id) as wh_id, 
@@ -85,7 +85,7 @@ class WarehouseController extends Controller
 
     public function getCurrentPeriod(Request $request)
     {
-        $result =  DB::connection("sqlSrvFPI")
+        $result =  DB::connection("sqlSrvBCKI")
                         ->table('period')
                         ->where('dept_id', 'PRODWH')
                         ->where('office_id', $request->office_id)

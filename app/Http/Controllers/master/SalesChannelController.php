@@ -17,7 +17,7 @@ class SalesChannelController extends Controller
             $sqlWhere .= " and active_flag = '$active_flag'";
         }
 
-        $datas = DB::connection('sqlSrvFPI') 
+        $datas = DB::connection('sqlSrvBCKI') 
                     ->table('channel_fee_sales')
                     ->selectRaw("channel_id, channel_name, active_flag")
                     ->whereRaw($sqlWhere)
@@ -29,7 +29,7 @@ class SalesChannelController extends Controller
 
     private function checkChannel($channel_id)
     {
-        return DB::connection('sqlSrvFPI')
+        return DB::connection('sqlSrvBCKI')
             ->table('channel_fee_sales')
             ->where('channel_id', $channel_id);
     }
@@ -37,13 +37,13 @@ class SalesChannelController extends Controller
     public function saveChannel(Request $request)
     {
         try {
-            $datas = DB::connection('sqlSrvFPI') 
+            $datas = DB::connection('sqlSrvBCKI') 
                 ->table('channel_fee_sales')
                 ->selectRaw("MAX(CAST(channel_id AS INT)) as max_id")
                 ->first(); 
             $next_id = ($datas && $datas->max_id) ? (int)$datas->max_id + 1 : 1;
 
-            $insert = DB::connection('sqlSrvFPI')
+            $insert = DB::connection('sqlSrvBCKI')
                 ->table('channel_fee_sales')
                 ->insert([
                     'channel_id' => (string)$next_id,
@@ -63,7 +63,7 @@ class SalesChannelController extends Controller
             $data = $this->checkChannel($channel_id)->first();
                     
             if ($data) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('channel_fee_sales')
                     ->where('channel_id', $channel_id)
                     ->update([
@@ -86,7 +86,7 @@ class SalesChannelController extends Controller
             $active_flag = $request->active_flag;
             $data = $this->checkChannel($channel_id)->first();
             if ($data) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('channel_fee_sales')
                     ->where('channel_id', $channel_id)
                     ->update([

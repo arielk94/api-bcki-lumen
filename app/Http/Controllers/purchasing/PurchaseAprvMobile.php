@@ -27,7 +27,7 @@ class PurchaseAprvMobile extends Controller
                                 ->table('sec_env_conf')
                                 ->selectRaw("var_value")
                                 ->where('user_id2',getAuth($request)->user_id2)
-                                ->where('entity_id','FDPI')
+                                ->where('entity_id','bcki')
                                 ->where('appl_id','MOBILE')
                                 ->where('var_id','APPROVALPO1')
                                 ->where('active_flag','Y')
@@ -37,7 +37,7 @@ class PurchaseAprvMobile extends Controller
                                 ->table('sec_env_conf')
                                 ->selectRaw("var_value")
                                 ->where('user_id2',getAuth($request)->user_id2)
-                                ->where('entity_id','FDPI')
+                                ->where('entity_id','bcki')
                                 ->where('appl_id','MOBILE')
                                 ->where('var_id','APPROVALPO2')
                                 ->where('active_flag','Y')
@@ -47,7 +47,7 @@ class PurchaseAprvMobile extends Controller
                                 ->table('sec_env_conf')
                                 ->selectRaw("var_value")
                                 ->where('user_id2',getAuth($request)->user_id2)
-                                ->where('entity_id','FDPI')
+                                ->where('entity_id','bcki')
                                 ->where('appl_id','MOBILE')
                                 ->where('var_id','APPROVALPR1')
                                 ->where('active_flag','Y')
@@ -57,7 +57,7 @@ class PurchaseAprvMobile extends Controller
                                 ->table('sec_env_conf')
                                 ->selectRaw("var_value")
                                 ->where('user_id2',getAuth($request)->user_id2)
-                                ->where('entity_id','FDPI')
+                                ->where('entity_id','bcki')
                                 ->where('appl_id','MOBILE')
                                 ->where('var_id','APPROVALPR2')
                                 ->where('active_flag','Y')
@@ -80,7 +80,7 @@ class PurchaseAprvMobile extends Controller
             }
 
             if($tr_type == 'PO'){
-                $datas = DB::connection("sqlSrvFPI")
+                $datas = DB::connection("sqlSrvBCKI")
                                 ->table('po_hdr')
                                 ->selectRaw("
                                             TRIM(po_hdr.po_id) AS po_id, 
@@ -147,7 +147,7 @@ class PurchaseAprvMobile extends Controller
                                 ->get();
                     
                 foreach ($datas as $item) {
-                    $resArticle = DB::connection('sqlSrvFPI')
+                    $resArticle = DB::connection('sqlSrvBCKI')
                                         ->table('po_item')
                                         ->selectRaw("
                                                 ROW_NUMBER() OVER (ORDER BY po_item.po_id) AS no,
@@ -175,7 +175,7 @@ class PurchaseAprvMobile extends Controller
             }elseif($tr_type == 'PR'){
                 $rawWh = DB::connection("sqlsrv")
                             ->table('sec_env_conf')
-                            ->where('entity_id', '=', 'FDPI')
+                            ->where('entity_id', '=', 'bcki')
                             ->where('appl_id', '=', 'MOBILE')
                             ->where('var_id', '=', 'APPROVALPR_DEPT')
                             ->where('user_id2', '=', getAuth($request)->user_id2)
@@ -183,7 +183,7 @@ class PurchaseAprvMobile extends Controller
                             ->value(DB::raw('TRIM(var_value)'));
                 $getRightWH = explode(',', $rawWh);
                 
-                $datas = DB::connection("sqlSrvFPI")
+                $datas = DB::connection("sqlSrvBCKI")
                                     ->table('pr_hdr')
                                     ->selectRaw("
                                                 TRIM(pr_hdr.pr_id) as pr_id,
@@ -287,7 +287,7 @@ class PurchaseAprvMobile extends Controller
                                     ->get();
                     
                 foreach ($datas as $item) {
-                    $resArticle = DB::connection('sqlSrvFPI')
+                    $resArticle = DB::connection('sqlSrvBCKI')
                                         ->table('pr_item')
                                         ->selectRaw("
                                         ROW_NUMBER() OVER (ORDER BY pr_item.pr_id) AS no,
@@ -348,7 +348,7 @@ class PurchaseAprvMobile extends Controller
 
             if($tr_type == 'PO'){
                 if($type_aprv=='approve1'){
-                    $order = DB::connection('sqlSrvFPI')
+                    $order = DB::connection('sqlSrvBCKI')
                             ->table('po_hdr')
                             ->where('po_id', $tr_id)
                             ->first();
@@ -356,7 +356,7 @@ class PurchaseAprvMobile extends Controller
 
                     if ($order) {
                         if ($order->dt_aprv == '1900-01-01 00:00:00.000') {
-                            $save = DB::connection('sqlSrvFPI')
+                            $save = DB::connection('sqlSrvBCKI')
                                     ->table('po_hdr')
                                     ->where('po_id', $tr_id)
                                     ->update([
@@ -372,7 +372,7 @@ class PurchaseAprvMobile extends Controller
                         return $this->sendError('No Order tidak ditemukan', 'Error', 500);
                     }  
                 }elseif($type_aprv=='approve2'){    
-                    $order = DB::connection('sqlSrvFPI')
+                    $order = DB::connection('sqlSrvBCKI')
                             ->table('po_hdr')
                             ->where('po_id', $tr_id)
                             ->first();
@@ -382,7 +382,7 @@ class PurchaseAprvMobile extends Controller
                             return $this->sendError('Belum Approve 1, Silahkan Approve 1 Dahulu', 'Error', 500);
                         }
                         if ($order->dt_aprv2 == '1900-01-01 00:00:00.000') {
-                            $save = DB::connection('sqlSrvFPI')
+                            $save = DB::connection('sqlSrvBCKI')
                                     ->table('po_hdr')
                                     ->where('po_id', $tr_id)
                                     ->update([
@@ -402,7 +402,7 @@ class PurchaseAprvMobile extends Controller
                 }
             }elseif($tr_type == 'PR'){
                 if($type_aprv=='approve1'){
-                    $order = DB::connection('sqlSrvFPI')
+                    $order = DB::connection('sqlSrvBCKI')
                             ->table('pr_hdr')
                             ->selectRaw('pr_hdr.*, ISNULL(vendor.apprv, 0) as apprv')
                             ->where('pr_id', $tr_id)
@@ -414,7 +414,7 @@ class PurchaseAprvMobile extends Controller
                     if ($order) {
                         if ($order->dt_aprv == '1900-01-01 00:00:00.000') {
                             if($vendor_apprv == 0){
-                                $save = DB::connection('sqlSrvFPI')
+                                $save = DB::connection('sqlSrvBCKI')
                                     ->table('pr_hdr')
                                     ->where('pr_id', $tr_id)
                                     ->update([
@@ -425,7 +425,7 @@ class PurchaseAprvMobile extends Controller
                                 $whatsapp = $this->sendNotifPurchase('PR',$tr_id,$dept_id);
                             }
                             if($vendor_apprv == 1){
-                                $save = DB::connection('sqlSrvFPI')
+                                $save = DB::connection('sqlSrvBCKI')
                                     ->table('pr_hdr')
                                     ->where('pr_id', $tr_id)
                                     ->update([
@@ -437,7 +437,7 @@ class PurchaseAprvMobile extends Controller
                                     ]);
                             }
                             if($vendor_apprv == 2){
-                                $save = DB::connection('sqlSrvFPI')
+                                $save = DB::connection('sqlSrvBCKI')
                                     ->table('pr_hdr')
                                     ->where('pr_id', $tr_id)
                                     ->update([
@@ -455,7 +455,7 @@ class PurchaseAprvMobile extends Controller
                         return $this->sendError('No Order tidak ditemukan', 'Error', 500);
                     }           
                 }elseif($type_aprv=='approve2'){
-                    $order = DB::connection('sqlSrvFPI')
+                    $order = DB::connection('sqlSrvBCKI')
                             ->table('pr_hdr')
                             ->selectRaw('pr_hdr.*, ISNULL(vendor.apprv, 0) as apprv')
                             ->where('pr_id', $tr_id)
@@ -469,7 +469,7 @@ class PurchaseAprvMobile extends Controller
                         }
                         if ($order->dt_aprv2 == '1900-01-01 00:00:00.000') {
                             if($vendor_apprv == 0){
-                                $save = DB::connection('sqlSrvFPI')
+                                $save = DB::connection('sqlSrvBCKI')
                                     ->table('pr_hdr')
                                     ->where('pr_id', $tr_id)
                                     ->update([
@@ -479,7 +479,7 @@ class PurchaseAprvMobile extends Controller
                                     ]);
                             }
                             if($vendor_apprv == 2){
-                                $save = DB::connection('sqlSrvFPI')
+                                $save = DB::connection('sqlSrvBCKI')
                                     ->table('pr_hdr')
                                     ->where('pr_id', $tr_id)
                                     ->update([
@@ -520,7 +520,7 @@ class PurchaseAprvMobile extends Controller
 
             $getEmp = ''; 
             if($type=='PR'){
-                $getEmp = DB::connection('sqlSrvFPI')
+                $getEmp = DB::connection('sqlSrvBCKI')
                     ->table('department')
                     ->selectRaw('nik_pr2')
                     ->whereRaw("dept_id = '" . $dept_id . "'")
@@ -529,7 +529,7 @@ class PurchaseAprvMobile extends Controller
             }
 
             if($type=='PR'){
-                $getPhone = DB::connection('sqlSrvFPI')
+                $getPhone = DB::connection('sqlSrvBCKI')
                             ->table('department')
                             ->selectRaw('pr2')
                             // ->whereRaw($sqlWhere)
@@ -539,7 +539,7 @@ class PurchaseAprvMobile extends Controller
                 $getPhone = $getPhone[0]->pr2;
             }
 
-                $getLink = "FDPI" . Carbon::now()->format('ymdH') . rand(10000, 99999);
+                $getLink = "bcki" . Carbon::now()->format('ymdH') . rand(10000, 99999);
                 DB::connection('sqlsrv')
                 ->table('sec_reset_password')
                 ->insert([
@@ -613,14 +613,14 @@ class PurchaseAprvMobile extends Controller
 
             if($tr_type == 'PO'){
                 if($type_aprv=='approve1'){
-                    $order = DB::connection('sqlSrvFPI')
+                    $order = DB::connection('sqlSrvBCKI')
                             ->table('po_hdr')
                             ->where('po_id', $tr_id)
                             ->first();
                     
                     if ($order) {
                         if ($order->dt_rjc == '1900-01-01 00:00:00.000') {
-                            $save = DB::connection('sqlSrvFPI')
+                            $save = DB::connection('sqlSrvBCKI')
                                     ->table('po_hdr')
                                     ->where('po_id', $tr_id)
                                     ->update([
@@ -631,7 +631,7 @@ class PurchaseAprvMobile extends Controller
                                         'rjc2_by' => getAuth($request)->user_id2,
                                         'stat' => 'X'
                                     ]);
-                            $save = DB::connection('sqlSrvFPI')
+                            $save = DB::connection('sqlSrvBCKI')
                                     ->table('po_item')
                                     ->where('po_id', $tr_id)
                                     ->update([
@@ -647,14 +647,14 @@ class PurchaseAprvMobile extends Controller
                         return $this->sendError('No Order tidak ditemukan', 'Error', 500);
                     }           
                 }elseif($type_aprv=='approve2'){    
-                    $order = DB::connection('sqlSrvFPI')
+                    $order = DB::connection('sqlSrvBCKI')
                             ->table('po_hdr')
                             ->where('po_id', $tr_id)
                             ->first();
                     
                     if ($order) {
                         if ($order->dt_rjc2 == '1900-01-01 00:00:00.000') {
-                            $save = DB::connection('sqlSrvFPI')
+                            $save = DB::connection('sqlSrvBCKI')
                                     ->table('po_hdr')
                                     ->where('po_id', $tr_id)
                                     ->update([
@@ -675,14 +675,14 @@ class PurchaseAprvMobile extends Controller
                 }
             }elseif($tr_type == 'PR'){
                 if($type_aprv=='approve1'){
-                    $order = DB::connection('sqlSrvFPI')
+                    $order = DB::connection('sqlSrvBCKI')
                             ->table('pr_hdr')
                             ->where('pr_id', $tr_id)
                             ->first();
                     
                     if ($order) {
                         if ($order->dt_rjc == '1900-01-01 00:00:00.000') {
-                            $save = DB::connection('sqlSrvFPI')
+                            $save = DB::connection('sqlSrvBCKI')
                                     ->table('pr_hdr')
                                     ->where('pr_id', $tr_id)
                                     ->update([
@@ -693,7 +693,7 @@ class PurchaseAprvMobile extends Controller
                                         'rjc2_by' => getAuth($request)->user_id2,
                                         'stat' => 'X'
                                     ]);
-                            $save2 = DB::connection('sqlSrvFPI')
+                            $save2 = DB::connection('sqlSrvBCKI')
                                     ->table('pr_item')
                                     ->where('pr_id', $tr_id)
                                     ->update([
@@ -701,7 +701,7 @@ class PurchaseAprvMobile extends Controller
                                         'stat' => 'X'
                                     ]);
 
-                            // DB::connection('sqlSrvFPI')->commit();
+                            // DB::connection('sqlSrvBCKI')->commit();
 
                             return $this->sendResponse('Success UnApproved 1', 'Successfully saved');
 
@@ -712,14 +712,14 @@ class PurchaseAprvMobile extends Controller
                         return $this->sendError('No Order tidak ditemukan', 'Error', 500);
                     }           
                 }elseif($type_aprv=='approve2'){
-                    $order = DB::connection('sqlSrvFPI')
+                    $order = DB::connection('sqlSrvBCKI')
                             ->table('pr_hdr')
                             ->where('pr_id', $tr_id)
                             ->first();
                     
                     if ($order) {
                         if ($order->dt_rjc2 == '1900-01-01 00:00:00.000') {
-                            $save = DB::connection('sqlSrvFPI')
+                            $save = DB::connection('sqlSrvBCKI')
                                     ->table('pr_hdr')
                                     ->where('pr_id', $tr_id)
                                     ->update([
@@ -731,7 +731,7 @@ class PurchaseAprvMobile extends Controller
                                         'stat' => 'X'
                                     ]);
 
-                            $save2 = DB::connection('sqlSrvFPI')
+                            $save2 = DB::connection('sqlSrvBCKI')
                                     ->table('pr_item')
                                     ->where('pr_id', $tr_id)
                                     ->update([

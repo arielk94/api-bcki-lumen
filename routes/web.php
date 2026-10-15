@@ -69,7 +69,7 @@ $router->group(['prefix' => 'api/public'], function ($router) {
 });
 
 $router->group(['middleware' => 'check.auth'], function () use ($router) {
-    $router->group(['prefix' => '/api/fpi'], function () use ($router) {
+    $router->group(['prefix' => '/api/bcki'], function () use ($router) {
         $router->group(['prefix' => 'master'], function ($router) {
             $router->post('/getProvince', 'master\masterController@getProvince');
             $router->post('/getCity', 'master\masterController@getCity');

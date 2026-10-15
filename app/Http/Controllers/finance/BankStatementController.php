@@ -18,7 +18,7 @@ class BankStatementController extends Controller
         $type = $request->type;
 
         try {
-            $connection = DB::connection("sqlSrvFPI");
+            $connection = DB::connection("sqlSrvBCKI");
 
             switch ($type) {
                 case 'customer':
@@ -66,7 +66,7 @@ class BankStatementController extends Controller
     }
     function getBankAccMap($BankAcc)
     {
-        $accMap = DB::connection("sqlSrvFPI")
+        $accMap = DB::connection("sqlSrvBCKI")
             ->table('account')
             ->selectRaw('acc_map')
             ->where('bank_acc', '=', $BankAcc)
@@ -78,7 +78,7 @@ class BankStatementController extends Controller
     {
         $tglYYMMDD = date('ymd', strtotime($sTgl));
 
-        $row = DB::connection("sqlSrvFPI")
+        $row = DB::connection("sqlSrvBCKI")
             ->table('bank_note')
             ->select(DB::raw('MAX(tr_id) as tid'))
             ->where('tr_type', trim($sType))
@@ -152,7 +152,7 @@ class BankStatementController extends Controller
         }
         //dd($sqlWhere);
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('bank_note as bn')
                 ->selectRaw("
                         trim(bn.Descr) Descr,trim(bn.cabang) cabang,bn.db_amt,bn.cr_amt,bn.saldo,trim(bn.tr_id) tr_id,bn.voucher,bn.run_number,bn.dt_trans,
@@ -185,8 +185,8 @@ class BankStatementController extends Controller
         $trId = $this->GenNoBukti($data['type'], $data['bank_acc'], $data['tr_date']);
 
         try {
-            DB::connection('sqlSrvFPI')->transaction(function () use ($data, $userId, $trId) {
-                DB::connection('sqlSrvFPI')->table('bank_note')->insert([
+            DB::connection('sqlSrvBCKI')->transaction(function () use ($data, $userId, $trId) {
+                DB::connection('sqlSrvBCKI')->table('bank_note')->insert([
                     'tr_type' => $data['type'],
                     'bank_acc' => $data['bank_acc'],
                     'tr_id' => $trId,
@@ -293,7 +293,7 @@ class BankStatementController extends Controller
                 //dd($nominal);
                 $remarkClean = str_replace("'", "", $records[$i - 7]['Keterangan']);
                 $trId = $this->GenNoBukti($type, $bankAcc, $tr_date);
-                $result = DB::connection("sqlSrvFPI")
+                $result = DB::connection("sqlSrvBCKI")
                     ->table('bank_note')
                     ->selectRaw("run_number")
                     ->where('descr', '=', trim($remarkClean))
@@ -306,7 +306,7 @@ class BankStatementController extends Controller
                 //dd($result, $remarkClean, $tr_date, $bankAcc, $records[$i - 7]['Cabang'], $records[$i - 7]['Saldo']);
                 if ($result) {
                     //dd('update');
-                    DB::connection('sqlSrvFPI')->table('bank_note')
+                    DB::connection('sqlSrvBCKI')->table('bank_note')
                         ->where('run_number', $result->run_number)
                         ->update([
                             'tr_type' => $type,
@@ -325,7 +325,7 @@ class BankStatementController extends Controller
                             'user_id' => $userId
                         ]);
                 } else {
-                    DB::connection('sqlSrvFPI')->table('bank_note')->insert([
+                    DB::connection('sqlSrvBCKI')->table('bank_note')->insert([
                         'tr_type' => $type,
                         'bank_acc' => $bankAcc,
                         'tr_id' => $trId,
@@ -382,7 +382,7 @@ class BankStatementController extends Controller
             //dd($nominal);
             $remarkClean = str_replace("'", "", $records[$i - $pengurang]['Description']);
             $trId = $this->GenNoBukti($type, $bankAcc, $tr_date);
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('bank_note')
                 ->selectRaw("run_number")
                 ->where('descr', '=', trim($remarkClean))
@@ -394,7 +394,7 @@ class BankStatementController extends Controller
                 ->first();
             //dd($result, $remarkClean, $tr_date, $bankAcc, $records[$i - 7]['Cabang'], $records[$i - 7]['Saldo']);
             if ($result) {
-                DB::connection('sqlSrvFPI')->table('bank_note')
+                DB::connection('sqlSrvBCKI')->table('bank_note')
                     ->where('run_number', $result->run_number)
                     ->update([
                         'tr_type' => $type,
@@ -413,7 +413,7 @@ class BankStatementController extends Controller
                         'user_id' => $userId
                     ]);
             } else {
-                DB::connection('sqlSrvFPI')->table('bank_note')->insert([
+                DB::connection('sqlSrvBCKI')->table('bank_note')->insert([
                     'tr_type' => $type,
                     'bank_acc' => $bankAcc,
                     'tr_id' => $trId,
@@ -471,7 +471,7 @@ class BankStatementController extends Controller
             //dd($records);
             $remarkClean = str_replace("'", "", $records[$i - $pengurang]['Description']);
             $trId = $this->GenNoBukti($type, $bankAcc, $tr_date);
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('bank_note')
                 ->selectRaw("run_number")
                 ->where('descr', '=', trim($remarkClean))
@@ -483,7 +483,7 @@ class BankStatementController extends Controller
                 ->first();
             //dd($result, $remarkClean, $tr_date, $bankAcc, $records[$i - 7]['Cabang'], $records[$i - 7]['Saldo']);
             if ($result) {
-                DB::connection('sqlSrvFPI')->table('bank_note')
+                DB::connection('sqlSrvBCKI')->table('bank_note')
                     ->where('run_number', $result->run_number)
                     ->update([
                         'tr_type' => $type,
@@ -502,7 +502,7 @@ class BankStatementController extends Controller
                         'user_id' => $userId
                     ]);
             } else {
-                DB::connection('sqlSrvFPI')->table('bank_note')->insert([
+                DB::connection('sqlSrvBCKI')->table('bank_note')->insert([
                     'tr_type' => $type,
                     'bank_acc' => $bankAcc,
                     'tr_id' => $trId,
@@ -550,7 +550,7 @@ class BankStatementController extends Controller
                     $type = $toNumber > 0  ? "C" : "D";
                     $remarkClean = str_replace("'", "", $datas[6]);
                     $trId = $this->GenNoBukti($type, $bankAcc, $tr_date);
-                    $result = DB::connection("sqlSrvFPI")
+                    $result = DB::connection("sqlSrvBCKI")
                         ->table('bank_note')
                         ->selectRaw("run_number")
                         ->where('descr', '=', trim($remarkClean))
@@ -560,7 +560,7 @@ class BankStatementController extends Controller
                         ->orderBy('run_number', 'desc')
                         ->first();
                     if ($result) {
-                        DB::connection('sqlSrvFPI')->table('bank_note')
+                        DB::connection('sqlSrvBCKI')->table('bank_note')
                             ->where('run_number', $result->run_number)
                             ->update([
                                 'tr_type' => $type,
@@ -577,7 +577,7 @@ class BankStatementController extends Controller
                                 'user_id' => $userId
                             ]);
                     } else {
-                        DB::connection('sqlSrvFPI')->table('bank_note')->insert([
+                        DB::connection('sqlSrvBCKI')->table('bank_note')->insert([
                             'tr_type' => $type,
                             'bank_acc' => $bankAcc,
                             'tr_id' => $trId,
@@ -628,7 +628,7 @@ class BankStatementController extends Controller
                     $remarkClean = str_replace("'", "", $datas[5]);
                     $trId = $this->GenNoBukti($type, $bankAcc, $tr_date);
 
-                    $result = DB::connection("sqlSrvFPI")
+                    $result = DB::connection("sqlSrvBCKI")
                         ->table('bank_note')
                         ->selectRaw("run_number")
                         ->where('descr', '=', trim($remarkClean))
@@ -638,7 +638,7 @@ class BankStatementController extends Controller
                         ->orderBy('run_number', 'desc')
                         ->first();
                     if ($result) {
-                        DB::connection('sqlSrvFPI')->table('bank_note')
+                        DB::connection('sqlSrvBCKI')->table('bank_note')
                             ->where('run_number', $result->run_number)
                             ->update([
                                 'tr_type' => $type,
@@ -655,7 +655,7 @@ class BankStatementController extends Controller
                                 'user_id' => $userId
                             ]);
                     } else {
-                        DB::connection('sqlSrvFPI')->table('bank_note')->insert([
+                        DB::connection('sqlSrvBCKI')->table('bank_note')->insert([
                             'tr_type' => $type,
                             'bank_acc' => $bankAcc,
                             'tr_id' => $trId,
@@ -710,7 +710,7 @@ class BankStatementController extends Controller
             //dd($nominal);
             $remarkClean = str_replace("'", "", $records[$i - $pengurang]['Remarks']);
             $trId = $this->GenNoBukti($type, $bankAcc, $tr_date);
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('bank_note')
                 ->selectRaw("run_number")
                 ->where('descr', '=', trim($remarkClean))
@@ -721,7 +721,7 @@ class BankStatementController extends Controller
                 ->first();
             //dd($result, $remarkClean, $tr_date, $bankAcc, $records[$i - 7]['Cabang'], $records[$i - 7]['Saldo']);
             if ($result) {
-                DB::connection('sqlSrvFPI')->table('bank_note')
+                DB::connection('sqlSrvBCKI')->table('bank_note')
                     ->where('run_number', $result->run_number)
                     ->update([
                         'tr_type' => $type,
@@ -739,7 +739,7 @@ class BankStatementController extends Controller
                         'user_id' => $userId
                     ]);
             } else {
-                DB::connection('sqlSrvFPI')->table('bank_note')->insert([
+                DB::connection('sqlSrvBCKI')->table('bank_note')->insert([
                     'tr_type' => $type,
                     'bank_acc' => $bankAcc,
                     'tr_id' => $trId,
@@ -798,7 +798,7 @@ class BankStatementController extends Controller
             //dd($nominal);
             $remarkClean = str_replace("'", "", $records[$i - $pengurang]['DESK_TRAN']);
             $trId = $this->GenNoBukti($type, $bankAcc, $tr_date);
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('bank_note')
                 ->selectRaw("run_number")
                 ->where('descr', '=', trim($remarkClean))
@@ -809,7 +809,7 @@ class BankStatementController extends Controller
                 ->first();
             //dd($result, $remarkClean, $tr_date, $bankAcc, $records[$i - 7]['Cabang'], $records[$i - 7]['Saldo']);
             if ($result) {
-                DB::connection('sqlSrvFPI')->table('bank_note')
+                DB::connection('sqlSrvBCKI')->table('bank_note')
                     ->where('run_number', $result->run_number)
                     ->update([
                         'tr_type' => $type,
@@ -827,7 +827,7 @@ class BankStatementController extends Controller
                         'user_id' => $userId
                     ]);
             } else {
-                DB::connection('sqlSrvFPI')->table('bank_note')->insert([
+                DB::connection('sqlSrvBCKI')->table('bank_note')->insert([
                     'tr_type' => $type,
                     'bank_acc' => $bankAcc,
                     'tr_id' => $trId,
@@ -858,10 +858,10 @@ class BankStatementController extends Controller
         // if ($this->ifChild($data['tr_id'])) {
         //     return $this->sendError('Splitted bank cannot be splited', 'Error', 500);
         // }
-        DB::connection('sqlSrvFPI')->table('bank_note')
+        DB::connection('sqlSrvBCKI')->table('bank_note')
             ->where('link_id', $data['tr_id'])
             ->delete();
-        $result = DB::connection("sqlSrvFPI")
+        $result = DB::connection("sqlSrvBCKI")
             ->table('bank_note')
             ->selectRaw("run_number,bank_acc,tr_type,dt_trans")
             ->where('tr_id', '=', trim($data['tr_id']))
@@ -872,12 +872,12 @@ class BankStatementController extends Controller
         $userId = getAuth($request)->user_id2 ?? null;
         $trId = $this->GenNoBuktiSplit('S', $bank_acc, $tr_date);
         try {
-            DB::connection('sqlSrvFPI')->transaction(function () use ($data, $userId, $bank_acc, $tr_type, $tr_date, $trId) {
+            DB::connection('sqlSrvBCKI')->transaction(function () use ($data, $userId, $bank_acc, $tr_type, $tr_date, $trId) {
                 foreach ($data['detail'] as $key => $detail) {
                     $trIdSeq = (float)(Str::substr($trId, -3)) + 1;
                     $trIdNew = Str::substr($trId, 0, 9) . str_pad($trIdSeq, 3, '0', STR_PAD_LEFT);
                     $trId = $trIdNew;
-                    DB::connection('sqlSrvFPI')->table('bank_note')->insert([
+                    DB::connection('sqlSrvBCKI')->table('bank_note')->insert([
                         'tr_type' => 'S',
                         'bank_acc' => $bank_acc,
                         'tr_id' => $trIdNew,
@@ -897,7 +897,7 @@ class BankStatementController extends Controller
                         'user_id' => $userId
                     ]);
                 }
-                DB::connection('sqlSrvFPI')->table('bank_note')
+                DB::connection('sqlSrvBCKI')->table('bank_note')
                     ->where('tr_id', trim($data['tr_id']))
                     ->update([
                         'dt_confirm2' =>  $tr_date,
@@ -926,7 +926,7 @@ class BankStatementController extends Controller
             $sqlWhere = $sqlWhere . " and bn.link_id = " . "'" . $tr_id . "'";
         }
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('bank_note as bn')
                 ->selectRaw("customer,
                 case when tr_type='C' then trim(namacustomer) else  trim(vendor_name) end as descr,
@@ -947,13 +947,13 @@ class BankStatementController extends Controller
     function ifPosting($trId, $type)
     {
         if ($type == "S") {
-            return DB::connection("sqlSrvFPI")
+            return DB::connection("sqlSrvBCKI")
                 ->table('bank_note')
                 ->where('link_id', trim($trId))
                 ->where('voucher', '>', 0)
                 ->exists();
         } else {
-            return DB::connection("sqlSrvFPI")
+            return DB::connection("sqlSrvBCKI")
                 ->table('bank_note')
                 ->where('tr_id', trim($trId))
                 ->where('voucher', '>', 0)
@@ -982,7 +982,7 @@ class BankStatementController extends Controller
     }
     function ifChild($trId)
     {
-        $result = DB::connection("sqlSrvFPI")
+        $result = DB::connection("sqlSrvBCKI")
             ->table('bank_note')
             ->selectRaw("tr_id")
             ->where('tr_id', '=', trim($trId))
@@ -1004,7 +1004,7 @@ class BankStatementController extends Controller
         }
         try {
             $sqlWhere = " stat='O' and tr_type='EX' ";
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('kb_hdr')
                 ->selectRaw("
                     trim(tr_id) tr_id,trim(remark) remark, kb_amt, vendor_id, stat, tr_type

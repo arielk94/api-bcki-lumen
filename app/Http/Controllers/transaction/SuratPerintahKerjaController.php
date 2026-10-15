@@ -29,7 +29,7 @@ class SuratPerintahKerjaController extends Controller
 
     public function getKontraktor()
     {
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
             ->table('vendor')
             ->selectRaw("TRIM (vendor_id) AS vendor_id, TRIM (vendor_name) AS vendor_name")
             ->get();
@@ -41,13 +41,13 @@ class SuratPerintahKerjaController extends Controller
     {
         $spk_type = $request->spk_type;
         if($spk_type == 'T'){
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('qc_form')
                 ->where('qc_type', '=', 'SK')
                 ->where('spk_type', $spk_type)
                 ->get();  
         }else{
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('qc_form')
                 ->where('qc_type', '=', 'SK')
                 ->get();
@@ -61,14 +61,14 @@ class SuratPerintahKerjaController extends Controller
         // $spk_type = $request->spk_type;
 
 
-        DB::connection('sqlSrvFPI')->beginTransaction();
-        $category = DB::connection("sqlSrvFPI")
+        DB::connection('sqlSrvBCKI')->beginTransaction();
+        $category = DB::connection("sqlSrvBCKI")
             ->table('qc_item_category')
             ->where('active_flag', '=', 'Y')
             ->get();
 
         foreach ($category as $key => $item) {
-            $qc_item = DB::connection("sqlSrvFPI")
+            $qc_item = DB::connection("sqlSrvBCKI")
                 ->table('qc_item')
                 ->selectRaw("qc_item.qc_item, qc_item.id_qc_item")
                 ->where('qc_item.id_qc_form', '=', $id_form)
@@ -81,7 +81,7 @@ class SuratPerintahKerjaController extends Controller
                 $item->qc_item = $qc_item;
             }
             
-            $qc_item_html = DB::connection("sqlSrvFPI")
+            $qc_item_html = DB::connection("sqlSrvBCKI")
                 ->table('qc_item')
                 ->selectRaw("qc_item.qc_item_html, qc_item.id_qc_item")
                 ->where('qc_item.id_qc_form', '=', $id_form)
@@ -96,7 +96,7 @@ class SuratPerintahKerjaController extends Controller
         }
 
 
-        DB::connection('sqlSrvFPI')->commit();
+        DB::connection('sqlSrvBCKI')->commit();
 
         return $this->sendResponse($category, 'Successfully get Contractor');
     }
@@ -108,7 +108,7 @@ class SuratPerintahKerjaController extends Controller
         $qc_item = $request->qc_item;
 
         try {
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             $user = DB::connection("sqlsrvHrd")
                 ->table("employee")
@@ -116,7 +116,7 @@ class SuratPerintahKerjaController extends Controller
                 ->where("user_id2", getAuth($request)->user_id2)
                 ->first();
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('spk_hdr')
                 ->insert([
                     'id_spk' => $gen_spk['id_spk'],
@@ -151,7 +151,7 @@ class SuratPerintahKerjaController extends Controller
 
             if ($datas) {
                 if (isset($request->note_article)) {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('appl_remark')
                         ->insert([
                             'office_id' => $user->office_id,
@@ -165,7 +165,7 @@ class SuratPerintahKerjaController extends Controller
                 }
                 
                 if (isset($request->note_qc)) {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('appl_remark')
                         ->insert([
                             'office_id' => $user->office_id,
@@ -178,7 +178,7 @@ class SuratPerintahKerjaController extends Controller
                         ]);
                 }
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('appl_remark')
                     ->insert([
                         'office_id' => $user->office_id,
@@ -190,7 +190,7 @@ class SuratPerintahKerjaController extends Controller
                         'user_id' => getAuth($request)->user_id2
                     ]);
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_hdr')
                     ->insert([
                         'qc_trans_id' => $gen_spk['qc_trans_id'],
@@ -221,7 +221,7 @@ class SuratPerintahKerjaController extends Controller
                     ];
                 }
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->insert($qc);
 
@@ -247,7 +247,7 @@ class SuratPerintahKerjaController extends Controller
                     ];
                 }
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('spk_article')
                     ->insert($e);
 
@@ -272,7 +272,7 @@ class SuratPerintahKerjaController extends Controller
                             Storage::disk('public')->put($path, $base64Content);
                         }
                     }
-                    $data = DB::connection("sqlSrvFPI")
+                    $data = DB::connection("sqlSrvBCKI")
                         ->table('spk_file')
                         ->insert([
                             'id_spk' => $gen_spk['id_spk'],
@@ -287,10 +287,10 @@ class SuratPerintahKerjaController extends Controller
                         ]);
                 }
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
             }
 
-            $user = DB::connection('sqlSrvFPI')
+            $user = DB::connection('sqlSrvBCKI')
                 ->table('spk_aprv_env')
                 ->selectRaw('aprv_1, no_hp_1, nama_employee_1')
                 ->where('doc_type', '=', 'SPK')
@@ -359,7 +359,7 @@ class SuratPerintahKerjaController extends Controller
             ->where("user_id2", getAuth($request)->user_id2)
             ->first();
 
-        $spk = DB::connection("sqlSrvFPI")
+        $spk = DB::connection("sqlSrvBCKI")
             ->table('spk_hdr')
             ->where('id_spk', $id_spk)
             ->first();
@@ -371,7 +371,7 @@ class SuratPerintahKerjaController extends Controller
             ], 200);
         }
 
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
             ->table('spk_hdr')
             ->where("id_spk", $id_spk)
             ->update([
@@ -399,7 +399,7 @@ class SuratPerintahKerjaController extends Controller
         if ($datas) {
             
             if (isset($request->note_qc)) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('appl_remark')
                     ->where('doc_id', $id_spk)
                     ->where('type_code', "SPK_QC")
@@ -412,7 +412,7 @@ class SuratPerintahKerjaController extends Controller
                     ]);
             }
             if (isset($request->note_article)) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('appl_remark')
                     ->where('doc_id', $id_spk)
                     ->where('type_code', "SPK_A")
@@ -425,7 +425,7 @@ class SuratPerintahKerjaController extends Controller
                     ]);
             }
 
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('appl_remark')
                 ->where('doc_id', $id_spk)
                 ->where('type_code', "SPK_L")
@@ -437,7 +437,7 @@ class SuratPerintahKerjaController extends Controller
                     'user_id' => getAuth($request)->user_id2
                 ]);
 
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
             ->table('qc_trans_hdr')
             ->where('doc_id','=', $id_spk)
             ->where('doc_type','=', 'SPK')
@@ -465,18 +465,18 @@ class SuratPerintahKerjaController extends Controller
                 }
             }
             if($qc_item && $updateQcForm){
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('qc_trans_dtl')
                 ->where('qc_trans_id','=', $qc_trans_id)
                 ->delete();
     
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->insert($qc);
             }
 
                         
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('spk_article')
                 ->where('id_spk', $id_spk)
                 ->delete();
@@ -501,13 +501,13 @@ class SuratPerintahKerjaController extends Controller
                 ];
             }
 
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('spk_article')
                 ->insert($e);
 
             if ($request->file) {
               // Ambil semua file yang sudah ada di DB untuk id_spk ini
-              $existingFiles = DB::connection("sqlSrvFPI")
+              $existingFiles = DB::connection("sqlSrvBCKI")
                 ->table('spk_file')
                 ->where('id_spk', $id_spk)
                 ->get();
@@ -544,7 +544,7 @@ class SuratPerintahKerjaController extends Controller
                       Storage::disk('public')->delete($existingRecord->doc_path);
                     }
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                       ->table('spk_file')
                       ->where('id_spk', $id_spk)
                       ->where('item_num', $key + 1)
@@ -557,7 +557,7 @@ class SuratPerintahKerjaController extends Controller
                         'modified_by'   => getAuth($request)->user_id2,
                       ]);
                   } else {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                       ->table('spk_file')
                       ->insert([
                         'id_spk'        => $id_spk,
@@ -591,7 +591,7 @@ class SuratPerintahKerjaController extends Controller
                   }
 
                   // Hapus dari DB
-                  DB::connection("sqlSrvFPI")
+                  DB::connection("sqlSrvBCKI")
                     ->table('spk_file')
                     ->where('id_spk', $id_spk)
                     ->where('nama_document', $existingFile->nama_document)
@@ -612,7 +612,7 @@ class SuratPerintahKerjaController extends Controller
         $id_spk = $request->id_spk;
         $vendor_id = $request->vendor_id;
 
-        $data = DB::connection("sqlSrvFPI")
+        $data = DB::connection("sqlSrvBCKI")
             ->table('spk_hdr')
             ->where('id_spk', '=', $id_spk)
             ->update([
@@ -659,7 +659,7 @@ class SuratPerintahKerjaController extends Controller
         }
 
 
-        $response = DB::connection('sqlSrvFPI')
+        $response = DB::connection('sqlSrvBCKI')
             ->table('spk_hdr')
             ->select([
                 'spk_hdr.*',
@@ -705,7 +705,7 @@ class SuratPerintahKerjaController extends Controller
             ->get();
 
         foreach ($response as $item) {
-            $resArticle = DB::connection('sqlSrvFPI')
+            $resArticle = DB::connection('sqlSrvBCKI')
                 ->table('spk_article')
                 ->select([
                     'spk_article.*',
@@ -718,7 +718,7 @@ class SuratPerintahKerjaController extends Controller
 
             $item->article = $resArticle;
 
-            $resRemarkArticle = DB::connection('sqlSrvFPI')
+            $resRemarkArticle = DB::connection('sqlSrvBCKI')
                 ->table('appl_remark')
                 ->select([
                     'appl_remark.remarks'
@@ -731,7 +731,7 @@ class SuratPerintahKerjaController extends Controller
                 $item->remark_article = $resRemarkArticle->remarks;
             }
 
-            $resRemarkQC = DB::connection('sqlSrvFPI')
+            $resRemarkQC = DB::connection('sqlSrvBCKI')
                 ->table('appl_remark')
                 ->select([
                     'appl_remark.remarks'
@@ -744,7 +744,7 @@ class SuratPerintahKerjaController extends Controller
                 $item->remark_qc = $resRemarkQC->remarks;
             }
 
-            $resRemarkLain = DB::connection('sqlSrvFPI')
+            $resRemarkLain = DB::connection('sqlSrvBCKI')
                 ->table('appl_remark')
                 ->select([
                     'appl_remark.remarks'
@@ -763,7 +763,7 @@ class SuratPerintahKerjaController extends Controller
     {
       $id_spk = $request->id_spk;
 
-      $response = DB::connection('sqlSrvFPI')
+      $response = DB::connection('sqlSrvBCKI')
         ->table('spk_file')
         ->select([
           'spk_file.nama_document as file_name',
@@ -796,7 +796,7 @@ class SuratPerintahKerjaController extends Controller
         }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('appl_constant')
                 ->selectRaw("*")
                 ->whereRaw($sqlWhere)
@@ -821,7 +821,7 @@ class SuratPerintahKerjaController extends Controller
         // }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('appl_constant')
                 ->selectRaw("*")
                 ->whereRaw($sqlWhere)
@@ -837,7 +837,7 @@ class SuratPerintahKerjaController extends Controller
     {
         $qc_trans_id = $request->qc_trans_id;
 
-        $data = DB::connection("sqlSrvFPI")
+        $data = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where(function($query) {
@@ -875,7 +875,7 @@ class SuratPerintahKerjaController extends Controller
         $romanMonth = $romanMonths[$dateMonth] ?? '';
 
         // Ambil nama site
-        $site = DB::connection("sqlSrvFPI")
+        $site = DB::connection("sqlSrvBCKI")
             ->table('site')
             ->select("site_name")
             ->where('id_site', $id_site)
@@ -885,11 +885,11 @@ class SuratPerintahKerjaController extends Controller
         $siteName = $site ? $site->site_name : 'UNKNOWN';
 
         // Ambil id_urut terbesar berdasarkan tahun dan bulan sekarang
-        $getLastIdSPK = DB::connection('sqlSrvFPI')
+        $getLastIdSPK = DB::connection('sqlSrvBCKI')
             ->table('spk_hdr')
             ->where('id_spk', 'like', "%" . $dateYear . $dateMonth . "%")
             ->max('id_urut');
-        $getLastIdQC = DB::connection('sqlSrvFPI')
+        $getLastIdQC = DB::connection('sqlSrvBCKI')
             ->table('qc_trans_hdr')
             ->where('qc_trans_id', 'like', "%" . $dateYear2digit . $dateMonth . $dateDay . "%")
             ->max('qc_trans_id');
@@ -898,10 +898,10 @@ class SuratPerintahKerjaController extends Controller
             $nextUrut = (int) $getLastIdSPK + 1;
             $seq = str_pad($nextUrut, 3, '0', STR_PAD_LEFT);
             $get_id_spk = $dateYear . $dateMonth . $seq;
-            $get_id_cetak = $seq . ' / PT.FDPI / ' . $siteName . ' / ' . $romanMonth . ' / ' . $dateYear;
+            $get_id_cetak = $seq . ' / PT.bcki / ' . $siteName . ' / ' . $romanMonth . ' / ' . $dateYear;
         } else {
             $get_id_spk = $dateYear . $dateMonth . '001';
-            $get_id_cetak = '001' . ' / PT.FDPI / ' . $siteName . ' / ' . $romanMonth . ' / ' . $dateYear;
+            $get_id_cetak = '001' . ' / PT.bcki / ' . $siteName . ' / ' . $romanMonth . ' / ' . $dateYear;
             $nextUrut = 1;
         }
         if ($getLastIdQC) {
@@ -923,7 +923,7 @@ class SuratPerintahKerjaController extends Controller
     private function sendNotifSPKApproval($spkId, $getEmp, $getPhone)
     {
         try {
-            $getLink = "FDPI" . now()->format('ymdH') . rand(10000, 99999);
+            $getLink = "bcki" . now()->format('ymdH') . rand(10000, 99999);
             DB::connection('sqlsrv')
             ->table('sec_reset_password')
             ->insert([

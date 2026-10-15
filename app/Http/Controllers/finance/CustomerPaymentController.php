@@ -62,7 +62,7 @@ class CustomerPaymentController extends Controller
         }
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('bank_note as bn')
                 ->selectRaw("
                         bn.Descr,bn.cabang,bn.db_amt,bn.cr_amt,bn.saldo,bn.tr_id,bn.voucher,bn.run_number,bn.dt_trans,
@@ -120,7 +120,7 @@ class CustomerPaymentController extends Controller
             $sqlWhere .= " AND g.id_house ='$house_id'";
         }
         try {
-            $query1 = DB::connection("sqlSrvFPI")
+            $query1 = DB::connection("sqlSrvBCKI")
                 ->table('payment_hdr as a')
                 ->selectRaw(
                     " distinct trim(a.pay_id) pay_id, trim(b.namacustomer) customer_name,a.tr_date, a.pay_amt as total_pay_amt,  trim(a.remark) remark,
@@ -144,7 +144,7 @@ class CustomerPaymentController extends Controller
                         ->on('h.id_house', 'g.id_house');
                 })
                 ->whereRaw($sqlWhere);
-            $query2 = DB::connection("sqlSrvFPI")
+            $query2 = DB::connection("sqlSrvBCKI")
                 ->table('payment_hdr as a')
                 ->selectRaw(
                     " trim(a.pay_id) pay_id,trim(b.namacustomer) customer_name,a.tr_date, a.pay_amt as total_pay_amt,  trim(a.remark) remark,
@@ -175,7 +175,7 @@ class CustomerPaymentController extends Controller
                 //->orderByDesc('a.dt_pay', 'a.pay_id')
                 //->get();
                 ->unionAll($query1);
-            $result =  DB::connection("sqlSrvFPI")
+            $result =  DB::connection("sqlSrvBCKI")
                 ->table(DB::raw("({$query2->toSql()}) as x"))
                 ->mergeBindings($query2)
                 ->get();
@@ -191,7 +191,7 @@ class CustomerPaymentController extends Controller
             return $this->sendError("Empty customer", 'Error', 500);
         }
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('penjualan as a')
                 ->selectRaw("
                         trim(a.penjualanno) invoice,totaljual total_inv,discount retur_disc,b.pay_amt amt_paid
@@ -219,7 +219,7 @@ class CustomerPaymentController extends Controller
         try {
             switch ($type) {
                 case 'header':
-                    $result = DB::connection("sqlSrvFPI")
+                    $result = DB::connection("sqlSrvBCKI")
                         ->table('payment_hdr as a')
                         ->selectRaw("
                         trim(a.pay_id) pay_id,trim(a.customerid) customer_id,trim(namacustomer) customer_name,a.tr_date dt_pay,a.pay_amt,
@@ -239,7 +239,7 @@ class CustomerPaymentController extends Controller
                     $message = 'Successfully retrieved purc payment data';
                     break;
                 case 'detail':
-                    $result = DB::connection("sqlSrvFPI")
+                    $result = DB::connection("sqlSrvBCKI")
                         ->table('payment_hdr as a')
                         ->selectRaw("
                         trim(b.penjualanno) inv_id,c.tgljual dt_inv,totaljual inv_amt,b.pay_amt
@@ -266,7 +266,7 @@ class CustomerPaymentController extends Controller
             return $this->sendError("Empty pay id", 'Error', 500);
         }
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('payment_hdr as a')
                 ->selectRaw(
                     " trim(a.pay_id) pay_id,trim(a.customerid) customer_id ,trim(b.namacustomer) customer_name,trim(b.alamat) alamat1,trim(b.kota) kota,a.tr_date dt_pay, 
@@ -339,7 +339,7 @@ class CustomerPaymentController extends Controller
         }
         try {
             $sqlWhere = " dp_amt - used_amt > 0 ";
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('dp_sales as a')
                 ->selectRaw("
                         trim(dp_id) dp_id,dt_dp, dp_amt, used_amt, (dp_amt - used_amt) as dp_available_amt,ac_num_dp ac_num
@@ -364,7 +364,7 @@ class CustomerPaymentController extends Controller
             // " from kwitansi a left outer join  site b on a.id_site=b.id_site    " & _
             // " left outer join house_unit c on a.id_site=c.id_site and a.id_cluster=c.id_cluster and a.id_house=c.id_house" & _
             // " where a.tr_id_ref='' and customerid='" & Trim(FromCustomer) & "'"
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('kwitansi as a')
                 ->selectRaw("
                         trim(a.tr_id) tr_id,trim(b.site_name) site_name,trim(d.house_name) house_name,format(a.tr_amt,'#,0') amt,a.tr_date,trim(a.remark) remark
@@ -397,7 +397,7 @@ class CustomerPaymentController extends Controller
         }
         try {
             $sqlWhere = " a.stat='B' and a.tr_id='' and tr_type='RG' ";
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('giro_trans as a')
                 ->selectRaw("
                         trim(a.giro_num) giro_num,trim(a.bank_id) bank_id,trim(bank_cust_name) bank_cust_name,giro_amt,dt_giro,dt_due
@@ -426,7 +426,7 @@ class CustomerPaymentController extends Controller
         }
         //$trid = $this->generateTrId($request->tgl_bayar);
         //dd($trid);
-        $exist = DB::connection('sqlSrvFPI')->table('payment_hdr as a')
+        $exist = DB::connection('sqlSrvBCKI')->table('payment_hdr as a')
             ->selectRaw("a.pay_id,b.penjualanno,a.voucher")
             ->join('payment_dtl as b', 'a.pay_id', '=', 'b.pay_id')
             ->when(!empty($data['tr_id']), function ($query) use ($data) {
@@ -443,14 +443,14 @@ class CustomerPaymentController extends Controller
         $voucher = $hasTrId ? $exist->voucher : $this->generateVoucher();
         //$payItem = $hasTrId ? $exist->pay_item  : 0;
 
-        $invExist = DB::connection('sqlSrvFPI')->table('penjualan as a')
+        $invExist = DB::connection('sqlSrvBCKI')->table('penjualan as a')
             ->selectRaw("a.totaljual amt_total,a.penjualanno")
             ->where('penjualanno', $data['detail']['invoice_id'])
             ->first();
         $invAmt  = $invExist->amt_total;
         $trInv   = trim($invExist->penjualanno);
         try {
-            $ifDataExist = DB::connection('sqlSrvFPI')->table('payment_dtl as a')
+            $ifDataExist = DB::connection('sqlSrvBCKI')->table('payment_dtl as a')
                 ->select('a.penjualanno')
                 ->where('a.pay_id', $trId)
                 ->where('a.penjualanno', $data['detail']['invoice_id'])
@@ -458,9 +458,9 @@ class CustomerPaymentController extends Controller
             if ($ifDataExist) {
                 return $this->sendError("Data exist, delete payment detail " . $data['detail']['invoice_id'] . " first", 'Error', 500);
             }
-            DB::connection('sqlSrvFPI')->transaction(function () use ($data, $userId, $trId, $type, $trInv, $invAmt, $voucher) {
+            DB::connection('sqlSrvBCKI')->transaction(function () use ($data, $userId, $trId, $type, $trInv, $invAmt, $voucher) {
                 if ($type == 'A') {
-                    DB::connection('sqlSrvFPI')->table('payment_hdr')->insert([
+                    DB::connection('sqlSrvBCKI')->table('payment_hdr')->insert([
                         'voucher' => $voucher,
                         'pay_id' => $trId,
                         'tr_date' => $data['tgl_bayar'],
@@ -484,7 +484,7 @@ class CustomerPaymentController extends Controller
                         'user_id' => $userId
                     ]);
                 } else {
-                    DB::connection('sqlSrvFPI')->table('payment_hdr')
+                    DB::connection('sqlSrvBCKI')->table('payment_hdr')
                         ->where('pay_id', $trId)
                         ->update([
                             'voucher' => $voucher,
@@ -511,7 +511,7 @@ class CustomerPaymentController extends Controller
                         ]);
                 }
 
-                DB::connection('sqlSrvFPI')->table('payment_dtl')->insert([
+                DB::connection('sqlSrvBCKI')->table('payment_dtl')->insert([
                     'voucher' => $voucher,
                     'pay_id' => $trId,
                     'penjualanno' => $data['detail']['invoice_id'],
@@ -524,7 +524,7 @@ class CustomerPaymentController extends Controller
                 ]);
                 //}
                 if (!empty($data['tr_id'])) {
-                    DB::connection('sqlSrvFPI')->table('bank_note')
+                    DB::connection('sqlSrvBCKI')->table('bank_note')
                         ->where('tr_id', $data['tr_id'])
                         ->update([
                             'voucher' => $voucher,
@@ -532,14 +532,14 @@ class CustomerPaymentController extends Controller
                         ]);
                 }
                 if (!empty($data['kwitansi'])) {
-                    DB::connection('sqlSrvFPI')->table('kwitansi')
+                    DB::connection('sqlSrvBCKI')->table('kwitansi')
                         ->where('tr_id', $data['kwitansi'])
                         ->update([
                             'tr_id_ref' => $trId
                         ]);
                 }
                 if (!empty($data['giro_id'])) {
-                    DB::connection('sqlSrvFPI')->table('giro_trans')
+                    DB::connection('sqlSrvBCKI')->table('giro_trans')
                         ->where('giro_num', $data['giro_id'])
                         ->update([
                             'stat' => 'C',
@@ -549,27 +549,27 @@ class CustomerPaymentController extends Controller
                 }
             });
 
-            $sumBayar = DB::connection('sqlSrvFPI')->table('payment_hdr as a')
+            $sumBayar = DB::connection('sqlSrvBCKI')->table('payment_hdr as a')
                 ->join('payment_dtl as b', 'a.pay_id', '=', 'b.pay_id')
                 ->where('a.pay_id', $trId)
                 ->sum('b.pay_amt') ?? 0;
-            DB::connection('sqlSrvFPI')->table('payment_hdr')->where('pay_id', $trId)
+            DB::connection('sqlSrvBCKI')->table('payment_hdr')->where('pay_id', $trId)
                 ->update([
                     'selisih_penj' => DB::raw('pay_amt - ' . (float)$sumBayar),
                     'ac_num_selisih_penj' => $request->ac_num_selisih_penj ? $request->ac_num_selisih_penj : ' '
                 ]);
 
-            $sumBayarInv = DB::connection('sqlSrvFPI')->table('payment_hdr as a')
+            $sumBayarInv = DB::connection('sqlSrvBCKI')->table('payment_hdr as a')
                 ->join('payment_dtl as b', 'a.pay_id', '=', 'b.pay_id')
                 ->where('b.penjualanno', $data['detail']['invoice_id'])
                 ->sum('b.pay_amt') ?? 0;
-            DB::connection('sqlSrvFPI')->table('payment_outstanding')
+            DB::connection('sqlSrvBCKI')->table('payment_outstanding')
                 ->where('penjualanno', $data['detail']['invoice_id'])
                 ->update([
                     'pay_amt' => (float) $sumBayarInv
 
                 ]);
-            DB::connection('sqlSrvFPI')->table('penjualan')
+            DB::connection('sqlSrvBCKI')->table('penjualan')
                 ->where('penjualanno', $data['detail']['invoice_id'])
                 ->update([
                     'pelunasan' => ((float)$invAmt - (float)($data['detail']['amt_diskon'] ?? 0) - (float)$sumBayarInv) <= 0 ? 'LUNAS' : 'BELUM'
@@ -578,12 +578,12 @@ class CustomerPaymentController extends Controller
 
             if (!empty($data['deposit_id'])) {
                 //foreach ($data['detail'] as $key => $detail) {
-                $sumDp = DB::connection('sqlSrvFPI')->table('payment_hdr as a')
+                $sumDp = DB::connection('sqlSrvBCKI')->table('payment_hdr as a')
                     ->join('payment_dtl as b', 'a.pay_id', '=', 'b.pay_id')
                     ->where('a.tr_id_ref', $data['deposit_id'])
                     ->sum('b.pay_amt') ?? 0;
 
-                DB::connection('sqlSrvFPI')->table('dp_sales')
+                DB::connection('sqlSrvBCKI')->table('dp_sales')
                     ->where('dp_id', $data['deposit_id'])
                     ->update([
                         'used_amt' => (float)$sumDp,
@@ -608,7 +608,7 @@ class CustomerPaymentController extends Controller
             return $this->sendError("Empty transaction id", 'Error', 500);
         }
         try {
-            $ifDataExist = DB::connection('sqlSrvFPI')->table('payment_dtl as a')
+            $ifDataExist = DB::connection('sqlSrvBCKI')->table('payment_dtl as a')
                 ->select('a.penjualanno')
                 ->where('a.pay_id', $pay_id)
                 ->where('a.penjualanno', $inv_id)
@@ -616,7 +616,7 @@ class CustomerPaymentController extends Controller
             if (!$ifDataExist) {
                 return $this->sendError("Data not found", 'Error', 500);
             }
-            $result = DB::connection('sqlSrvFPI')->table('payment_hdr as a')
+            $result = DB::connection('sqlSrvBCKI')->table('payment_hdr as a')
                 ->select('a.tr_date', 'bukti', 'giro_id', 'a.tr_id_ref', 'a.kwitansi')
                 ->join('payment_dtl as b', 'a.pay_id', '=', 'b.pay_id')
                 ->where('a.pay_id', $pay_id)
@@ -630,36 +630,36 @@ class CustomerPaymentController extends Controller
                 return $this->sendError("This periode already closed, cannot be modified", 'Error', 500);
             }
 
-            DB::connection('sqlSrvFPI')->table('payment_dtl')
+            DB::connection('sqlSrvBCKI')->table('payment_dtl')
                 ->where('pay_id', $pay_id)
                 ->where('penjualanno', $inv_id)
                 ->delete();
-            $sumBayar = DB::connection('sqlSrvFPI')->table('payment_hdr as a')
+            $sumBayar = DB::connection('sqlSrvBCKI')->table('payment_hdr as a')
                 ->join('payment_dtl as b', 'a.pay_id', '=', 'b.pay_id')
                 ->where('b.penjualanno', $inv_id)
                 ->sum('b.pay_amt') ?? 0;
 
-            DB::connection('sqlSrvFPI')->table('penjualan')
+            DB::connection('sqlSrvBCKI')->table('penjualan')
                 ->where('penjualanno', $inv_id)
                 ->update([
                     'pelunasan' =>   'BELUM'
                 ]);
-            DB::connection('sqlSrvFPI')->table('payment_outstanding')
+            DB::connection('sqlSrvBCKI')->table('payment_outstanding')
                 ->where('penjualanno', $inv_id)
                 ->update([
                     'pay_amt' => (float)$sumBayar
                 ]);
-            $itemExist = DB::connection('sqlSrvFPI')->table('payment_dtl')
+            $itemExist = DB::connection('sqlSrvBCKI')->table('payment_dtl')
                 ->selectRaw("pay_id")
                 ->where('pay_id', $pay_id)
                 ->orderBy('penjualanno', 'desc')
                 ->first();
             if (!$itemExist) {
-                DB::connection('sqlSrvFPI')->table('payment_hdr')
+                DB::connection('sqlSrvBCKI')->table('payment_hdr')
                     ->where('pay_id', $pay_id)
                     ->delete();
                 if (!empty($bkk)) {
-                    DB::connection('sqlSrvFPI')->table('bank_note')
+                    DB::connection('sqlSrvBCKI')->table('bank_note')
                         ->where('tr_id', $bkk)
                         ->update([
                             'voucher' => 0,
@@ -667,14 +667,14 @@ class CustomerPaymentController extends Controller
                         ]);
                 }
                 if (!empty($kwitansi)) {
-                    DB::connection('sqlSrvFPI')->table('kwitansi')
+                    DB::connection('sqlSrvBCKI')->table('kwitansi')
                         ->where('tr_id', $kwitansi)
                         ->update([
                             'tr_id_ref' => ''
                         ]);
                 }
                 if (!empty($noGiro)) {
-                    DB::connection('sqlSrvFPI')->table('giro_trans')
+                    DB::connection('sqlSrvBCKI')->table('giro_trans')
                         ->where('giro_num', $noGiro)
                         ->update([
                             'stat' => 'O',
@@ -684,12 +684,12 @@ class CustomerPaymentController extends Controller
                 }
             }
             if (!empty($dp_id)) {
-                $sumDp = DB::connection('sqlSrvFPI')->table('payment_hdr as a')
+                $sumDp = DB::connection('sqlSrvBCKI')->table('payment_hdr as a')
                     ->join('payment_dtl as b', 'a.pay_id', '=', 'b.pay_id')
                     ->where('a.tr_id_ref', $dp_id)
                     ->sum('b.pay_amt') ?? 0;
 
-                DB::connection('sqlSrvFPI')->table('dp_sales')
+                DB::connection('sqlSrvBCKI')->table('dp_sales')
                     ->where('dp_id', $dp_id)
                     ->update([
                         'used_amt' => (float)$sumDp
@@ -708,7 +708,7 @@ class CustomerPaymentController extends Controller
         $tahun2digit = date('y', strtotime($tanggal));
         $bulan2digit = date('m', strtotime($tanggal));
         $tgl2digit = date('d', strtotime($tanggal));
-        $last = DB::connection("sqlSrvFPI")
+        $last = DB::connection("sqlSrvBCKI")
             ->table('payment_hdr')
             ->selectRaw('RIGHT(trim(pay_id), 3) as kode_akhir')
             ->where('pay_id', 'like', "%{$prefix}{$tahun2digit}{$bulan2digit}{$tgl2digit}%")
@@ -727,7 +727,7 @@ class CustomerPaymentController extends Controller
     }
     function generateVoucher()
     {
-        $maxAmount = DB::connection("sqlSrvFPI")->table('payment_hdr')
+        $maxAmount = DB::connection("sqlSrvBCKI")->table('payment_hdr')
             ->max('voucher');
         // dd($last);
         if ($maxAmount) {
@@ -739,7 +739,7 @@ class CustomerPaymentController extends Controller
     }
     function getAcnumDP($dp_id)
     {
-        $result = DB::connection("sqlSrvFPI")
+        $result = DB::connection("sqlSrvBCKI")
             ->table('dp_sales')
             ->selectRaw('ac_num_dp')
             ->where('dp_id',  $dp_id)

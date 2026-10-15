@@ -15,7 +15,7 @@ trait SendNotificationAppBarTrait
         $data = DB::connection("sqlsrv")
             ->table('notification')
             ->insert([
-                'entity_id' => 'FDPI',
+                'entity_id' => 'bcki',
                 'notif_id' => $id_notif,
                 'dept_id' => $deptId,
                 'notif_title' => $notif_title,

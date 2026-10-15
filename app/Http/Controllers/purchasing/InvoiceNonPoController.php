@@ -43,10 +43,10 @@ class InvoiceNonPoController extends Controller
         $getAuth = getAuth($request);
         $currId = $this->getCurrId("");
 
-        $AcNumDr = DB::connection("sqlSrvFPI")
+        $AcNumDr = DB::connection("sqlSrvBCKI")
             ->select(DB::raw("select ac_num, concat(trim(ac_name),' | ', trim(ac_num)) as ac_name from g_ledger where  ac_type in ('EX', 'AS') and active_flag = 'Y' order by ac_num"));
 
-        $AcNumCr = DB::connection("sqlSrvFPI")
+        $AcNumCr = DB::connection("sqlSrvBCKI")
             ->select(DB::raw("select ac_num, concat(trim(ac_name),' | ', trim(ac_num)) as ac_name from g_ledger where ac_type = 'LI' and active_flag = 'Y' order by ac_num"));
 
         return $this->sendResponse([
@@ -98,44 +98,44 @@ class InvoiceNonPoController extends Controller
 
     public function GetAcNum()
     {
-        $AcNumHut = DB::connection("sqlSrvFPI")
+        $AcNumHut = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'HUTANG PEMBELIAN')
             ->value("ac_num");
 
-        $AcNumBbt = DB::connection("sqlSrvFPI")
+        $AcNumBbt = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'PERSEDIAAN BARANG BELUM TERTAGIH')
             ->value("ac_num");
 
-        $AcNumDisc = DB::connection("sqlSrvFPI")
+        $AcNumDisc = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'DISKON PEMBELIAN')
             ->value("ac_num");
 
-        $AcNumPpn = DB::connection("sqlSrvFPI")
+        $AcNumPpn = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'PPN MASUKAN')
             ->value("ac_num");
 
-        $AcNumPph = DB::connection("sqlSrvFPI")
+        $AcNumPph = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'PPH23')
             ->value("ac_num");
 
-        $AcNumPph21 = DB::connection("sqlSrvFPI")
+        $AcNumPph21 = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'PPH21')
             ->where('divisi', '=', 'L')
             ->value("ac_num");
 
-        $AcNumPph4 = DB::connection("sqlSrvFPI")
+        $AcNumPph4 = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'PPH4')
@@ -208,7 +208,7 @@ class InvoiceNonPoController extends Controller
         }
 
         try {
-            $invoice = DB::connection("sqlSrvFPI")
+            $invoice = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw($sSQL . $sqlWhere . ' ORDER BY a.dt_inv, a.inv_id '));
 
             return $this->sendResponse($invoice, 'Successfull');
@@ -231,7 +231,7 @@ class InvoiceNonPoController extends Controller
             $sqlWhere .= "and a.inv_id = '$request->InvId' ";
         }
 
-        $invoiceDetail = DB::connection("sqlSrvFPI")
+        $invoiceDetail = DB::connection("sqlSrvBCKI")
             ->select(DB::raw("select a.office_id, a.tr_id, a.inv_id, a.inv_item, a.article_id,
                         c.description, a.qty, a.unit_meas, a.unit_price, a.amt_item, a.remark, 
                         ISNULL(s.site_name,' ') as site_name, ISNULL(t.cluster_name,' ') as cluster_name, ISNULL(h.house_name,' ') as house_name
@@ -251,7 +251,7 @@ class InvoiceNonPoController extends Controller
         try {
             $OptInv = $request->OptInv;
             if ($OptInv == 'R') {
-                $PrHdr = DB::connection("sqlSrvFPI")
+                $PrHdr = DB::connection("sqlSrvBCKI")
                     ->table('pr_hdr as a')
                     ->selectRaw('a.office_id, a.dt_pr, a.pr_id, a.dept_id, c.pic_name, a.memo_txt, a.vendor_id, vnd.vendor_name, TRIM(vnd.pay_term_id) as payterm')
                     ->join('department as b', 'a.dept_id', '=', 'b.dept_id')
@@ -267,7 +267,7 @@ class InvoiceNonPoController extends Controller
             }
 
             if ($OptInv == 'P') {
-                $RcvHdr = DB::connection("sqlSrvFPI")
+                $RcvHdr = DB::connection("sqlSrvBCKI")
                     ->table('purc_rcv_hdr')
                     ->selectRaw('office_id, dt_rcv, purc_rcv_id, sj_no, memo_txt')
                     ->where('vendor_id', $request->vendor_id)
@@ -281,7 +281,7 @@ class InvoiceNonPoController extends Controller
                 $cat_id = $request->cat_id;
                 $com_id = $request->com_id;
 
-                $Article = DB::connection("sqlSrvFPI")
+                $Article = DB::connection("sqlSrvBCKI")
                     ->table('article as a')
                     ->selectRaw('a.article_id, a.description, a.uom, a.cat_id, a.com_id, b.descr as cat_name, c.com_desc as com_name')
                     ->join('category as b', 'a.cat_id', '=', 'b.cat_id')
@@ -310,7 +310,7 @@ class InvoiceNonPoController extends Controller
             $OptInv = $request->OptInv;
 
             if ($OptInv == 'R') {
-                $PrItem = DB::connection("sqlSrvFPI")
+                $PrItem = DB::connection("sqlSrvBCKI")
                     ->table('pr_item as a')
                     ->selectRaw("office_id, a.pr_id, a.pr_item, a.article_id, b.description, a.qty, a.unit_meas, 
                             b.ac_num_exp as ac_num_dr, a.remark,  
@@ -329,7 +329,7 @@ class InvoiceNonPoController extends Controller
             }
 
             if ($OptInv == 'P') {
-                $RcvItem = DB::connection("sqlSrvFPI")
+                $RcvItem = DB::connection("sqlSrvBCKI")
                     ->table('purc_rcv_dtl as a')
                     ->selectRaw('a.office_id, a.purc_rcv_id, a.seq_num, a.sj_no, a.pr_id, a.pr_item, 
                             a.po_id, a.po_item, a.article_id, b.description, 
@@ -357,7 +357,7 @@ class InvoiceNonPoController extends Controller
             $sqlWhere .= "and office_id = '$request->OfficeId' ";
         }
 
-        $InvItem = DB::connection("sqlSrvFPI")
+        $InvItem = DB::connection("sqlSrvBCKI")
             // ->select(DB::raw("select isnull(max(inv_item), 0) + 1 as inv_item FROM purc_inv_item where $sqlWhere"));
             ->table('purc_inv_item')
             ->selectRaw("isnull(max(inv_item), 0) + 1 as inv_item")
@@ -378,7 +378,7 @@ class InvoiceNonPoController extends Controller
                 $InvId = 'PINV' . substr(date('Y', strtotime($DtInv)), -2) . date('m', strtotime($DtInv)) . $OfficeId;
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('purc_inv_mast')
                 ->selectRaw("concat('$TrId', format(isnull(max(inv_num),0) + 1,'000')) as tr_id,
                                  concat('$InvId', format(isnull(max(inv_num),0) + 1,'000')) as inv_id, 
@@ -432,8 +432,8 @@ class InvoiceNonPoController extends Controller
                 $tr_num = $inv['inv_num'];
                 $pr_id = @$detailArr[0]['pr_id'] ?? '';
 
-                DB::connection("sqlSrvFPI")->beginTransaction();
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")->beginTransaction();
+                DB::connection("sqlSrvBCKI")
                     ->table('purc_inv_mast')
                     ->insert([
                         'office_id'         => $request->office_id ?? '',
@@ -517,25 +517,25 @@ class InvoiceNonPoController extends Controller
 
                     ];
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('purc_inv_item')
                         ->insert($dataInsert);
 
                     if ($request->type == 'R') {
                         // Update qty_po dan stat pada pr_item
-                        $sumQty = DB::connection("sqlSrvFPI")
+                        $sumQty = DB::connection("sqlSrvBCKI")
                             ->table('purc_inv_item')
                             ->where('pr_id', $value->pr_id)
                             ->where('pr_item', $value->pr_item)
                             ->sum('qty');
 
-                        $qtyPr = DB::connection("sqlSrvFPI")
+                        $qtyPr = DB::connection("sqlSrvBCKI")
                             ->table('pr_item')
                             ->where('pr_id', $value->pr_id)
                             ->where('pr_item', $value->pr_item)
                             ->value('qty');
 
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                             ->table('pr_item')
                             ->where('pr_id', $value->pr_id)
                             ->where('pr_item', $value->pr_item)
@@ -545,13 +545,13 @@ class InvoiceNonPoController extends Controller
                             ]);
 
                         // Update stat pr_hdr jika semua item sudah 'C'
-                        $isClosed = !DB::connection("sqlSrvFPI")
+                        $isClosed = !DB::connection("sqlSrvBCKI")
                             ->table('pr_item')
                             ->where('pr_id', $value->pr_id)
                             ->where('stat', 'O')
                             ->exists();
 
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                             ->table('pr_hdr')
                             ->where('pr_id', $value->pr_id)
                             ->update(['stat' => $isClosed ? 'C' : 'O']);
@@ -567,7 +567,7 @@ class InvoiceNonPoController extends Controller
                                     'seq_num_invoice' => $key + 1
                                 ];
                             }
-                            $dbSave = DB::connection("sqlSrvFPI")
+                            $dbSave = DB::connection("sqlSrvBCKI")
                                 ->table($table)
                                 ->where('sj_no', $value->sj_no);
 
@@ -581,7 +581,7 @@ class InvoiceNonPoController extends Controller
                     }
                 }
 
-                DB::connection("sqlSrvFPI")->commit();
+                DB::connection("sqlSrvBCKI")->commit();
                 if ($request->type == 'R' || $request->type == 'A') {
                     $this->ServiceAccounting->JrnlPurcInvNonPO(1, $tr_id, date("Y", strtotime($request->tanggal)), getAuth($request)->user_id2);
                 }
@@ -593,7 +593,7 @@ class InvoiceNonPoController extends Controller
             } else {
                 $allowedPaidSave = $this->getEnvConf('FINANCE', 'FINAL_CLOSING', getAuth($request)->user_id2 ?? '');
 
-                $datas = DB::connection("sqlSrvFPI")
+                $datas = DB::connection("sqlSrvBCKI")
                     ->table('purc_inv_mast')
                     ->selectRaw('amt_paid, inv_id, tr_id, office_id')
                     ->where('office_id', $request->office_id)
@@ -650,14 +650,14 @@ class InvoiceNonPoController extends Controller
 
                 ];
 
-                DB::connection("sqlSrvFPI")->beginTransaction();
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")->beginTransaction();
+                DB::connection("sqlSrvBCKI")
                     ->table('purc_inv_mast')
                     ->where('tr_id', $request->tr_id)
                     ->where('office_id', $request->office_id)
                     ->update($dataUpdate);
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('purc_inv_item')
                     ->where('tr_id', $request->tr_id)
                     ->where('office_id', $request->office_id)
@@ -686,7 +686,7 @@ class InvoiceNonPoController extends Controller
                     //         'dt_modified'       => DB::raw('getdate()'),
                     //         'user_id'           => getAuth($request)->user_id2 ?? ''
                     //     ];
-                    //     DB::connection("sqlSrvFPI")
+                    //     DB::connection("sqlSrvBCKI")
                     //         ->table('purc_inv_item')
                     //         ->where('tr_id', $request->tr_id)
                     //         ->where('office_id', $request->office_id)
@@ -723,25 +723,25 @@ class InvoiceNonPoController extends Controller
 
                     ];
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('purc_inv_item')
                         ->insert($dataInsert);
 
                     if ($request->type == 'R') {
                         // Update qty_po dan stat pada pr_item
-                        $sumQty = DB::connection("sqlSrvFPI")
+                        $sumQty = DB::connection("sqlSrvBCKI")
                             ->table('purc_inv_item')
                             ->where('pr_id', $value->pr_id)
                             ->where('pr_item', $value->pr_item)
                             ->sum('qty');
 
-                        $qtyPr = DB::connection("sqlSrvFPI")
+                        $qtyPr = DB::connection("sqlSrvBCKI")
                             ->table('pr_item')
                             ->where('pr_id', $value->pr_id)
                             ->where('pr_item', $value->pr_item)
                             ->value('qty');
 
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                             ->table('pr_item')
                             ->where('pr_id', $value->pr_id)
                             ->where('pr_item', $value->pr_item)
@@ -751,13 +751,13 @@ class InvoiceNonPoController extends Controller
                             ]);
 
                         // Update stat pr_hdr jika semua item sudah 'C'
-                        $isClosed = !DB::connection("sqlSrvFPI")
+                        $isClosed = !DB::connection("sqlSrvBCKI")
                             ->table('pr_item')
                             ->where('pr_id', $value->pr_id)
                             ->where('stat', 'O')
                             ->exists();
 
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                             ->table('pr_hdr')
                             ->where('pr_id', $value->pr_id)
                             ->update(['stat' => $isClosed ? 'C' : 'O']);
@@ -773,7 +773,7 @@ class InvoiceNonPoController extends Controller
                                     'seq_num_invoice' => $key + 1
                                 ];
                             }
-                            $dbSave = DB::connection("sqlSrvFPI")
+                            $dbSave = DB::connection("sqlSrvBCKI")
                                 ->table($table)
                                 ->where('sj_no', $value->sj_no);
 
@@ -788,7 +788,7 @@ class InvoiceNonPoController extends Controller
                     }
                 }
 
-                DB::connection("sqlSrvFPI")->commit();
+                DB::connection("sqlSrvBCKI")->commit();
                 if ($request->type == 'R' || $request->type == 'A') {
                     $this->ServiceAccounting->JrnlPurcInvNonPO(1, $tr_id, date("Y", strtotime($request->tanggal)), getAuth($request)->user_id2);
                 }
@@ -798,7 +798,7 @@ class InvoiceNonPoController extends Controller
                 return $this->sendResponse([], 'Invoice updated successfully');
             }
         } catch (\Exception $e) {
-            DB::connection("sqlSrvFPI")->rollBack();
+            DB::connection("sqlSrvBCKI")->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -813,7 +813,7 @@ class InvoiceNonPoController extends Controller
             $sqlwhere .= "and a.office_id = '$request->office_id' ";
         }
 
-        $dataHdr = DB::connection("sqlSrvFPI")
+        $dataHdr = DB::connection("sqlSrvBCKI")
             ->table('purc_inv_mast as a')
             ->selectRaw('a.tr_id, a.office_id, a.inv_id, a.inv_type as type, a.tr_num, a.vendor_id, 
                         b.vendor_name, a.vendor_inv as vendor_invoice, a.tax_inv as faktur_pajak, a.pr_id,
@@ -829,7 +829,7 @@ class InvoiceNonPoController extends Controller
             ->whereRaw($sqlwhere)
             ->first();
 
-        $dataDtl = DB::connection("sqlSrvFPI")
+        $dataDtl = DB::connection("sqlSrvBCKI")
             ->table('purc_inv_item as a')
             ->selectRaw('a.office_id, a.tr_id, a.seq_num, a.inv_id, a.inv_item, a.sj_no, a.po_id, a.po_item, a.pr_id, a.pr_item,
                             a.article_id, b.description as article_desc, a.qty, a.unit_meas, a.unit_price as price, a.remark, 
@@ -857,7 +857,7 @@ class InvoiceNonPoController extends Controller
             $office_id = $request->office_id;
             $type = $request->type;
 
-            $checkPaid = DB::connection("sqlSrvFPI")
+            $checkPaid = DB::connection("sqlSrvBCKI")
                 ->table('purc_inv_mast')
                 ->where('tr_id', $tr_id)
                 ->where('amt_paid', '>', 0)
@@ -867,8 +867,8 @@ class InvoiceNonPoController extends Controller
                 return $this->sendError('Invoice has been paid', 'Error', 500);
             }
 
-            DB::connection("sqlSrvFPI")->beginTransaction();
-            $seq_num_inv = DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")->beginTransaction();
+            $seq_num_inv = DB::connection("sqlSrvBCKI")
                 ->table('purc_inv_item')
                 ->selectRaw('tr_id, office_id, seq_num, inv_id, inv_item, sj_no, po_id, po_item, pr_id, pr_item, article_id, qty, sj_no')
                 ->where('tr_id', $tr_id)
@@ -878,7 +878,7 @@ class InvoiceNonPoController extends Controller
 
             foreach ($seq_num_inv as $key => $value) {
                 if ($type == 'R') {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('pr_item')
                         ->where('pr_id', $value->pr_id)
                         ->where('pr_item', $value->pr_item)
@@ -888,7 +888,7 @@ class InvoiceNonPoController extends Controller
                             'stat'   => 'O'
                         ]);
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('pr_hdr')
                         ->where('pr_id', $value->pr_id)
                         ->where('office_id', $value->office_id)
@@ -896,7 +896,7 @@ class InvoiceNonPoController extends Controller
                 }
 
                 if ($type == 'P') {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('purc_rcv_dtl')
                         ->where('inv_id', $value->inv_id)
                         ->where('inv_item', $value->inv_item)
@@ -908,7 +908,7 @@ class InvoiceNonPoController extends Controller
                             'seq_num_invoice' => 0
                         ]);
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('purc_rcv_hdr')
                         ->where('inv_id', $value->inv_id)
                         ->where('office_id', $value->office_id)
@@ -916,7 +916,7 @@ class InvoiceNonPoController extends Controller
                 }
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('purc_inv_mast')
                 ->selectRaw('tr_id, office_id, reff_id')
                 ->where('tr_id', $tr_id)
@@ -927,7 +927,7 @@ class InvoiceNonPoController extends Controller
             if ($datas) {
                 $reff_id = $datas->reff_id;
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('qc_opname')
                     ->where('tr_id', $reff_id)
                     ->update([
@@ -935,7 +935,7 @@ class InvoiceNonPoController extends Controller
                         'confirmed_by' => ' ',
                     ]);
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('kb_hdr')
                     ->where('qc_opname_id', $reff_id)
                     ->update([
@@ -943,22 +943,22 @@ class InvoiceNonPoController extends Controller
                     ]);
             }
 
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('purc_inv_mast')
                 ->where('tr_id', $tr_id)
                 ->where('office_id', $office_id)
                 ->delete();
 
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('purc_inv_item')
                 ->where('tr_id', $tr_id)
                 ->where('office_id', $office_id)
                 ->delete();
 
-            DB::connection("sqlSrvFPI")->commit();
+            DB::connection("sqlSrvBCKI")->commit();
             return $this->sendResponse([], 'Invoice deleted successfully');
         } catch (\Exception $e) {
-            DB::connection("sqlSrvFPI")->rollBack();
+            DB::connection("sqlSrvBCKI")->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }

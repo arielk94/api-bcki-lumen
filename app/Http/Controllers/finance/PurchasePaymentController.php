@@ -62,7 +62,7 @@ class PurchasePaymentController extends Controller
         }
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('bank_note as bn')
                 ->selectRaw("
                     bn.Descr+'-'+bn.doc_id as Descr ,bn.cabang,bn.db_amt,bn.cr_amt,bn.saldo,bn.tr_id,bn.voucher,bn.run_number,bn.dt_trans,
@@ -126,7 +126,7 @@ class PurchasePaymentController extends Controller
             $sqlWhere .= " AND e.id_house ='$house_id'";
         }
         try {
-            $query1 = DB::connection("sqlSrvFPI")
+            $query1 = DB::connection("sqlSrvBCKI")
                 ->table('purc_pay_mast as a')
                 ->selectRaw(
                     " trim(a.pay_id) pay_id, trim(b.vendor_name) vendor_name,a.dt_pay, a.pay_amt as total_pay_amt,  trim(a.remark) remark,
@@ -167,7 +167,7 @@ class PurchasePaymentController extends Controller
             //     $q->where('ae.id_house', $house_id);
             // });
             //->get();
-            $query2 = DB::connection("sqlSrvFPI")
+            $query2 = DB::connection("sqlSrvBCKI")
                 ->table('purc_pay_mast as a')
                 ->selectRaw(
                     " trim(a.pay_id) pay_id, trim(b.vendor_name) vendor_name,a.dt_pay, a.pay_amt as total_pay_amt,  trim(a.remark) remark,
@@ -194,7 +194,7 @@ class PurchasePaymentController extends Controller
                 //->orderByDesc('a.dt_pay', 'a.pay_id')
                 //->get();
                 ->unionAll($query1);
-            $result =  DB::connection("sqlSrvFPI")
+            $result =  DB::connection("sqlSrvBCKI")
                 ->table(DB::raw("({$query2->toSql()}) as x"))
                 ->mergeBindings($query2)
                 ->get();
@@ -210,7 +210,7 @@ class PurchasePaymentController extends Controller
             return $this->sendError("Empty vendor", 'Error', 500);
         }
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('purc_inv_mast as a')
                 ->selectRaw("
                         trim(a.inv_id) invoice,amt_total total_inv,amt_retur + amt_paid_disc retur_disc,amt_paid amt_paid
@@ -239,7 +239,7 @@ class PurchasePaymentController extends Controller
         try {
             switch ($type) {
                 case 'header':
-                    $result = DB::connection("sqlSrvFPI")
+                    $result = DB::connection("sqlSrvBCKI")
                         ->table('purc_pay_mast as a')
                         ->selectRaw("
                         trim(a.pay_id) pay_id,trim(a.vendor_id) vendor_id,trim(vendor_name) vendor_name,a.dt_pay,a.dt_cek,a.pay_amt,
@@ -260,7 +260,7 @@ class PurchasePaymentController extends Controller
                     $message = 'Successfully retrieved purc payment data';
                     break;
                 case 'detail':
-                    $result = DB::connection("sqlSrvFPI")
+                    $result = DB::connection("sqlSrvBCKI")
                         ->table('purc_pay_mast as a')
                         ->selectRaw("
                         trim(b.inv_id) inv_id,c.dt_inv,inv_amt,b.pay_amt,trim(b.tr_id) tr_id
@@ -287,7 +287,7 @@ class PurchasePaymentController extends Controller
             return $this->sendError("Empty pay id", 'Error', 500);
         }
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('purc_pay_mast as a')
                 ->selectRaw(
                     " trim(a.pay_id) pay_id,trim(a.vendor_id) vendor_id ,trim(b.vendor_name) vendor_name,trim(b.address1) alamat1,trim(b.address2) alamat2,trim(b.city) kota,a.dt_pay, 
@@ -371,7 +371,7 @@ class PurchasePaymentController extends Controller
         }
         try {
             $sqlWhere = " dp_amt - dp_used > 0 ";
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('purc_down_payment as a')
                 ->selectRaw("
                         trim(dp_id) dp_id,dt_dp, dp_amt, dp_used, (dp_amt - dp_used) as dp_available_amt,ac_num_dp ac_num
@@ -396,7 +396,7 @@ class PurchasePaymentController extends Controller
         }
         try {
             $sqlWhere = " a.stat='B' and a.tr_id='' and tr_type='IG' ";
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('giro_trans as a')
                 ->selectRaw("
                         trim(a.giro_num) giro_num,trim(a.bank_id) bank_id,trim(bank_cust_name) bank_cust_name,giro_amt,dt_giro,dt_due
@@ -425,7 +425,7 @@ class PurchasePaymentController extends Controller
         }
         // $hasTrId = "";
         // if ($data['deposit_id']) {
-        //     $exist = DB::connection('sqlSrvFPI')->table('purc_pay_mast as a')
+        //     $exist = DB::connection('sqlSrvBCKI')->table('purc_pay_mast as a')
         //         ->selectRaw("a.pay_id,b.pay_item,c.tr_id,c.amt_total")
         //         ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')
         //         ->join('purc_inv_mast as c', 'b.inv_id', '=', 'c.inv_id')
@@ -434,7 +434,7 @@ class PurchasePaymentController extends Controller
         //         ->first();
         //     $hasTrId = $exist && trim($data['deposit_id'] ?? '') !== '';
         // } else {
-        //     $exist = DB::connection('sqlSrvFPI')->table('purc_pay_mast as a')
+        //     $exist = DB::connection('sqlSrvBCKI')->table('purc_pay_mast as a')
         //         ->selectRaw("a.pay_id,b.pay_item,c.tr_id,c.amt_total")
         //         ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')
         //         ->join('purc_inv_mast as c', 'b.inv_id', '=', 'c.inv_id')
@@ -443,7 +443,7 @@ class PurchasePaymentController extends Controller
         //         ->first();
         //     $hasTrId = $exist && trim($data['tr_id'] ?? '') !== '';
         // }
-        $exist = DB::connection('sqlSrvFPI')->table('purc_pay_mast as a')
+        $exist = DB::connection('sqlSrvBCKI')->table('purc_pay_mast as a')
             ->selectRaw("a.pay_id,b.pay_item,c.tr_id,c.amt_total")
             ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')
             ->join('purc_inv_mast as c', 'b.inv_id', '=', 'c.inv_id')
@@ -460,16 +460,16 @@ class PurchasePaymentController extends Controller
         $type    = $hasTrId ? 'M' : 'A';
         $payItem = $hasTrId ? $exist->pay_item  : 0;
 
-        $invExist = DB::connection('sqlSrvFPI')->table('purc_inv_mast as a')
+        $invExist = DB::connection('sqlSrvBCKI')->table('purc_inv_mast as a')
             ->selectRaw("a.amt_total,a.tr_id")
             ->where('inv_id', $data['detail']['invoice_id'])
             ->first();
         $invAmt  = $invExist->amt_total;
         $trInv   = trim($invExist->tr_id);
         try {
-            DB::connection('sqlSrvFPI')->transaction(function () use ($data, $userId, $trId, $type, $payItem, $trInv, $invAmt, $request) {
+            DB::connection('sqlSrvBCKI')->transaction(function () use ($data, $userId, $trId, $type, $payItem, $trInv, $invAmt, $request) {
                 if ($type == 'A') {
-                    DB::connection('sqlSrvFPI')->table('purc_pay_mast')->insert([
+                    DB::connection('sqlSrvBCKI')->table('purc_pay_mast')->insert([
                         'office_id' => 1,
                         'pay_id' => $trId,
                         'dt_pay' => $data['tgl_bayar'],
@@ -492,7 +492,7 @@ class PurchasePaymentController extends Controller
                         'user_id' => $userId
                     ]);
                 } else {
-                    DB::connection('sqlSrvFPI')->table('purc_pay_mast')
+                    DB::connection('sqlSrvBCKI')->table('purc_pay_mast')
                         ->where('pay_id', $trId)
                         ->update([
                             'office_id' => 1,
@@ -518,7 +518,7 @@ class PurchasePaymentController extends Controller
                         ]);
                 }
 
-                DB::connection('sqlSrvFPI')->table('purc_pay_item')->insert([
+                DB::connection('sqlSrvBCKI')->table('purc_pay_item')->insert([
                     'office_id' => 1,
                     'pay_id' => $trId,
                     'pay_item' => (int)$payItem + 1,
@@ -534,7 +534,7 @@ class PurchasePaymentController extends Controller
                 ]);
                 //}
                 if (!empty($data['tr_id'])) {
-                    DB::connection('sqlSrvFPI')->table('bank_note')
+                    DB::connection('sqlSrvBCKI')->table('bank_note')
                         ->where('tr_id', $data['tr_id'])
                         ->update([
                             'voucher' => 1,
@@ -543,7 +543,7 @@ class PurchasePaymentController extends Controller
                 }
 
                 if (!empty($data['giro_id'])) {
-                    DB::connection('sqlSrvFPI')->table('giro_trans')
+                    DB::connection('sqlSrvBCKI')->table('giro_trans')
                         ->where('giro_num', $data['giro_id'])
                         ->update([
                             'stat' => 'C',
@@ -553,7 +553,7 @@ class PurchasePaymentController extends Controller
                 }
 
                 if (!empty($data['kb_id'])) {
-                    DB::connection('sqlSrvFPI')->table('kb_hdr')
+                    DB::connection('sqlSrvBCKI')->table('kb_hdr')
                         ->where('tr_id', $data['kb_id'])
                         ->update([
                             'pay_id' => $trId
@@ -561,15 +561,15 @@ class PurchasePaymentController extends Controller
                 }
             });
 
-            $sumBayar = DB::connection('sqlSrvFPI')->table('purc_pay_mast as a')
+            $sumBayar = DB::connection('sqlSrvBCKI')->table('purc_pay_mast as a')
                 ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')
                 ->where('a.pay_id', $trId)
                 ->sum('b.pay_amt') ?? 0;
-            DB::connection('sqlSrvFPI')->table('purc_pay_mast')->where('pay_id', $trId)
+            DB::connection('sqlSrvBCKI')->table('purc_pay_mast')->where('pay_id', $trId)
                 ->update([
                     'selisih_bayar' => DB::raw('pay_amt - ' . (float)$sumBayar)
                 ]);
-            // DB::connection('sqlSrvFPI')->table('purc_pay_mast')
+            // DB::connection('sqlSrvBCKI')->table('purc_pay_mast')
             //     ->where('pay_id',  $trId)
             //     ->update([
             //         'selisih_bayar' => DB::raw("
@@ -580,11 +580,11 @@ class PurchasePaymentController extends Controller
             //             END
             //         "),
             //     ]);
-            $sumBayarInv = DB::connection('sqlSrvFPI')->table('purc_pay_mast as a')
+            $sumBayarInv = DB::connection('sqlSrvBCKI')->table('purc_pay_mast as a')
                 ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')
                 ->where('b.inv_id', $data['detail']['invoice_id'])
                 ->sum('b.pay_amt') ?? 0;
-            DB::connection('sqlSrvFPI')->table('purc_inv_mast')
+            DB::connection('sqlSrvBCKI')->table('purc_inv_mast')
                 ->where('inv_id', $data['detail']['invoice_id'])
                 ->update([
                     'amt_paid' => (float) $sumBayarInv,
@@ -594,18 +594,18 @@ class PurchasePaymentController extends Controller
 
             if (!empty($data['deposit_id'])) {
                 //foreach ($data['detail'] as $key => $detail) {
-                $sumDp = DB::connection('sqlSrvFPI')->table('purc_pay_mast as a')
+                $sumDp = DB::connection('sqlSrvBCKI')->table('purc_pay_mast as a')
                     ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')
                     ->where('dp_id', $data['deposit_id'])
                     ->sum('b.pay_amt') ?? 0;
 
-                $dpInvoiceExist = DB::connection('sqlSrvFPI')->table('purc_dp_inv')
+                $dpInvoiceExist = DB::connection('sqlSrvBCKI')->table('purc_dp_inv')
                     ->select('inv_id')
                     ->where('dp_id', $data['deposit_id'])
                     ->where('pay_id', $trId)
                     ->where('inv_id', $data['detail']['invoice_id']);
                 if ($dpInvoiceExist) {
-                    DB::connection('sqlSrvFPI')->table('purc_dp_inv')
+                    DB::connection('sqlSrvBCKI')->table('purc_dp_inv')
                         ->where('dp_id', $data['deposit_id'])
                         ->where('pay_id', $trId)
                         ->where('inv_id', $data['detail']['invoice_id'])
@@ -615,7 +615,7 @@ class PurchasePaymentController extends Controller
                             'user_id' => $userId
                         ]);
                 } else {
-                    DB::connection('sqlSrvFPI')->table('purc_dp_inv')->insert([
+                    DB::connection('sqlSrvBCKI')->table('purc_dp_inv')->insert([
                         'office_id' => 1,
                         'dp_id' => $data['deposit_id'],
                         'pay_id' => $trId,
@@ -629,7 +629,7 @@ class PurchasePaymentController extends Controller
                 }
                 //}
 
-                DB::connection('sqlSrvFPI')->table('purc_down_payment')
+                DB::connection('sqlSrvBCKI')->table('purc_down_payment')
                     ->where('dp_id', $data['deposit_id'])
                     ->update([
                         'dp_used' => (float)$sumDp
@@ -653,7 +653,7 @@ class PurchasePaymentController extends Controller
             return $this->sendError("Empty transaction id", 'Error', 500);
         }
         try {
-            $result = DB::connection('sqlSrvFPI')->table('purc_pay_mast as a')
+            $result = DB::connection('sqlSrvBCKI')->table('purc_pay_mast as a')
                 ->select('dt_pay', 'bkk', 'cek_id', 'dp_id')
                 ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')
                 ->where('a.pay_id', $pay_id)
@@ -665,40 +665,40 @@ class PurchasePaymentController extends Controller
                 return $this->sendError("This periode already closed, cannot be modified", 'Error', 500);
             }
 
-            DB::connection('sqlSrvFPI')->table('purc_pay_item')
+            DB::connection('sqlSrvBCKI')->table('purc_pay_item')
                 ->where('pay_id', $pay_id)
                 ->where('inv_id', $inv_id)
                 ->delete();
-            $sumBayar = DB::connection('sqlSrvFPI')->table('purc_pay_mast as a')
+            $sumBayar = DB::connection('sqlSrvBCKI')->table('purc_pay_mast as a')
                 ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')
                 ->where('b.inv_id', $inv_id)
                 ->sum('b.pay_amt') ?? 0;
 
-            DB::connection('sqlSrvFPI')->table('purc_inv_mast')
+            DB::connection('sqlSrvBCKI')->table('purc_inv_mast')
                 ->where('inv_id', $inv_id)
                 ->update([
                     'amt_paid' => (float)$sumBayar,
                     'paid_flag' =>  (float)$sumBayar > 0 ? 'Y' : 'N'
                 ]);
-            $sumPay = DB::connection('sqlSrvFPI')->table('purc_pay_mast as a')
+            $sumPay = DB::connection('sqlSrvBCKI')->table('purc_pay_mast as a')
                 ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')
                 ->where('a.pay_id', $pay_id)
                 ->sum('b.pay_amt') ?? 0;
-            DB::connection('sqlSrvFPI')->table('purc_pay_mast')->where('pay_id', $pay_id)
+            DB::connection('sqlSrvBCKI')->table('purc_pay_mast')->where('pay_id', $pay_id)
                 ->update([
                     'selisih_bayar' => DB::raw('pay_amt - ' . (float)$sumPay)
                 ]);
-            $itemExist = DB::connection('sqlSrvFPI')->table('purc_pay_item')
+            $itemExist = DB::connection('sqlSrvBCKI')->table('purc_pay_item')
                 ->selectRaw("pay_id")
                 ->where('pay_id', $pay_id)
                 ->orderBy('pay_item', 'desc')
                 ->first();
             if (!$itemExist) {
-                DB::connection('sqlSrvFPI')->table('purc_pay_mast')
+                DB::connection('sqlSrvBCKI')->table('purc_pay_mast')
                     ->where('pay_id', $pay_id)
                     ->delete();
                 if (!empty($bkk)) {
-                    DB::connection('sqlSrvFPI')->table('bank_note')
+                    DB::connection('sqlSrvBCKI')->table('bank_note')
                         ->where('tr_id', $bkk)
                         ->update([
                             'voucher' => 0,
@@ -706,7 +706,7 @@ class PurchasePaymentController extends Controller
                         ]);
                 }
                 if (!empty($noGiro)) {
-                    DB::connection('sqlSrvFPI')->table('giro_trans')
+                    DB::connection('sqlSrvBCKI')->table('giro_trans')
                         ->where('giro_num', $noGiro)
                         ->update([
                             'stat' => 'O',
@@ -716,18 +716,18 @@ class PurchasePaymentController extends Controller
                 }
             }
             if (!empty($dp_id)) {
-                $sumDp = DB::connection('sqlSrvFPI')->table('purc_pay_mast as a')
+                $sumDp = DB::connection('sqlSrvBCKI')->table('purc_pay_mast as a')
                     ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')
                     ->where('a.dp_id', $dp_id)
                     ->sum('b.pay_amt') ?? 0;
-                $dpInvoiceExist = DB::connection('sqlSrvFPI')->table('purc_dp_inv')
+                $dpInvoiceExist = DB::connection('sqlSrvBCKI')->table('purc_dp_inv')
                     ->select('pay_amt')
                     ->where('dp_id', $dp_id)
                     ->where('pay_id', $pay_id)
                     ->where('inv_id', $inv_id)
                     ->first();
                 if ($dpInvoiceExist) {
-                    DB::connection('sqlSrvFPI')->table('purc_dp_inv')
+                    DB::connection('sqlSrvBCKI')->table('purc_dp_inv')
                         ->where('dp_id', $dp_id)
                         ->where('pay_id', $pay_id)
                         ->update([
@@ -735,12 +735,12 @@ class PurchasePaymentController extends Controller
                         ]);
                 }
                 if ((float)$sumDp <= 0) {
-                    DB::connection('sqlSrvFPI')->table('purc_dp_inv')
+                    DB::connection('sqlSrvBCKI')->table('purc_dp_inv')
                         ->where('dp_id', $dp_id)
                         ->where('inv_id', $inv_id)
                         ->delete();
                 }
-                DB::connection('sqlSrvFPI')->table('purc_down_payment')
+                DB::connection('sqlSrvBCKI')->table('purc_down_payment')
                     ->where('dp_id', $dp_id)
                     ->update([
                         'dp_used' => (float)$sumDp
@@ -764,20 +764,20 @@ class PurchasePaymentController extends Controller
         }
         try {
 
-            $result = DB::connection('sqlSrvFPI')->table('purc_pay_mast as a')
+            $result = DB::connection('sqlSrvBCKI')->table('purc_pay_mast as a')
                 ->selectRaw("a.*")
                 ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')
                 ->where('a.pay_id', $pay_id)
                 ->first();
             if ($result) {
-                DB::connection('sqlSrvFPI')->table('purc_pay_mast')->where('office_id', 1)->where('pay_id', $pay_id)->update([
+                DB::connection('sqlSrvBCKI')->table('purc_pay_mast')->where('office_id', 1)->where('pay_id', $pay_id)->update([
                     'cek_id' => $request->giro_id ?? '',
                     'dt_modified' => now(),
                     'user_id' => $userId
                 ]);
 
                 if (!empty($request->giro_id)) {
-                    DB::connection('sqlSrvFPI')->table('giro_trans')
+                    DB::connection('sqlSrvBCKI')->table('giro_trans')
                         ->where('giro_num', $request->giro_id)
                         ->update([
                             'stat' => 'C',
@@ -799,7 +799,7 @@ class PurchasePaymentController extends Controller
         $prefix = 'PP01';
         $tahun2digit = date('y', strtotime($tanggal));
         $bulan2digit = date('m', strtotime($tanggal));
-        $last = DB::connection("sqlSrvFPI")
+        $last = DB::connection("sqlSrvBCKI")
             ->table('purc_pay_mast')
             ->selectRaw('RIGHT(trim(pay_id), 3) as kode_akhir')
             ->where('pay_id', 'like', "%{$prefix}{$tahun2digit}{$bulan2digit}%")
@@ -829,7 +829,7 @@ class PurchasePaymentController extends Controller
     public function jurnalulangpurcpay(Request $request)
     {
         $pay_id = $request->pay_id ?? '';
-        $dataPurcPay = DB::connection('sqlSrvFPI')
+        $dataPurcPay = DB::connection('sqlSrvBCKI')
             ->table('purc_pay_mast as a')
             ->select('dt_pay', 'bkk', 'cek_id', 'dp_id')
             ->join('purc_pay_item as b', 'a.pay_id', '=', 'b.pay_id')

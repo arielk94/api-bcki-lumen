@@ -16,7 +16,7 @@ class ArticleController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/fpi/article/getArticle",
+     *     path="/api/bcki/article/getArticle",
      *     tags={"Master Article"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -82,7 +82,7 @@ class ArticleController extends Controller
             $sqlWhere .= " and article.description = '$search'";
         }
 
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
             ->table('article')
             ->selectraw("
                 TRIM(article.article_id) AS article_id,
@@ -121,7 +121,7 @@ class ArticleController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/article/getCategory",
+     *     path="/api/bcki/article/getCategory",
      *     tags={"Master Article"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -165,7 +165,7 @@ class ArticleController extends Controller
             $sqlWhere .= " and active_flag = '$active_flag'";
         }
 
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
             ->table('category')
             ->selectraw("
                                     cat_id,
@@ -181,7 +181,7 @@ class ArticleController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/article/getUOM",
+     *     path="/api/bcki/article/getUOM",
      *     tags={"Master Article"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -213,7 +213,7 @@ class ArticleController extends Controller
             $sqlWhere .= " and active_flag = '$active_flag'";
         }
 
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
             ->table('unit_meas')
             ->selectraw("
                                     unit_meas,
@@ -232,7 +232,7 @@ class ArticleController extends Controller
         $dateMonth = date("m");
         $gen_cluster_id = '';
 
-        $getLastTrID = DB::connection('sqlSrvFPI')
+        $getLastTrID = DB::connection('sqlSrvBCKI')
             ->table('article')
             ->max('article_id');
 
@@ -258,7 +258,7 @@ class ArticleController extends Controller
             $sqlWhere .= " and LEFT(CAST(article_id AS INT), 1) = '0'";
         }
 
-        $getLastArticleID =  DB::connection('sqlSrvFPI')
+        $getLastArticleID =  DB::connection('sqlSrvBCKI')
             ->table('article')
             ->whereRaw($sqlWhere)
             ->select(DB::raw('max(cast(article_id as int))'))
@@ -274,17 +274,17 @@ class ArticleController extends Controller
 
     public function deleteArticle(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $sales = DB::connection('sqlSrvFPI')
+            $sales = DB::connection('sqlSrvBCKI')
                 ->table('article')
                 ->where('article_id', $request->article_id)
                 ->first();
 
             if ($sales) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('article')
                     ->where('article_id', $request->article_id)
                     ->update([
@@ -292,31 +292,31 @@ class ArticleController extends Controller
                         'dt_modified' => now(),
                         'modified_by' => getAuth($request)->user_id2,
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully Delete Article');
             } else {
                 return $this->sendError('Article tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function activateArticle(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $sales = DB::connection('sqlSrvFPI')
+            $sales = DB::connection('sqlSrvBCKI')
                 ->table('article')
                 ->where('article_id', $request->article_id)
                 ->first();
 
             if ($sales) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('article')
                     ->where('article_id', $request->article_id)
                     ->update([
@@ -325,21 +325,21 @@ class ArticleController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
 
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully Activate Article');
             } else {
                 return $this->sendError('Article tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/article/getWhArticle",
+     *     path="/api/bcki/article/getWhArticle",
      *     tags={"Master Article"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -421,7 +421,7 @@ class ArticleController extends Controller
             $where = $where . "and article.active_flag = " . "'" . $request->active_flag . "'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('article')
             ->selectraw("
                     trim(article.article_id) as article_id,
@@ -490,7 +490,7 @@ class ArticleController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/article/getCommodity",
+     *     path="/api/bcki/article/getCommodity",
      *     tags={"Master Article"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -515,7 +515,7 @@ class ArticleController extends Controller
     {
         $cat_id = $request->cat_id;
 
-        $data = DB::connection("sqlSrvFPI")
+        $data = DB::connection("sqlSrvBCKI")
             ->table('commodity')
             ->select([
                 "com_id",
@@ -591,7 +591,7 @@ class ArticleController extends Controller
             $where = $where . "and article.vendor_id = " . "'" . $request->vendor_id . "'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('article')
             ->selectraw("
                     trim(article.article_id) as article_id,
@@ -661,7 +661,7 @@ class ArticleController extends Controller
 
     public function showCategory()
     {
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('category')
             ->selectraw("cat_id,descr")
             ->where('active_flag', 'Y')
@@ -678,7 +678,7 @@ class ArticleController extends Controller
             $sqlWhere .= " and cat_id = '$cat_id'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('commodity')
             ->selectraw("cat_id, com_id, com_desc")
             ->whereraw($sqlWhere)
@@ -697,7 +697,7 @@ class ArticleController extends Controller
             $sqlWhere .= " and cat_id = '$cat_id' and com_id = '$com_id'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('commodity_grp')
             ->selectraw("cat_id, com_id, com_grp, com_grp_desc")
             ->whereraw($sqlWhere)
@@ -708,7 +708,7 @@ class ArticleController extends Controller
 
     public function showArticleID()
     {
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('article')
             ->selectraw("article_id, barcode, description, TRIM(varian) as varian")
             ->where('active_flag', 'Y')
@@ -725,7 +725,7 @@ class ArticleController extends Controller
             $sqlWhere .= " and brand.vendor_id = '$vendor_id'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('brand')
             ->selectraw("trim(brand.brand_id) as brand_id, trim(brand.descr) as descr, trim(brand.vendor_id) as vendor_id, trim(vendor.vendor_name) as vendor_name")
             ->leftJoin('vendor', 'brand.vendor_id', '=', 'vendor.vendor_id')
@@ -737,7 +737,7 @@ class ArticleController extends Controller
 
     public function showUOM()
     {
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('appl_constant')
             ->selectraw("str1,str2")
             ->where('key_code', 'UOM')
@@ -747,7 +747,7 @@ class ArticleController extends Controller
 
     public function showACnum()
     {
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('g_ledger')
             ->selectraw("
                 TRIM(ac_num) AS ac_num,
@@ -761,7 +761,7 @@ class ArticleController extends Controller
 
     public function showCostCenter()
     {
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('cost_center')
             ->selectraw("
                 TRIM(cost_ctr_id) AS cost_ctr_id,
@@ -785,7 +785,7 @@ class ArticleController extends Controller
 
     public function showVendor()
     {
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('vendor')
             ->selectraw("
                 TRIM(vendor_id) AS vendor_id,
@@ -797,13 +797,13 @@ class ArticleController extends Controller
     public function saveArticle(Request $request)
     {
         try {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('article')
                 ->where('article_id', $request->article_id)
                 ->first();
 
             if ($data) {
-                $update = DB::connection('sqlSrvFPI')
+                $update = DB::connection('sqlSrvBCKI')
                     ->table('article')
                     ->where('article_id', $request->article_id)
                     ->update([
@@ -853,7 +853,7 @@ class ArticleController extends Controller
                 return $this->sendResponse('Success edit', 'Successfully edit Article');
             } else {
                 $article_id = $this->genArticleID($request->cat_id);
-                $insert = DB::connection('sqlSrvFPI')
+                $insert = DB::connection('sqlSrvBCKI')
                     ->table('article')
                     ->insert([
                         'article_id' => $article_id,
@@ -903,7 +903,7 @@ class ArticleController extends Controller
                 return $this->sendResponse('Success Insert', 'Successfully insert Article');
             }
         } catch (\Exception $e) {
-            // DB::connection('sqlSrvFPI')->rollBack();
+            // DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }

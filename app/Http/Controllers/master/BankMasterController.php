@@ -16,7 +16,7 @@ class BankMasterController extends Controller
     {
         try {
 
-            $datas = DB::connection('sqlSrvFPI')->table('account')
+            $datas = DB::connection('sqlSrvBCKI')->table('account')
                         ->selectRaw("DISTINCT trim(bank_name) as bank_name")
                         ->whereIn('a_type', ['B'])
                         ->where('posting', 'Y')
@@ -39,7 +39,7 @@ class BankMasterController extends Controller
                 return $this->sendError("Empty Bank ID", 'Error', 500);
             }
 
-            $datas = DB::connection('sqlSrvFPI')->table('account as a')
+            $datas = DB::connection('sqlSrvBCKI')->table('account as a')
                 ->selectRaw("trim(a.bank_acc) as bank_acc, trim(b.ac_name) as description")
                 ->join('g_ledger as b', 'a.ac_num', '=', 'b.ac_num')
                 ->where('a.bank_name', '=', $bankId)
@@ -57,7 +57,7 @@ class BankMasterController extends Controller
     {
         try {
 
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                     ->table('bank_mast')
                     ->where('active_flag', 'Y')
                     ->get();
@@ -95,7 +95,7 @@ class BankMasterController extends Controller
                 $where = $where . " and a.posting = 'Y'";
             }
 
-            $datas = DB::connection('sqlSrvFPI')->table('account as a')
+            $datas = DB::connection('sqlSrvBCKI')->table('account as a')
                 ->selectRaw("a.*, trim(b.ac_name) as description")
                 ->leftJoin('g_ledger as b', 'a.ac_num', '=', 'b.ac_num')
                 ->whereRaw($where)
@@ -111,7 +111,7 @@ class BankMasterController extends Controller
     public function store(Request $request)
     {
         try {    
-            $save = DB::connection('sqlSrvFPI')->table('account')
+            $save = DB::connection('sqlSrvBCKI')->table('account')
                     ->insert([
                         'a_type' => $request->a_type,
                         'bank_acc' => $request->bank_acc,
@@ -133,7 +133,7 @@ class BankMasterController extends Controller
     public function update(Request $request)
     {
         try {    
-            $save = DB::connection('sqlSrvFPI')->table('account')
+            $save = DB::connection('sqlSrvBCKI')->table('account')
                     ->where('a_type', $request->a_type)
                     ->where('bank_acc', $request->bank_acc)
                     ->update([
@@ -156,7 +156,7 @@ class BankMasterController extends Controller
     {
         try {    
 
-            $data = DB::connection('sqlSrvFPI')->table('account')
+            $data = DB::connection('sqlSrvBCKI')->table('account')
                     ->selectRaw('*')
                     ->where('a_type', $request->a_type)
                     ->where('bank_acc', $request->bank_acc)
@@ -164,7 +164,7 @@ class BankMasterController extends Controller
 
             if ($data) {
 
-                $save = DB::connection('sqlSrvFPI')->table('account')
+                $save = DB::connection('sqlSrvBCKI')->table('account')
                         ->where('a_type', $request->a_type)
                         ->where('bank_acc', $request->bank_acc)
                         ->update([
@@ -229,7 +229,7 @@ class BankMasterController extends Controller
                         'posting' => $records[$i - $pengurang]['posting'],
                     ]);
                 } else {
-                    DB::connection('sqlSrvFPI')->table('account')->insert([
+                    DB::connection('sqlSrvBCKI')->table('account')->insert([
                         'a_type' => $records[$i - $pengurang]['a_type'],
                         'bank_acc' => $records[$i - $pengurang]['bank_acc'],
                         'bank_name' => $records[$i - $pengurang]['bank_name'],

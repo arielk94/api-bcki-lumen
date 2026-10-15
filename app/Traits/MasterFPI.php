@@ -17,7 +17,7 @@ trait MasterFPI
             $sqlWhere .= "and vendor_id = '$id' or vendor_name like '%$id%'";
         }
 
-        $GVendor = DB::connection("sqlSrvFPI")
+        $GVendor = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select trim(vendor_id) as vendor_id, concat(trim(vendor_name), ' (', trim(vendor_id), ')') as vendor_name from vendor where $sqlWhere and active_flag = 'Y'"));
 
         return $GVendor;
@@ -32,7 +32,7 @@ trait MasterFPI
             $sqlWhere .= "and office_id = '$id' or office_name like '%$id%'";
         }
 
-        $GOffice = DB::connection("sqlSrvFPI")
+        $GOffice = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select office_id,
                                 TRIM(office) AS office,
                                 TRIM(address) AS address,
@@ -64,7 +64,7 @@ trait MasterFPI
     public function getDepartment($UserId, $id)
     {
         // $UserId = Auth::user()->user_id2;
-        $AllDept = DB::connection("sqlSrvFPI")
+        $AllDept = DB::connection("sqlSrvBCKI")
                 ->table('sec_env_conf')
                 ->where('user_id2', '=', $UserId)
                 ->where('var_id', '=', 'ALLDEPT')
@@ -77,7 +77,7 @@ trait MasterFPI
                 $sqlWhere .= "and dept_id = '$id' or dept_name like '%$id%'";
             }
 
-            $GDepartment = DB::connection("sqlSrvFPI")
+            $GDepartment = DB::connection("sqlSrvBCKI")
                     ->select(DB::raw("select office_id,
                                     TRIM(dept_id) AS dept_id,
                                     TRIM(dept_name) AS dept_name,
@@ -102,7 +102,7 @@ trait MasterFPI
                                     TRIM(nik_kb2) AS nik_kb2 from department where $sqlWhere and active_flag = 'Y'"));
             
         } else {
-            $UserPic = DB::connection("sqlSrvFPI")
+            $UserPic = DB::connection("sqlSrvBCKI")
                     ->table('pr_req_user')
                     ->where('nik', '=', $UserId)
                     ->where('active_flag', '=', 'Y')
@@ -114,7 +114,7 @@ trait MasterFPI
                     $sqlWhere .= "and dept_id = '$id' or dept_name like '%$id%'"; 
                 }  
 
-                $GDepartment = DB::connection("sqlSrvFPI")
+                $GDepartment = DB::connection("sqlSrvBCKI")
                         ->select(DB::raw("select a.office_id,
                                         TRIM(a.dept_id) AS dept_id,
                                         TRIM(a.dept_name) AS dept_name,
@@ -145,7 +145,7 @@ trait MasterFPI
                         $sqlWhere .= "and dept_id = '$id' or dept_name like '%$id%'";
                     }
 
-                    $GDepartment = DB::connection("sqlSrvFPI")
+                    $GDepartment = DB::connection("sqlSrvBCKI")
                             ->select(DB::raw("select office_id,
                                             TRIM(dept_id) AS dept_id,
                                             TRIM(dept_name) AS dept_name,
@@ -177,7 +177,7 @@ trait MasterFPI
     public function getPicName($UserId, $DeptId, $id)
     {
         //$UserId = Auth::user()->user_id2;
-        $AllDept = DB::connection("sqlSrvFPI")
+        $AllDept = DB::connection("sqlSrvBCKI")
                 ->table('sec_env_conf')
                 ->where('user_id', '=', $UserId)
                 ->where('var_id', '=', 'ALLDEPT')
@@ -192,7 +192,7 @@ trait MasterFPI
                 $sqlWhere .= "and dept_id = '$DeptId'";
             }
     
-            $GPic = DB::connection("sqlSrvFPI")
+            $GPic = DB::connection("sqlSrvBCKI")
                     ->select(DB::raw("select office_id,
                                     TRIM(dept_id) AS dept_id,
                                     TRIM(pic_id) AS pic_id,
@@ -203,7 +203,7 @@ trait MasterFPI
                                     TRIM(user_id) AS user_id,
                                     TRIM(nik) AS nik from pr_req_user where $sqlWhere and active_flag = 'Y'"));
         } else {
-            $Pic = DB::connection("sqlSrvFPI")
+            $Pic = DB::connection("sqlSrvBCKI")
                 ->table('pr_req_user')
                 ->where('nik', '=', $UserId)
                 ->first();
@@ -215,7 +215,7 @@ trait MasterFPI
                 if($DeptId) {
                     $sqlWhere .= "and dept_id = '$DeptId'";
                 }
-                $GPic = DB::connection("sqlSrvFPI")
+                $GPic = DB::connection("sqlSrvBCKI")
                         ->select(DB::raw("select office_id,
                                         TRIM(dept_id) AS dept_id,
                                         TRIM(pic_id) AS pic_id,
@@ -234,7 +234,7 @@ trait MasterFPI
                     $sqlWhere .= "and dept_id = '$DeptId'";
                 }
         
-                $GPic = DB::connection("sqlSrvFPI")
+                $GPic = DB::connection("sqlSrvBCKI")
                         ->select(DB::raw("select office_id,
                                         TRIM(dept_id) AS dept_id,
                                         TRIM(pic_id) AS pic_id,
@@ -258,7 +258,7 @@ trait MasterFPI
             $sqlWhere .= "and article_id = '$id' or description like '%$id%'";
         }
 
-        $GArticle = DB::connection("sqlSrvFPI")
+        $GArticle = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select article_id,
                                 TRIM(barcode) AS barcode,
                                 TRIM(description) AS description,
@@ -316,7 +316,7 @@ trait MasterFPI
             $sqlWhere .= "and id_site = '$id' or site_name like '%$id%'";
         }
 
-        $GSite = DB::connection("sqlSrvFPI")
+        $GSite = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select * from site where $sqlWhere and stat = 'Y'"));
         
         return $GSite;
@@ -330,7 +330,7 @@ trait MasterFPI
             $sqlWhere .= "and id_cluster = '$id' or cluster_name like '%$id%'";
         }
 
-        $GCluster = DB::connection("sqlSrvFPI")
+        $GCluster = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select * from site_cluster where $sqlWhere and stat = 'Y' "));
         return $GCluster;
     }
@@ -343,7 +343,7 @@ trait MasterFPI
             $sqlWhere .= "and id_house = '$id' or house_name like '%$id%'";
         }
 
-        $GHouse = DB::connection("sqlSrvFPI")
+        $GHouse = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select * from house_unit where $sqlWhere and active_flag = 'Y' "));
         return $GHouse;
         
@@ -356,7 +356,7 @@ trait MasterFPI
             $sqlWhere .= "and pay_term_id = '$id' or pay_term_desc ike '%$id%'";
         }
 
-        $GPayTerm = DB::connection("sqlSrvFPI")
+        $GPayTerm = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select trim(pay_term_id) as pay_term_id, trim(pay_term_desc) as pay_term_desc, num_of_days from pay_term where $sqlWhere and active_flag = 'Y'"));
 
         return $GPayTerm;
@@ -370,7 +370,7 @@ trait MasterFPI
             $sqlWhere .= "and curr_id = '$id' or symbol like '%$id%'";
         }
 
-        $GCurrId = DB::connection("sqlSrvFPI")
+        $GCurrId = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select 
                                     office_id,
                                     TRIM(curr_id) AS curr_id,
@@ -445,7 +445,7 @@ trait MasterFPI
                             ->table('sec_env_conf')
                             ->select('var_value')
                             ->where('user_id2', $user_id2)
-                            ->where('entity_id', 'FDPI')
+                            ->where('entity_id', 'bcki')
                             ->where('appl_id', $appl_id)
                             ->where('var_id', $var_id)
                             ->where('active_flag', $active_flag)

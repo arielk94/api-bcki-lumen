@@ -36,7 +36,7 @@ class CheckListController extends Controller
             }
             // dd($sqlWhere);
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('qc_trans_dtl')
                 ->selectRaw("
                                 qc_trans_dtl.qc_trans_id, 
@@ -92,14 +92,14 @@ class CheckListController extends Controller
 
         try {
             if($id_work == '1' || $id_work == 1){
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
                     ->value('dt_aprv');
                     
                 if ($cekAprv !== '1900-01-01 00:00:00.000') {
-                    $linkGambar = DB::connection("sqlSrvFPI")
+                    $linkGambar = DB::connection("sqlSrvBCKI")
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -109,7 +109,7 @@ class CheckListController extends Controller
                         Storage::disk('public')->delete($linkGambar);
                     }
     
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -123,7 +123,7 @@ class CheckListController extends Controller
                     return $this->sendResponse('Success Update', 'Successfully unapprove');
                 } else {
                     if ($image) {
-                        $directory = 'fpi-check-list/'; // Direktori penyimpanan
+                        $directory = 'bcki-check-list/'; // Direktori penyimpanan
         
                         $filename2 = Str::random(40) . '.jpg'; // Nama file hasil compress
                         $path2 = $directory . $filename2;
@@ -151,7 +151,7 @@ class CheckListController extends Controller
                         $path2 = '';
                     }
     
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -165,14 +165,14 @@ class CheckListController extends Controller
                     return $this->sendResponse('Success Update', 'Successfully approve');
                 }
             }elseif($id_work == '2' || $id_work == 2){
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
                     ->value('dt_aprv2');
                     
                 if ($cekAprv !== '1900-01-01 00:00:00.000') {
-                    $linkGambar = DB::connection("sqlSrvFPI")
+                    $linkGambar = DB::connection("sqlSrvBCKI")
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -182,7 +182,7 @@ class CheckListController extends Controller
                         Storage::disk('public')->delete($linkGambar);
                     }
     
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -196,7 +196,7 @@ class CheckListController extends Controller
                     return $this->sendResponse('Success Update', 'Successfully unapprove 2');
                 } else {
                     if ($image) {
-                        $directory = 'fpi-check-list/'; // Direktori penyimpanan
+                        $directory = 'bcki-check-list/'; // Direktori penyimpanan
         
                         $filename2 = Str::random(40) . '.jpg'; // Nama file hasil compress
                         $path2 = $directory . $filename2;
@@ -224,7 +224,7 @@ class CheckListController extends Controller
                         $path2 = '';
                     }
     
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -238,14 +238,14 @@ class CheckListController extends Controller
                     return $this->sendResponse('Success Update', 'Successfully approve 2');
                 }
             }elseif($id_work == '3' || $id_work == 3){
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
                     ->value('dt_aprv3');
                     
                 if ($cekAprv !== '1900-01-01 00:00:00.000') {
-                    $linkGambar = DB::connection("sqlSrvFPI")
+                    $linkGambar = DB::connection("sqlSrvBCKI")
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -255,7 +255,7 @@ class CheckListController extends Controller
                         Storage::disk('public')->delete($linkGambar);
                     }
     
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -269,7 +269,7 @@ class CheckListController extends Controller
                     return $this->sendResponse('Success Update', 'Successfully unapprove 3');
                 } else {
                     if ($image) {
-                        $directory = 'fpi-check-list/'; // Direktori penyimpanan
+                        $directory = 'bcki-check-list/'; // Direktori penyimpanan
         
                         $filename2 = Str::random(40) . '.jpg'; // Nama file hasil compress
                         $path2 = $directory . $filename2;
@@ -297,7 +297,7 @@ class CheckListController extends Controller
                         $path2 = '';
                     }
     
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -338,7 +338,7 @@ class CheckListController extends Controller
 
         try {
             if($id_work == '1' || $id_work == 1){
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -358,7 +358,7 @@ class CheckListController extends Controller
                                 $originalName = $file->getClientOriginalName();
 
                                 $filename = Str::random(40) . '.' . $extension;
-                                $path = 'fpi-check-list/';
+                                $path = 'bcki-check-list/';
 
                                 // -- save file local
                                 Storage::disk('public')->put("$path/$filename", file_get_contents($file));
@@ -377,7 +377,7 @@ class CheckListController extends Controller
                         }
                     }
     
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -390,7 +390,7 @@ class CheckListController extends Controller
                         ]);
 
                     if ($img) {
-                        DB::connection('sqlSrvFPI')
+                        DB::connection('sqlSrvBCKI')
                             ->table('qc_trans_doc')
                             ->insert($img);
                     }
@@ -398,7 +398,7 @@ class CheckListController extends Controller
                     return $this->sendResponse('Success Update', 'Successfully approve 1');
                 }
             }elseif($id_work == '2' || $id_work == 2){
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -418,7 +418,7 @@ class CheckListController extends Controller
                                 $originalName = $file->getClientOriginalName();
 
                                 $filename = Str::random(40) . '.' . $extension;
-                                $path = 'fpi-check-list/';
+                                $path = 'bcki-check-list/';
 
                                 // -- save file local
                                 Storage::disk('public')->put("$path/$filename", file_get_contents($file));
@@ -437,7 +437,7 @@ class CheckListController extends Controller
                         }
                     }
     
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -450,7 +450,7 @@ class CheckListController extends Controller
                         ]);
 
                     if ($img) {
-                        DB::connection('sqlSrvFPI')
+                        DB::connection('sqlSrvBCKI')
                             ->table('qc_trans_doc')
                             ->insert($img);
                     }
@@ -458,7 +458,7 @@ class CheckListController extends Controller
                     return $this->sendResponse('Success Update', 'Successfully approve 2');
                 }
             }elseif($id_work == '3' || $id_work == 3){
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -478,7 +478,7 @@ class CheckListController extends Controller
                                 $originalName = $file->getClientOriginalName();
 
                                 $filename = Str::random(40) . '.' . $extension;
-                                $path = 'fpi-check-list/';
+                                $path = 'bcki-check-list/';
 
                                 // -- save file local
                                 Storage::disk('public')->put("$path/$filename", file_get_contents($file));
@@ -497,7 +497,7 @@ class CheckListController extends Controller
                         }
                     }
     
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_dtl')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
@@ -510,7 +510,7 @@ class CheckListController extends Controller
                         ]);
 
                     if ($img) {
-                        DB::connection('sqlSrvFPI')
+                        DB::connection('sqlSrvBCKI')
                             ->table('qc_trans_doc')
                             ->insert($img);
                     }
@@ -559,7 +559,7 @@ class CheckListController extends Controller
                         $sqlWhere = $sqlWhere . " and qc_trans_hdr.active_flag = 'Y'";
                     }
 
-                    $datas = DB::connection("sqlSrvFPI")
+                    $datas = DB::connection("sqlSrvBCKI")
                         ->table('qc_trans_hdr')
                         ->selectRaw("
                             spk_hdr.id_site, 
@@ -612,7 +612,7 @@ class CheckListController extends Controller
                         $sqlWhere = $sqlWhere . " and qc_trans_hdr.active_flag = " . "'Y'";
                     }
 
-                    $datas = DB::connection("sqlSrvFPI")
+                    $datas = DB::connection("sqlSrvBCKI")
                         ->table('qc_trans_hdr')
                         ->selectRaw("
                                         v_penjualan_payment.id_site, 
@@ -652,7 +652,7 @@ class CheckListController extends Controller
                         $sqlWhere = $sqlWhere . " and qc_trans_hdr.active_flag = " . "'Y'";
                     }
 
-                    $datas = DB::connection("sqlSrvFPI")
+                    $datas = DB::connection("sqlSrvBCKI")
                         ->table('qc_trans_hdr')
                         ->selectRaw("
                                         v_penjualan_payment.id_site, 
@@ -694,13 +694,13 @@ class CheckListController extends Controller
         }
 
         // 🔥 Ambil semua attachment, group by id_qc_item lalu id_work
-        $allImages = DB::connection("sqlSrvFPI")
+        $allImages = DB::connection("sqlSrvBCKI")
             ->table('qc_trans_doc')
             ->where('qc_trans_id', $qc_trans_id)
             ->get()
             ->groupBy('id_qc_item');
 
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
             ->table('qc_trans_dtl')
             ->selectRaw("
                 qc_trans_dtl.qc_trans_id,
@@ -769,7 +769,7 @@ class CheckListController extends Controller
     //         }
     //         // dd($sqlWhere);
 
-    //         $datas = DB::connection("sqlSrvFPI")
+    //         $datas = DB::connection("sqlSrvBCKI")
     //             ->table('qc_trans_dtl')
     //             ->selectRaw("
     //                             qc_trans_dtl.qc_trans_id, 
@@ -830,7 +830,7 @@ class CheckListController extends Controller
 //                 return $this->sendError("Trx ID Kosong", 'Error', 500);
 //             }
 
-//             $datas = DB::connection("sqlSrvFPI")
+//             $datas = DB::connection("sqlSrvBCKI")
 //                 ->table('qc_trans_dtl')
 //                 ->selectRaw("
 //                     qc_trans_dtl.qc_trans_id, 
@@ -861,7 +861,7 @@ class CheckListController extends Controller
 //                 ->map(function ($item) {
 
 //                     // 🔥 ambil semua gambar dari qc_trans_doc
-//                     $images = DB::connection("sqlSrvFPI")
+//                     $images = DB::connection("sqlSrvBCKI")
 //                         ->table('qc_trans_doc')
 //                         ->where('qc_trans_id', $item->qc_trans_id)
 //                         ->where('id_qc_item', $item->id_qc_item)
@@ -918,7 +918,7 @@ class CheckListController extends Controller
         }
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('qc_trans_hdr as qth')
                 ->leftjoin('spk_hdr as sh', function ($e) {
                         $e->on('qth.doc_id', '=', 'sh.id_spk')
@@ -970,13 +970,13 @@ class CheckListController extends Controller
     //     try {
 
     //         // 🔥 ambil semua gambar (group by item)
-    //         $allImages = DB::connection("sqlSrvFPI")
+    //         $allImages = DB::connection("sqlSrvBCKI")
     //             ->table('qc_trans_doc')
     //             ->where('qc_trans_id', $qc_trans_id)
     //             ->get()
     //             ->groupBy('id_qc_item');
 
-    //         $result =  DB::connection("sqlSrvFPI")
+    //         $result =  DB::connection("sqlSrvBCKI")
     //             ->table('qc_trans_dtl as qtd')
     //             ->join('qc_trans_hdr as qth', 'qtd.qc_trans_id', '=', 'qth.qc_trans_id')
     //             ->join('qc_item as qi', 'qtd.id_qc_item', '=', 'qi.id_qc_item')
@@ -1066,13 +1066,13 @@ class CheckListController extends Controller
 
     try {
 
-        $allImages = DB::connection("sqlSrvFPI")
+        $allImages = DB::connection("sqlSrvBCKI")
             ->table('qc_trans_doc')
             ->where('qc_trans_id', $qc_trans_id)
             ->get()
             ->groupBy('id_qc_item');
 
-        $result = DB::connection("sqlSrvFPI")
+        $result = DB::connection("sqlSrvBCKI")
             ->table('qc_trans_dtl as qtd')
             ->join('qc_trans_hdr as qth', 'qtd.qc_trans_id', '=', 'qth.qc_trans_id')
             ->join('qc_item as qi', 'qtd.id_qc_item', '=', 'qi.id_qc_item')
@@ -1188,7 +1188,7 @@ class CheckListController extends Controller
                         $sqlWhere = $sqlWhere . " and hu.active_flag = " . "'Y'";
                     }
 
-                    $datas = DB::connection("sqlSrvFPI")
+                    $datas = DB::connection("sqlSrvBCKI")
                             ->table('house_unit as hu')
                             ->selectRaw("
                                         DISTINCT
@@ -1226,7 +1226,7 @@ class CheckListController extends Controller
                         $sqlWhere = $sqlWhere . " and hu.active_flag = " . "'Y'";
                     }
 
-                    $datas = DB::connection("sqlSrvFPI")
+                    $datas = DB::connection("sqlSrvBCKI")
                             ->table('house_unit as hu')
                             ->selectRaw("
                                         hu.id_site,
@@ -1263,7 +1263,7 @@ class CheckListController extends Controller
                         $sqlWhere = $sqlWhere . " and hu.active_flag = " . "'Y'";
                     }
 
-                    $datas = DB::connection("sqlSrvFPI")
+                    $datas = DB::connection("sqlSrvBCKI")
                             ->table('house_unit as hu')
                             ->selectRaw("
                                         hu.id_site,
@@ -1313,7 +1313,7 @@ class CheckListController extends Controller
         }
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('vendor as v')
                 ->selectRaw("
                         DISTINCT
@@ -1369,13 +1369,13 @@ class CheckListController extends Controller
         }
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('qc_trans_dtl')
                 ->selectRaw($sqlSelect)
                 ->whereRaw($sqlWhere)
                 ->get();
             
-            $img = DB::connection("sqlSrvFPI")
+            $img = DB::connection("sqlSrvBCKI")
                 ->table('qc_trans_doc')
                 // ->selectRaw($sqlSelect)
                 ->selectRaw("
@@ -1438,7 +1438,7 @@ class CheckListController extends Controller
             */
             if ($id_work == '1' || $id_work == 1) {
 
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1450,7 +1450,7 @@ class CheckListController extends Controller
                 }
 
                 // ================= DELETE IMAGE =================
-                $listAttch = DB::connection('sqlSrvFPI')
+                $listAttch = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1466,7 +1466,7 @@ class CheckListController extends Controller
                     }
                 }
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1475,7 +1475,7 @@ class CheckListController extends Controller
                     ->delete();
 
                 // ================= LAST ITEM NUM =================
-                $lastItemNum = DB::connection('sqlSrvFPI')
+                $lastItemNum = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1494,7 +1494,7 @@ class CheckListController extends Controller
                             $originalName = $file->getClientOriginalName();
 
                             $filename = Str::random(40) . '.' . $extension;
-                            $path = 'fpi-check-list/';
+                            $path = 'bcki-check-list/';
 
                             Storage::disk('public')->put(
                                 "$path/$filename",
@@ -1517,7 +1517,7 @@ class CheckListController extends Controller
                 }
 
                 // ================= UPDATE REMARK =================
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1529,7 +1529,7 @@ class CheckListController extends Controller
 
                 // ================= INSERT IMAGE =================
                 if ($img) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_doc')
                         ->insert($img);
                 }
@@ -1547,7 +1547,7 @@ class CheckListController extends Controller
             */
             elseif ($id_work == '2' || $id_work == 2) {
 
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1559,7 +1559,7 @@ class CheckListController extends Controller
                 }
 
                 // ================= DELETE IMAGE =================
-                $listAttch = DB::connection('sqlSrvFPI')
+                $listAttch = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1576,7 +1576,7 @@ class CheckListController extends Controller
                     }
                 }
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1585,7 +1585,7 @@ class CheckListController extends Controller
                     ->delete();
 
                 // ================= LAST ITEM NUM =================
-                $lastItemNum = DB::connection('sqlSrvFPI')
+                $lastItemNum = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1605,7 +1605,7 @@ class CheckListController extends Controller
                             $originalName = $file->getClientOriginalName();
 
                             $filename = Str::random(40) . '.' . $extension;
-                            $path = 'fpi-check-list';
+                            $path = 'bcki-check-list';
 
                             Storage::disk('public')->put(
                                 "$path/$filename",
@@ -1628,7 +1628,7 @@ class CheckListController extends Controller
                 }
 
                 // ================= UPDATE REMARK =================
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1640,7 +1640,7 @@ class CheckListController extends Controller
 
                 // ================= INSERT IMAGE =================
                 if ($img) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_doc')
                         ->insert($img);
                 }
@@ -1658,7 +1658,7 @@ class CheckListController extends Controller
             */
             elseif ($id_work == '3' || $id_work == 3) {
 
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1670,7 +1670,7 @@ class CheckListController extends Controller
                 }
 
                 // ================= DELETE IMAGE =================
-                $listAttch = DB::connection('sqlSrvFPI')
+                $listAttch = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1687,7 +1687,7 @@ class CheckListController extends Controller
                     }
                 }
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1696,7 +1696,7 @@ class CheckListController extends Controller
                     ->delete();
 
                 // ================= LAST ITEM NUM =================
-                $lastItemNum = DB::connection('sqlSrvFPI')
+                $lastItemNum = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1716,7 +1716,7 @@ class CheckListController extends Controller
                             $originalName = $file->getClientOriginalName();
 
                             $filename = Str::random(40) . '.' . $extension;
-                            $path = 'fpi-check-list';
+                            $path = 'bcki-check-list';
 
                             Storage::disk('public')->put(
                                 "$path/$filename",
@@ -1739,7 +1739,7 @@ class CheckListController extends Controller
                 }
 
                 // ================= UPDATE REMARK =================
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1751,7 +1751,7 @@ class CheckListController extends Controller
 
                 // ================= INSERT IMAGE =================
                 if ($img) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_doc')
                         ->insert($img);
                 }
@@ -1799,7 +1799,7 @@ class CheckListController extends Controller
         try {
             if($id_work == '1' || $id_work == 1){
                                // Update yang ada, hapus gambar yg mau dihapus
-                $listAttch = DB::connection('sqlSrvFPI')
+                $listAttch = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1816,7 +1816,7 @@ class CheckListController extends Controller
                 }
 
                 //delete image
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1825,7 +1825,7 @@ class CheckListController extends Controller
                     ->delete();
 
                 // -- item_num
-                $lastItemNum = DB::connection('sqlSrvFPI')
+                $lastItemNum = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1844,7 +1844,7 @@ class CheckListController extends Controller
                             $originalName = $file->getClientOriginalName();
 
                             $filename = Str::random(40) . '.' . $extension;
-                            $path = 'fpi-check-list/';
+                            $path = 'bcki-check-list/';
 
                             // -- save file local
                             Storage::disk('public')->put("$path/$filename", file_get_contents($file));
@@ -1863,7 +1863,7 @@ class CheckListController extends Controller
                     }
                 }
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1876,7 +1876,7 @@ class CheckListController extends Controller
                     ]);
 
                 if ($img) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_doc')
                         ->insert($img);
                 }
@@ -1885,7 +1885,7 @@ class CheckListController extends Controller
                 
             }elseif($id_work == '2' || $id_work == 2){
                 // Delete semua gambar
-                // $linkGambar = DB::connection("sqlSrvFPI")
+                // $linkGambar = DB::connection("sqlSrvBCKI")
                 //     ->table('qc_trans_doc')
                 //     ->where('qc_trans_id', $qc_trans_id)
                 //     ->where('id_qc_item', $id_qc_item)
@@ -1895,11 +1895,11 @@ class CheckListController extends Controller
                     
                 // if($linkGambar->isNotEmpty()) {
                 //     foreach ($linkGambar as $item) {
-                //         Storage::disk('public')->delete('fpi-check-list/' . $item->doc_name);
+                //         Storage::disk('public')->delete('bcki-check-list/' . $item->doc_name);
                 //     }
                 // }
 
-                // DB::connection('sqlSrvFPI')
+                // DB::connection('sqlSrvBCKI')
                 //         ->table('qc_trans_doc')
                 //         ->where('qc_trans_id', $qc_trans_id)
                 //         ->where('id_qc_item', $id_qc_item)
@@ -1907,7 +1907,7 @@ class CheckListController extends Controller
                 //         ->delete();
 
                 // Update yang ada, hapus gambar yg mau dihapus
-                $listAttch = DB::connection('sqlSrvFPI')
+                $listAttch = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1924,7 +1924,7 @@ class CheckListController extends Controller
                 }
 
                 //delete image
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1933,7 +1933,7 @@ class CheckListController extends Controller
                     ->delete();
 
                 // -- item_num
-                $lastItemNum = DB::connection('sqlSrvFPI')
+                $lastItemNum = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1952,7 +1952,7 @@ class CheckListController extends Controller
                             $originalName = $file->getClientOriginalName();
 
                             $filename = Str::random(40) . '.' . $extension;
-                            $path = 'fpi-check-list/';
+                            $path = 'bcki-check-list/';
 
                             // -- save file local
                             Storage::disk('public')->put("$path/$filename", file_get_contents($file));
@@ -1971,7 +1971,7 @@ class CheckListController extends Controller
                     }
                 }
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -1984,7 +1984,7 @@ class CheckListController extends Controller
                     ]);
 
                 if ($img) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_doc')
                         ->insert($img);
                 }
@@ -1993,7 +1993,7 @@ class CheckListController extends Controller
 
             }elseif($id_work == '3' || $id_work == 3){
                 // Delete semua gambar
-                // $linkGambar = DB::connection("sqlSrvFPI")
+                // $linkGambar = DB::connection("sqlSrvBCKI")
                 //     ->table('qc_trans_doc')
                 //     ->where('qc_trans_id', $qc_trans_id)
                 //     ->where('id_qc_item', $id_qc_item)
@@ -2003,11 +2003,11 @@ class CheckListController extends Controller
                     
                 // if($linkGambar->isNotEmpty()) {
                 //     foreach ($linkGambar as $item) {
-                //         Storage::disk('public')->delete('fpi-check-list/' . $item->doc_name);
+                //         Storage::disk('public')->delete('bcki-check-list/' . $item->doc_name);
                 //     }
                 // }
 
-                // DB::connection('sqlSrvFPI')
+                // DB::connection('sqlSrvBCKI')
                 //         ->table('qc_trans_doc')
                 //         ->where('qc_trans_id', $qc_trans_id)
                 //         ->where('id_qc_item', $id_qc_item)
@@ -2015,7 +2015,7 @@ class CheckListController extends Controller
                 //         ->delete();
 
                 // Update yang ada, hapus gambar yg mau dihapus
-                $listAttch = DB::connection('sqlSrvFPI')
+                $listAttch = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -2032,7 +2032,7 @@ class CheckListController extends Controller
                 }
 
                 //delete image
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -2041,7 +2041,7 @@ class CheckListController extends Controller
                     ->delete();
 
                 // -- item_num
-                $lastItemNum = DB::connection('sqlSrvFPI')
+                $lastItemNum = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -2060,7 +2060,7 @@ class CheckListController extends Controller
                             $originalName = $file->getClientOriginalName();
 
                             $filename = Str::random(40) . '.' . $extension;
-                            $path = 'fpi-check-list/';
+                            $path = 'bcki-check-list/';
 
                             // -- save file local
                             Storage::disk('public')->put("$path/$filename", file_get_contents($file));
@@ -2079,7 +2079,7 @@ class CheckListController extends Controller
                     }
                 }
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -2092,7 +2092,7 @@ class CheckListController extends Controller
                     ]);
 
                 if ($img) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_doc')
                         ->insert($img);
                 }
@@ -2126,7 +2126,7 @@ class CheckListController extends Controller
 
         try {
             if($id_work == '1' || $id_work == 1){
-                $linkGambar = DB::connection("sqlSrvFPI")
+                $linkGambar = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -2136,18 +2136,18 @@ class CheckListController extends Controller
                     
                 if($linkGambar->isNotEmpty()) {
                     foreach ($linkGambar as $item) {
-                        Storage::disk('public')->delete('fpi-check-list/' . $item->doc_name);
+                        Storage::disk('public')->delete('bcki-check-list/' . $item->doc_name);
                     }
                 }
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_doc')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
                         ->where('id_work', $id_work)
                         ->delete();
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -2160,7 +2160,7 @@ class CheckListController extends Controller
                 return $this->sendResponse('Success Update', 'Successfully cancel approve 1');
                 
             }elseif($id_work == '2' || $id_work == 2){
-                $linkGambar = DB::connection("sqlSrvFPI")
+                $linkGambar = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -2170,18 +2170,18 @@ class CheckListController extends Controller
                     
                 if($linkGambar->isNotEmpty()) {
                     foreach ($linkGambar as $item) {
-                        Storage::disk('public')->delete('fpi-check-list/' . $item->doc_name);
+                        Storage::disk('public')->delete('bcki-check-list/' . $item->doc_name);
                     }
                 }
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_doc')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
                         ->where('id_work', $id_work)
                         ->delete();
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -2194,7 +2194,7 @@ class CheckListController extends Controller
                 return $this->sendResponse('Success Update', 'Successfully cancel approve 2');
 
             }elseif($id_work == '3' || $id_work == 3){
-                $linkGambar = DB::connection("sqlSrvFPI")
+                $linkGambar = DB::connection("sqlSrvBCKI")
                     ->table('qc_trans_doc')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)
@@ -2204,18 +2204,18 @@ class CheckListController extends Controller
                     
                 if($linkGambar->isNotEmpty()) {
                     foreach ($linkGambar as $item) {
-                        Storage::disk('public')->delete('fpi-check-list/' . $item->doc_name);
+                        Storage::disk('public')->delete('bcki-check-list/' . $item->doc_name);
                     }
                 }
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_doc')
                         ->where('qc_trans_id', $qc_trans_id)
                         ->where('id_qc_item', $id_qc_item)
                         ->where('id_work', $id_work)
                         ->delete();
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('id_qc_item', $id_qc_item)

@@ -28,7 +28,7 @@ class ClosingWeeklyController extends Controller
             $sqlWhere.= " and site_cluster.id_cluster = '$id_cluster'";
         }
 
-        $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
             SELECT
                 site.id_site,
                 site.site_name,
@@ -109,7 +109,7 @@ class ClosingWeeklyController extends Controller
             $sqlWhere.= " and site_cluster.id_cluster = '$id_cluster'";
         }
 
-        $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
             SELECT
                 site.id_site,
                 site.site_name,
@@ -181,7 +181,7 @@ class ClosingWeeklyController extends Controller
         $spk_type = trim($request->spk_type);
         $com_id = $request->com_id;
 
-        $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
                     SELECT
                         site.id_site,
                         site.site_name + ' ' + site.site_address AS site_name,
@@ -240,7 +240,7 @@ class ClosingWeeklyController extends Controller
         $closed_date = Carbon::parse($request->closed_date)->format('Y-m-d');
         $user_id = getAuth($request)->user_id2;
 
-        $opname_hdr = DB::connection('sqlSrvFPI')
+        $opname_hdr = DB::connection('sqlSrvBCKI')
                         ->table('qc_opname')
                         ->whereDate('tr_date', $closed_date)
                         ->where('spk_id', trim($request->spk_id))
@@ -252,7 +252,7 @@ class ClosingWeeklyController extends Controller
                 return $this->sendError('SPK dengan trans ID tsb sudah jadi Invoice, hapus Invoice dulu', 'Error', 500);
             }
         }
-        // $qc_period_weekly = DB::connection('sqlSrvFPI')
+        // $qc_period_weekly = DB::connection('sqlSrvBCKI')
         // ->table('qc_period_weekly')
         // ->where('close_date', $closed_date)
         // ->where('spk_id', $request->spk_id)
@@ -263,13 +263,13 @@ class ClosingWeeklyController extends Controller
         // if ($qc_period_weekly) {
         //     return $this->sendError('Upps maaf sudah di closing untuk tgl ' . $closed_date, 'Error', 500);
         // }
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
         try {
 
             foreach ($request->items as $key => $value) {
                 $value = (object) $value;
 
-                $closed = DB::connection("sqlSrvFPI")
+                $closed = DB::connection("sqlSrvBCKI")
                 ->table('qc_closing_weekly')
                 ->select('item_num')
                 ->where('close_date', $closed_date)
@@ -279,7 +279,7 @@ class ClosingWeeklyController extends Controller
                 ->first();
 
                 if ($closed) {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                     ->table('qc_closing_weekly')
                     ->select('item_num')
                     ->where('close_date', $closed_date)
@@ -288,7 +288,7 @@ class ClosingWeeklyController extends Controller
                     ->where('qc_item_id', $value->id_qc_item)
                     ->delete();
 
-                    $item_num = DB::connection("sqlSrvFPI")
+                    $item_num = DB::connection("sqlSrvBCKI")
                             ->table('qc_closing_weekly')
                             ->select('item_num')
                             ->where('close_date', $closed_date)
@@ -297,7 +297,7 @@ class ClosingWeeklyController extends Controller
                             ->where('qc_item_id', $value->id_qc_item)
                             ->max('item_num');
 
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                     ->table('qc_closing_weekly')
                     ->insert([
                         'close_date' => $closed_date,
@@ -312,7 +312,7 @@ class ClosingWeeklyController extends Controller
                         'closing_by' => $user_id
                     ]);
                 } else {
-                    $item_num = DB::connection("sqlSrvFPI")
+                    $item_num = DB::connection("sqlSrvBCKI")
                             ->table('qc_closing_weekly')
                             ->select('item_num')
                             ->where('close_date', $closed_date)
@@ -321,7 +321,7 @@ class ClosingWeeklyController extends Controller
                             ->where('qc_item_id', $value->id_qc_item)
                             ->max('item_num');
 
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                     ->table('qc_closing_weekly')
                     ->insert([
                         'close_date' => $closed_date,
@@ -337,7 +337,7 @@ class ClosingWeeklyController extends Controller
                     ]);
                 }                
                  
-                DB::connection('sqlSrvFPI')->update(
+                DB::connection('sqlSrvBCKI')->update(
                     "UPDATE qc_trans_dtl
                     SET stat_closing = ?, stat_closing2 = ?, stat_closing3 = ? 
                     WHERE qc_trans_id = ? AND id_qc_item = ?", 
@@ -346,7 +346,7 @@ class ClosingWeeklyController extends Controller
                 );
             }
 
-            $qc_period_weekly = DB::connection('sqlSrvFPI')
+            $qc_period_weekly = DB::connection('sqlSrvBCKI')
             ->table('qc_period_weekly')
             ->where('close_date', $closed_date)
             ->where('spk_id', $request->spk_id)
@@ -355,7 +355,7 @@ class ClosingWeeklyController extends Controller
             ->first();
 
             if (!$qc_period_weekly) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('qc_period_weekly')
                 ->insert([
                     'close_date' => $closed_date,
@@ -368,7 +368,7 @@ class ClosingWeeklyController extends Controller
                 ]);
             }
 
-            $qc_trans_hdr = DB::connection('sqlSrvFPI')
+            $qc_trans_hdr = DB::connection('sqlSrvBCKI')
             ->table('qc_trans_hdr')
             ->where('doc_id', $request->spk_id)
             ->where('doc_type', 'SPK')
@@ -378,13 +378,13 @@ class ClosingWeeklyController extends Controller
 
             $this->storeOpname($request, $closed_date, $id_qc_from);
 
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
 
             return $this->sendResponse('', 'Successfully closed');
 
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -393,7 +393,7 @@ class ClosingWeeklyController extends Controller
     {
         // $payload = ['spk_id, spk_type, qc_trans_id, com_id, items']
 
-        $opname_hdr = DB::connection('sqlSrvFPI')
+        $opname_hdr = DB::connection('sqlSrvBCKI')
                         ->table('qc_opname_dtl as qc_opname_dtl')
                         ->join('qc_opname',function($join){
                             $join->on('qc_opname.tr_id','=','qc_opname_dtl.tr_id')
@@ -410,13 +410,13 @@ class ClosingWeeklyController extends Controller
                 return $this->sendError('Tidak bisa unclosing, SPK sudah jadi Invoice', 'Error', 500);
             }
         }
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
         try {
 
             foreach ($request->items as $key => $value) {
                 $value = (object) $value;
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('qc_closing_weekly')
                 ->where('spk_id', $value->spk_id)
                 ->where('qc_trans_id', $value->qc_trans_id)
@@ -424,7 +424,7 @@ class ClosingWeeklyController extends Controller
                 ->where('com_id', $request->com_id)
                 ->delete();
                  
-                DB::connection('sqlSrvFPI')->update(
+                DB::connection('sqlSrvBCKI')->update(
                     "UPDATE qc_trans_dtl
                     SET stat_closing = ?, stat_closing2 = ?, stat_closing3 = ? 
                     WHERE qc_trans_id = ? AND id_qc_item = ?", 
@@ -434,59 +434,59 @@ class ClosingWeeklyController extends Controller
             }
 
             if ($opname_hdr) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('qc_opname_kasbon')
                 ->where('spk_id', $request->spk_id)
                 ->where('tr_id', $opname_hdr->tr_id)
                 ->delete();
             }
 
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
             ->table('qc_opname_dtl')
             ->where('spk_id', $request->spk_id)
             ->where('qc_trans_id', $request->qc_trans_id)
             ->where('com_id', $request->com_id)
             ->delete();
 
-            $countHeader = DB::connection("sqlSrvFPI")
+            $countHeader = DB::connection("sqlSrvBCKI")
             ->table('qc_opname_dtl')
             ->where('spk_id', $request->spk_id)
             ->where('qc_trans_id', $request->qc_trans_id)
             ->count();
 
             if ((int) $countHeader == 0) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('qc_opname')
                 ->where('spk_id', $request->spk_id)
                 ->where('qc_trans_id', $request->qc_trans_id)
                 ->delete();
             }
 
-            $qc_period_weekly = DB::connection('sqlSrvFPI')
+            $qc_period_weekly = DB::connection('sqlSrvBCKI')
             ->table('qc_period_weekly')
             ->where('spk_id', $request->spk_id)
             ->where('spk_type', $request->spk_type)
             ->where('com_id', $request->com_id)
             ->delete();
 
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
             ->table('qc_opname_kasbon')
             ->where('spk_id', $request->spk_id)
             ->delete();
 
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
 
             return $this->sendResponse('', 'Successfully unclosed');
 
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     private function storeOpname($request, $closed_date, $id_qc_from){
-        $sum_closing = DB::connection('sqlSrvFPI')->selectOne("
+        $sum_closing = DB::connection('sqlSrvBCKI')->selectOne("
                     SELECT 
                         SUM(CASE WHEN check2 = 'Y' THEN 1 ELSE 0 END) AS total_checked,
                         SUM(CASE WHEN check3 = 'Y' THEN 1 ELSE 0 END) AS total_qc
@@ -494,7 +494,7 @@ class ClosingWeeklyController extends Controller
                     WHERE spk_id = ? AND qc_trans_id = ?  AND com_id = ?
                 ", [trim($request->spk_id), trim($request->qc_trans_id), $request->com_id]);
 
-        $sum_trans_dtl = DB::connection('sqlSrvFPI')->selectOne("
+        $sum_trans_dtl = DB::connection('sqlSrvBCKI')->selectOne("
                     SELECT 
                         SUM(CASE WHEN qtl.dt_aprv2 IS NOT NULL THEN 1 ELSE 0 END) AS total_checked,
                         SUM(CASE WHEN qtl.dt_aprv3 IS NOT NULL THEN 1 ELSE 0 END) AS total_qc
@@ -515,7 +515,7 @@ class ClosingWeeklyController extends Controller
         if (trim($request->spk_type) == 'A' || trim($request->spk_type) == 'L') {
             if (($closing_total_checked >= $trans_total_checked && $closing_total_checked > 0) && ($closing_total_qc >= $trans_total_qc && $closing_total_qc > 0)) {
                 try {
-                    $opname_hdr = DB::connection('sqlSrvFPI')
+                    $opname_hdr = DB::connection('sqlSrvBCKI')
                     ->table('qc_opname')
                     ->whereDate('tr_date', $closed_date)
                     ->where('spk_id', trim($request->spk_id))
@@ -526,7 +526,7 @@ class ClosingWeeklyController extends Controller
                         $transId = $opname_hdr->tr_id;
                     } else {
                         $transId = $this->generateID($request);
-                        DB::connection('sqlSrvFPI')
+                        DB::connection('sqlSrvBCKI')
                         ->table('qc_opname')
                         ->insert([
                             'tr_id' => $transId,
@@ -560,7 +560,7 @@ class ClosingWeeklyController extends Controller
                             $amt_retensi = 0;
                             $total_final = $amt - $amt_retensi;
 
-                            $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                            $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->where('spk_id', $request->spk_id)
                             ->where('qc_trans_id', $request->qc_trans_id)
@@ -569,14 +569,14 @@ class ClosingWeeklyController extends Controller
                             ->first();
 
                             if (!$qc_opname_dtl) {
-                                $item_num = DB::connection("sqlSrvFPI")->table('qc_opname_dtl')
+                                $item_num = DB::connection("sqlSrvBCKI")->table('qc_opname_dtl')
                                             ->select('item_num')
                                             ->where('tr_id', $transId)
                                             ->where('spk_id', $request->spk_id)
                                             ->where('qc_trans_id', $request->qc_trans_id)
                                             ->max('item_num');
 
-                                DB::connection('sqlSrvFPI')
+                                DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->insert([
                                     'tr_id' => $transId,
@@ -601,7 +601,7 @@ class ClosingWeeklyController extends Controller
                             $amt_retensi = 0;
                             $total_final = $amt - $amt_retensi;
 
-                            $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                            $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->where('spk_id', $request->spk_id)
                             ->where('qc_trans_id', $request->qc_trans_id)
@@ -611,7 +611,7 @@ class ClosingWeeklyController extends Controller
 
                             if (!$qc_opname_dtl) {
 
-                                $item_num = DB::connection("sqlSrvFPI")
+                                $item_num = DB::connection("sqlSrvBCKI")
                                             ->table('qc_opname_dtl')
                                             ->select('item_num')
                                             ->where('tr_id', $transId)
@@ -619,7 +619,7 @@ class ClosingWeeklyController extends Controller
                                             ->where('qc_trans_id', $request->qc_trans_id)
                                             ->max('item_num');
 
-                                DB::connection('sqlSrvFPI')
+                                DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->insert([
                                     'tr_id' => $transId,
@@ -646,7 +646,7 @@ class ClosingWeeklyController extends Controller
                     //         $amt_retensi = 0;
                     //         $total_qc = $amt - $amt_retensi;
 
-                    //         $sum_retensi = DB::connection('sqlSrvFPI')->selectOne("
+                    //         $sum_retensi = DB::connection('sqlSrvBCKI')->selectOne("
                     //             SELECT 
                     //                 SUM(amt_retensi) as amt_retensi
                     //             FROM qc_opname_dtl WITH (NOLOCK)
@@ -656,7 +656,7 @@ class ClosingWeeklyController extends Controller
                     //         $total_retensi = $sum_retensi ? ($sum_retensi->amt_retensi ? $sum_retensi->amt_retensi : 0) : 0;
                     //         $total_final = $total_qc + $total_retensi;
 
-                    //         $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                    //         $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                     //         ->table('qc_opname_dtl')
                     //         ->where('spk_id', $request->spk_id)
                     //         ->where('qc_trans_id', $request->qc_trans_id)
@@ -666,7 +666,7 @@ class ClosingWeeklyController extends Controller
 
                     //         if (!$qc_opname_dtl) {
 
-                    //             $item_num = DB::connection("sqlSrvFPI")
+                    //             $item_num = DB::connection("sqlSrvBCKI")
                     //                         ->table('qc_opname_dtl')
                     //                         ->select('item_num')
                     //                         ->where('tr_id', $transId)
@@ -674,7 +674,7 @@ class ClosingWeeklyController extends Controller
                     //                         ->where('qc_trans_id', $request->qc_trans_id)
                     //                         ->max('item_num');
 
-                    //             DB::connection('sqlSrvFPI')
+                    //             DB::connection('sqlSrvBCKI')
                     //             ->table('qc_opname_dtl')
                     //             ->insert([
                     //                 'tr_id' => $transId,
@@ -705,7 +705,7 @@ class ClosingWeeklyController extends Controller
             if (($closing_total_checked >= $trans_total_checked && $closing_total_checked > 0) || ($closing_total_qc >= $trans_total_qc && $closing_total_qc > 0)) {
 
                 try {
-                    $opname_hdr = DB::connection('sqlSrvFPI')
+                    $opname_hdr = DB::connection('sqlSrvBCKI')
                     ->table('qc_opname')
                     ->whereDate('tr_date', $closed_date)
                     ->where('spk_id', trim($request->spk_id))
@@ -716,7 +716,7 @@ class ClosingWeeklyController extends Controller
                         $transId = $opname_hdr->tr_id;
                     } else {
                         $transId = $this->generateID($request);
-                        DB::connection('sqlSrvFPI')
+                        DB::connection('sqlSrvBCKI')
                         ->table('qc_opname')
                         ->insert([
                             'tr_id' => $transId,
@@ -738,7 +738,7 @@ class ClosingWeeklyController extends Controller
                             $amt_retensi = 0;
                             $total_final = $amt - $amt_retensi;
 
-                            $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                            $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->where('spk_id', $request->spk_id)
                             ->where('qc_trans_id', $request->qc_trans_id)
@@ -747,14 +747,14 @@ class ClosingWeeklyController extends Controller
                             ->first();
 
                             if (!$qc_opname_dtl) {
-                                $item_num = DB::connection("sqlSrvFPI")->table('qc_opname_dtl')
+                                $item_num = DB::connection("sqlSrvBCKI")->table('qc_opname_dtl')
                                             ->select('item_num')
                                             ->where('tr_id', $transId)
                                             ->where('spk_id', $request->spk_id)
                                             ->where('qc_trans_id', $request->qc_trans_id)
                                             ->max('item_num');
 
-                                DB::connection('sqlSrvFPI')
+                                DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->insert([
                                     'tr_id' => $transId,
@@ -779,7 +779,7 @@ class ClosingWeeklyController extends Controller
                             $amt_retensi = 0;
                             $total_final = $amt - $amt_retensi;
 
-                            $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                            $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->where('spk_id', $request->spk_id)
                             ->where('qc_trans_id', $request->qc_trans_id)
@@ -789,7 +789,7 @@ class ClosingWeeklyController extends Controller
 
                             if (!$qc_opname_dtl) {
 
-                                $item_num = DB::connection("sqlSrvFPI")
+                                $item_num = DB::connection("sqlSrvBCKI")
                                             ->table('qc_opname_dtl')
                                             ->select('item_num')
                                             ->where('tr_id', $transId)
@@ -797,7 +797,7 @@ class ClosingWeeklyController extends Controller
                                             ->where('qc_trans_id', $request->qc_trans_id)
                                             ->max('item_num');
 
-                                DB::connection('sqlSrvFPI')
+                                DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->insert([
                                     'tr_id' => $transId,
@@ -828,7 +828,7 @@ class ClosingWeeklyController extends Controller
 
                 try {
 
-                    $opname_hdr = DB::connection('sqlSrvFPI')
+                    $opname_hdr = DB::connection('sqlSrvBCKI')
                     ->table('qc_opname')
                     ->whereDate('tr_date', $closed_date)
                     ->where('spk_id', trim($request->spk_id))
@@ -839,7 +839,7 @@ class ClosingWeeklyController extends Controller
                         $transId = $opname_hdr->tr_id;
                     } else {
                         $transId = $this->generateID($request);
-                        DB::connection('sqlSrvFPI')
+                        DB::connection('sqlSrvBCKI')
                         ->table('qc_opname')
                         ->insert([
                             'tr_id' => $transId,
@@ -874,7 +874,7 @@ class ClosingWeeklyController extends Controller
                             $amt_retensi = 0;
                             $total_final = $amt - $amt_retensi;
 
-                            $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                            $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->where('spk_id', $request->spk_id)
                             ->where('qc_trans_id', $request->qc_trans_id)
@@ -883,14 +883,14 @@ class ClosingWeeklyController extends Controller
                             ->first();
 
                             if (!$qc_opname_dtl) {
-                                $item_num = DB::connection("sqlSrvFPI")->table('qc_opname_dtl')
+                                $item_num = DB::connection("sqlSrvBCKI")->table('qc_opname_dtl')
                                             ->select('item_num')
                                             ->where('tr_id', $transId)
                                             ->where('spk_id', $request->spk_id)
                                             ->where('qc_trans_id', $request->qc_trans_id)
                                             ->max('item_num');
 
-                                DB::connection('sqlSrvFPI')
+                                DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->insert([
                                     'tr_id' => $transId,
@@ -915,7 +915,7 @@ class ClosingWeeklyController extends Controller
                             $amt_retensi = 0;
                             $total_final = $amt - $amt_retensi;
 
-                            $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                            $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->where('spk_id', $request->spk_id)
                             ->where('qc_trans_id', $request->qc_trans_id)
@@ -925,7 +925,7 @@ class ClosingWeeklyController extends Controller
 
                             if (!$qc_opname_dtl) {
 
-                                $item_num = DB::connection("sqlSrvFPI")
+                                $item_num = DB::connection("sqlSrvBCKI")
                                             ->table('qc_opname_dtl')
                                             ->select('item_num')
                                             ->where('tr_id', $transId)
@@ -933,7 +933,7 @@ class ClosingWeeklyController extends Controller
                                             ->where('qc_trans_id', $request->qc_trans_id)
                                             ->max('item_num');
 
-                                DB::connection('sqlSrvFPI')
+                                DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->insert([
                                     'tr_id' => $transId,
@@ -958,7 +958,7 @@ class ClosingWeeklyController extends Controller
                             $amt = 1 * $total_original;
                             $amt_retensi = 0;
                             $total_final = $amt - $amt_retensi;
-                            $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                            $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->where('spk_id', $request->spk_id)
                             ->where('qc_trans_id', $request->qc_trans_id)
@@ -968,7 +968,7 @@ class ClosingWeeklyController extends Controller
 
                             if (!$qc_opname_dtl) {
 
-                                $item_num = DB::connection("sqlSrvFPI")
+                                $item_num = DB::connection("sqlSrvBCKI")
                                             ->table('qc_opname_dtl')
                                             ->select('item_num')
                                             ->where('tr_id', $transId)
@@ -976,7 +976,7 @@ class ClosingWeeklyController extends Controller
                                             ->where('qc_trans_id', $request->qc_trans_id)
                                             ->max('item_num');
 
-                                DB::connection('sqlSrvFPI')
+                                DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->insert([
                                     'tr_id' => $transId,
@@ -1009,7 +1009,7 @@ class ClosingWeeklyController extends Controller
                 // Form SPK Tambahan 1 (dgn pembayaran 100%)
                 if (($closing_total_checked >= $trans_total_checked && $closing_total_checked > 0) && ($closing_total_qc >= $trans_total_qc && $closing_total_qc > 0)) {
                     try {
-                        $opname_hdr = DB::connection('sqlSrvFPI')
+                        $opname_hdr = DB::connection('sqlSrvBCKI')
                         ->table('qc_opname')
                         ->whereDate('tr_date', $closed_date)
                         ->where('spk_id', trim($request->spk_id))
@@ -1020,7 +1020,7 @@ class ClosingWeeklyController extends Controller
                             $transId = $opname_hdr->tr_id;
                         } else {
                             $transId = $this->generateID($request);
-                            DB::connection('sqlSrvFPI')
+                            DB::connection('sqlSrvBCKI')
                             ->table('qc_opname')
                             ->insert([
                                 'tr_id' => $transId,
@@ -1042,7 +1042,7 @@ class ClosingWeeklyController extends Controller
                                 $amt_retensi = 0;
                                 $total_final = $amt - $amt_retensi;
 
-                                $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                                $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->where('spk_id', $request->spk_id)
                                 ->where('qc_trans_id', $request->qc_trans_id)
@@ -1052,7 +1052,7 @@ class ClosingWeeklyController extends Controller
 
                                 if (!$qc_opname_dtl) {
 
-                                    $item_num = DB::connection("sqlSrvFPI")
+                                    $item_num = DB::connection("sqlSrvBCKI")
                                                 ->table('qc_opname_dtl')
                                                 ->select('item_num')
                                                 ->where('tr_id', $transId)
@@ -1060,7 +1060,7 @@ class ClosingWeeklyController extends Controller
                                                 ->where('qc_trans_id', $request->qc_trans_id)
                                                 ->max('item_num');
 
-                                    DB::connection('sqlSrvFPI')
+                                    DB::connection('sqlSrvBCKI')
                                     ->table('qc_opname_dtl')
                                     ->insert([
                                         'tr_id' => $transId,
@@ -1091,7 +1091,7 @@ class ClosingWeeklyController extends Controller
                 // Form SPK Tambahan 2 (dgn pembayaran 95% lalu 5%)
                 if (($closing_total_checked >= $trans_total_checked && $closing_total_checked > 0) && ($closing_total_qc >= $trans_total_qc && $closing_total_qc > 0)) {
                     try {
-                        $opname_hdr = DB::connection('sqlSrvFPI')
+                        $opname_hdr = DB::connection('sqlSrvBCKI')
                         ->table('qc_opname')
                         ->whereDate('tr_date', $closed_date)
                         ->where('spk_id', trim($request->spk_id))
@@ -1102,7 +1102,7 @@ class ClosingWeeklyController extends Controller
                             $transId = $opname_hdr->tr_id;
                         } else {
                             $transId = $this->generateID($request);
-                            DB::connection('sqlSrvFPI')
+                            DB::connection('sqlSrvBCKI')
                             ->table('qc_opname')
                             ->insert([
                                 'tr_id' => $transId,
@@ -1124,7 +1124,7 @@ class ClosingWeeklyController extends Controller
                                 $amt_retensi = 0.05 * $amt;
                                 $total_final = $amt - $amt_retensi;
 
-                                $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                                $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->where('spk_id', $request->spk_id)
                                 ->where('qc_trans_id', $request->qc_trans_id)
@@ -1134,7 +1134,7 @@ class ClosingWeeklyController extends Controller
 
                                 if (!$qc_opname_dtl) {
 
-                                    $item_num = DB::connection("sqlSrvFPI")
+                                    $item_num = DB::connection("sqlSrvBCKI")
                                                 ->table('qc_opname_dtl')
                                                 ->select('item_num')
                                                 ->where('tr_id', $transId)
@@ -1142,7 +1142,7 @@ class ClosingWeeklyController extends Controller
                                                 ->where('qc_trans_id', $request->qc_trans_id)
                                                 ->max('item_num');
 
-                                    DB::connection('sqlSrvFPI')
+                                    DB::connection('sqlSrvBCKI')
                                     ->table('qc_opname_dtl')
                                     ->insert([
                                         'tr_id' => $transId,
@@ -1168,7 +1168,7 @@ class ClosingWeeklyController extends Controller
                                 $amt_retensi = 0;
                                 $total_qc = $amt - $amt_retensi;
 
-                                $sum_retensi = DB::connection('sqlSrvFPI')->selectOne("
+                                $sum_retensi = DB::connection('sqlSrvBCKI')->selectOne("
                                     SELECT 
                                         SUM(amt_retensi) as amt_retensi
                                     FROM qc_opname_dtl WITH (NOLOCK)
@@ -1178,7 +1178,7 @@ class ClosingWeeklyController extends Controller
                                 $total_retensi = $sum_retensi ? ($sum_retensi->amt_retensi ? $sum_retensi->amt_retensi : 0) : 0;
                                 $total_final = $total_qc + $total_retensi;
 
-                                $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                                $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->where('spk_id', $request->spk_id)
                                 ->where('qc_trans_id', $request->qc_trans_id)
@@ -1188,7 +1188,7 @@ class ClosingWeeklyController extends Controller
 
                                 if (!$qc_opname_dtl) {
 
-                                    $item_num = DB::connection("sqlSrvFPI")
+                                    $item_num = DB::connection("sqlSrvBCKI")
                                                 ->table('qc_opname_dtl')
                                                 ->select('item_num')
                                                 ->where('tr_id', $transId)
@@ -1196,7 +1196,7 @@ class ClosingWeeklyController extends Controller
                                                 ->where('qc_trans_id', $request->qc_trans_id)
                                                 ->max('item_num');
 
-                                    DB::connection('sqlSrvFPI')
+                                    DB::connection('sqlSrvBCKI')
                                     ->table('qc_opname_dtl')
                                     ->insert([
                                         'tr_id' => $transId,
@@ -1228,7 +1228,7 @@ class ClosingWeeklyController extends Controller
                 // Form SPK Tambahan 3 (dgn pembayaran 95% (75% dan 25%) lalu 5%)
                 if (($closing_total_checked >= $trans_total_checked && $closing_total_checked > 0) || ($closing_total_qc >= $trans_total_qc && $closing_total_qc > 0)) {
                     try {
-                        $opname_hdr = DB::connection('sqlSrvFPI')
+                        $opname_hdr = DB::connection('sqlSrvBCKI')
                         ->table('qc_opname')
                         ->whereDate('tr_date', $closed_date)
                         ->where('spk_id', trim($request->spk_id))
@@ -1239,7 +1239,7 @@ class ClosingWeeklyController extends Controller
                             $transId = $opname_hdr->tr_id;
                         } else {
                             $transId = $this->generateID($request);
-                            DB::connection('sqlSrvFPI')
+                            DB::connection('sqlSrvBCKI')
                             ->table('qc_opname')
                             ->insert([
                                 'tr_id' => $transId,
@@ -1261,7 +1261,7 @@ class ClosingWeeklyController extends Controller
                                 $amt_retensi = 0.05 * $amt;
                                 $total_final = $amt - $amt_retensi;
                                 
-                                $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                                $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->where('spk_id', $request->spk_id)
                                 ->where('qc_trans_id', $request->qc_trans_id)
@@ -1270,14 +1270,14 @@ class ClosingWeeklyController extends Controller
                                 ->first();
 
                                 if (!$qc_opname_dtl) {
-                                    $item_num = DB::connection("sqlSrvFPI")->table('qc_opname_dtl')
+                                    $item_num = DB::connection("sqlSrvBCKI")->table('qc_opname_dtl')
                                                 ->select('item_num')
                                                 ->where('tr_id', $transId)
                                                 ->where('spk_id', $request->spk_id)
                                                 ->where('qc_trans_id', $request->qc_trans_id)
                                                 ->max('item_num');
 
-                                    DB::connection('sqlSrvFPI')
+                                    DB::connection('sqlSrvBCKI')
                                     ->table('qc_opname_dtl')
                                     ->insert([
                                         'tr_id' => $transId,
@@ -1302,7 +1302,7 @@ class ClosingWeeklyController extends Controller
                                 $amt_retensi = 0.05 * $amt;
                                 $total_final = $amt - $amt_retensi;
 
-                                $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                                $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->where('spk_id', $request->spk_id)
                                 ->where('qc_trans_id', $request->qc_trans_id)
@@ -1312,7 +1312,7 @@ class ClosingWeeklyController extends Controller
 
                                 if (!$qc_opname_dtl) {
 
-                                    $item_num = DB::connection("sqlSrvFPI")
+                                    $item_num = DB::connection("sqlSrvBCKI")
                                                 ->table('qc_opname_dtl')
                                                 ->select('item_num')
                                                 ->where('tr_id', $transId)
@@ -1320,7 +1320,7 @@ class ClosingWeeklyController extends Controller
                                                 ->where('qc_trans_id', $request->qc_trans_id)
                                                 ->max('item_num');
 
-                                    DB::connection('sqlSrvFPI')
+                                    DB::connection('sqlSrvBCKI')
                                     ->table('qc_opname_dtl')
                                     ->insert([
                                         'tr_id' => $transId,
@@ -1346,7 +1346,7 @@ class ClosingWeeklyController extends Controller
                                 $amt_retensi = 0;
                                 $total_qc = $amt - $amt_retensi;
 
-                                $sum_retensi = DB::connection('sqlSrvFPI')->selectOne("
+                                $sum_retensi = DB::connection('sqlSrvBCKI')->selectOne("
                                     SELECT 
                                         SUM(amt_retensi) as amt_retensi
                                     FROM qc_opname_dtl WITH (NOLOCK)
@@ -1356,7 +1356,7 @@ class ClosingWeeklyController extends Controller
                                 $total_retensi = $sum_retensi ? ($sum_retensi->amt_retensi ? $sum_retensi->amt_retensi : 0) : 0;
                                 $total_final = $total_qc + $total_retensi;
 
-                                $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                                $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->where('spk_id', $request->spk_id)
                                 ->where('qc_trans_id', $request->qc_trans_id)
@@ -1366,7 +1366,7 @@ class ClosingWeeklyController extends Controller
 
                                 if (!$qc_opname_dtl) {
 
-                                    $item_num = DB::connection("sqlSrvFPI")
+                                    $item_num = DB::connection("sqlSrvBCKI")
                                                 ->table('qc_opname_dtl')
                                                 ->select('item_num')
                                                 ->where('tr_id', $transId)
@@ -1374,7 +1374,7 @@ class ClosingWeeklyController extends Controller
                                                 ->where('qc_trans_id', $request->qc_trans_id)
                                                 ->max('item_num');
 
-                                    DB::connection('sqlSrvFPI')
+                                    DB::connection('sqlSrvBCKI')
                                     ->table('qc_opname_dtl')
                                     ->insert([
                                         'tr_id' => $transId,
@@ -1407,7 +1407,7 @@ class ClosingWeeklyController extends Controller
                 if ($closing_total_qc >= $trans_total_qc && $closing_total_qc > 0) {
                     try {
 
-                        $opname_hdr = DB::connection('sqlSrvFPI')
+                        $opname_hdr = DB::connection('sqlSrvBCKI')
                         ->table('qc_opname')
                         ->whereDate('tr_date', $closed_date)
                         ->where('spk_id', trim($request->spk_id))
@@ -1418,7 +1418,7 @@ class ClosingWeeklyController extends Controller
                             $transId = $opname_hdr->tr_id;
                         } else {
                         $transId = $this->generateID($request);
-                            DB::connection('sqlSrvFPI')
+                            DB::connection('sqlSrvBCKI')
                             ->table('qc_opname')
                             ->insert([
                                 'tr_id' => $transId,
@@ -1454,7 +1454,7 @@ class ClosingWeeklyController extends Controller
                                 $amt_retensi = 0;
                                 $total_final = $amt - $amt_retensi;
 
-                                $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                                $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->where('spk_id', $request->spk_id)
                                 ->where('qc_trans_id', $request->qc_trans_id)
@@ -1464,7 +1464,7 @@ class ClosingWeeklyController extends Controller
 
                                 if (!$qc_opname_dtl) {
 
-                                    $item_num = DB::connection("sqlSrvFPI")
+                                    $item_num = DB::connection("sqlSrvBCKI")
                                                 ->table('qc_opname_dtl')
                                                 ->select('item_num')
                                                 ->where('tr_id', $transId)
@@ -1472,7 +1472,7 @@ class ClosingWeeklyController extends Controller
                                                 ->where('qc_trans_id', $request->qc_trans_id)
                                                 ->max('item_num');
 
-                                    DB::connection('sqlSrvFPI')
+                                    DB::connection('sqlSrvBCKI')
                                     ->table('qc_opname_dtl')
                                     ->insert([
                                         'tr_id' => $transId,
@@ -1505,7 +1505,7 @@ class ClosingWeeklyController extends Controller
 
                 try {
 
-                    $opname_hdr = DB::connection('sqlSrvFPI')
+                    $opname_hdr = DB::connection('sqlSrvBCKI')
                     ->table('qc_opname')
                     ->whereDate('tr_date', $closed_date)
                     ->where('spk_id', trim($request->spk_id))
@@ -1516,7 +1516,7 @@ class ClosingWeeklyController extends Controller
                         $transId = $opname_hdr->tr_id;
                     } else {
                         $transId = $this->generateID($request);
-                        DB::connection('sqlSrvFPI')
+                        DB::connection('sqlSrvBCKI')
                         ->table('qc_opname')
                         ->insert([
                             'tr_id' => $transId,
@@ -1555,7 +1555,7 @@ class ClosingWeeklyController extends Controller
                             $amt_retensi = 0.05 * $amt;
                             $total_final = $amt - $amt_retensi;
                             
-                            $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                            $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->where('spk_id', $request->spk_id)
                             ->where('qc_trans_id', $request->qc_trans_id)
@@ -1564,14 +1564,14 @@ class ClosingWeeklyController extends Controller
                             ->first();
 
                             if (!$qc_opname_dtl) {
-                                $item_num = DB::connection("sqlSrvFPI")->table('qc_opname_dtl')
+                                $item_num = DB::connection("sqlSrvBCKI")->table('qc_opname_dtl')
                                             ->select('item_num')
                                             ->where('tr_id', $transId)
                                             ->where('spk_id', $request->spk_id)
                                             ->where('qc_trans_id', $request->qc_trans_id)
                                             ->max('item_num');
 
-                                DB::connection('sqlSrvFPI')
+                                DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->insert([
                                     'tr_id' => $transId,
@@ -1596,7 +1596,7 @@ class ClosingWeeklyController extends Controller
                             $amt_retensi = 0.05 * $amt;
                             $total_final = $amt - $amt_retensi;
 
-                            $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                            $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->where('spk_id', $request->spk_id)
                             ->where('qc_trans_id', $request->qc_trans_id)
@@ -1606,7 +1606,7 @@ class ClosingWeeklyController extends Controller
 
                             if (!$qc_opname_dtl) {
 
-                                $item_num = DB::connection("sqlSrvFPI")
+                                $item_num = DB::connection("sqlSrvBCKI")
                                             ->table('qc_opname_dtl')
                                             ->select('item_num')
                                             ->where('tr_id', $transId)
@@ -1614,7 +1614,7 @@ class ClosingWeeklyController extends Controller
                                             ->where('qc_trans_id', $request->qc_trans_id)
                                             ->max('item_num');
 
-                                DB::connection('sqlSrvFPI')
+                                DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->insert([
                                     'tr_id' => $transId,
@@ -1640,7 +1640,7 @@ class ClosingWeeklyController extends Controller
                             $amt_retensi = 0;
                             $total_qc = $amt - $amt_retensi;
 
-                            $sum_retensi = DB::connection('sqlSrvFPI')->selectOne("
+                            $sum_retensi = DB::connection('sqlSrvBCKI')->selectOne("
                                 SELECT 
                                     SUM(amt_retensi) as amt_retensi
                                 FROM qc_opname_dtl WITH (NOLOCK)
@@ -1650,7 +1650,7 @@ class ClosingWeeklyController extends Controller
                             $total_retensi = $sum_retensi ? ($sum_retensi->amt_retensi ? $sum_retensi->amt_retensi : 0) : 0;
                             $total_final = $total_qc + $total_retensi;
 
-                            $qc_opname_dtl = DB::connection('sqlSrvFPI')
+                            $qc_opname_dtl = DB::connection('sqlSrvBCKI')
                             ->table('qc_opname_dtl')
                             ->where('spk_id', $request->spk_id)
                             ->where('qc_trans_id', $request->qc_trans_id)
@@ -1660,7 +1660,7 @@ class ClosingWeeklyController extends Controller
 
                             if (!$qc_opname_dtl) {
 
-                                $item_num = DB::connection("sqlSrvFPI")
+                                $item_num = DB::connection("sqlSrvBCKI")
                                             ->table('qc_opname_dtl')
                                             ->select('item_num')
                                             ->where('tr_id', $transId)
@@ -1668,7 +1668,7 @@ class ClosingWeeklyController extends Controller
                                             ->where('qc_trans_id', $request->qc_trans_id)
                                             ->max('item_num');
 
-                                DB::connection('sqlSrvFPI')
+                                DB::connection('sqlSrvBCKI')
                                 ->table('qc_opname_dtl')
                                 ->insert([
                                     'tr_id' => $transId,
@@ -1701,7 +1701,7 @@ class ClosingWeeklyController extends Controller
 
     private function updateOpnameHdr($transId, $spk_id, $qc_trans_id, $request){  
 
-        $sum_amt = DB::connection('sqlSrvFPI')->selectOne("
+        $sum_amt = DB::connection('sqlSrvBCKI')->selectOne("
                         SELECT 
                             SUM(amt) as amt,
                             SUM(amt_retensi) as amt_retensi,
@@ -1716,14 +1716,14 @@ class ClosingWeeklyController extends Controller
 
         $terbilang = terbilang($amt_final);
 
-        DB::connection('sqlSrvFPI')->update(
+        DB::connection('sqlSrvBCKI')->update(
             "UPDATE qc_opname
              SET amt = ?, amt_retensi = ?, amt_total = ?, terbilang = ? 
              WHERE tr_id = ?  AND spk_id = ? AND qc_trans_id = ?", 
             [$amt, $amt_retensi, $amt_final, $terbilang, trim($transId), trim($spk_id), trim($qc_trans_id)]
         );   
 
-        DB::connection('sqlSrvFPI')->update(
+        DB::connection('sqlSrvBCKI')->update(
             "UPDATE qc_closing_weekly
              SET opname_id = ?
              WHERE spk_id = ? AND qc_trans_id = ?  AND com_id = ? AND opname_id = ' '",
@@ -1738,7 +1738,7 @@ class ClosingWeeklyController extends Controller
         $dateDay = date("d");
         $gen_tr_id = '';
 
-        $getLastTrID =  DB::connection('sqlSrvFPI')
+        $getLastTrID =  DB::connection('sqlSrvBCKI')
                         ->table('qc_opname')
                         ->where('tr_id', 'like', "%".'9'.$dateYear.$dateMonth.$dateDay."%")
                         ->max('tr_id');

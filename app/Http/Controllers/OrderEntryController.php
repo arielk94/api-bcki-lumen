@@ -67,7 +67,7 @@ class OrderEntryController extends Controller
             }
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('CustomerOrder')
             ->selectraw('CustomerOrder.order_id,
                     CustomerOrder.office_id,
@@ -147,7 +147,7 @@ class OrderEntryController extends Controller
         if($id_house){
             $sqlWhere.= " and CustomerOrderDetil.id_house = '$id_house'";
         }
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('CustomerOrderDetil')
             ->selectraw('
             trim(CustomerOrderDetil.order_id) as order_id,
@@ -197,7 +197,7 @@ class OrderEntryController extends Controller
         // $item_num = $request->item_num;
 
         //included price
-        $result1 = DB::connection('sqlSrvFPI')
+        $result1 = DB::connection('sqlSrvBCKI')
             ->table('CustomerOrderAddonUnit')
             ->selectraw('
                 trim(CustomerOrderAddonUnit.order_id) as order_id,
@@ -216,7 +216,7 @@ class OrderEntryController extends Controller
             ->get();
         
         //bonus
-        $result2 = DB::connection('sqlSrvFPI')
+        $result2 = DB::connection('sqlSrvBCKI')
             ->table('CustomerOrderAddonUnit')
             ->selectraw('
                 trim(CustomerOrderAddonUnit.order_id) as order_id,
@@ -247,7 +247,7 @@ class OrderEntryController extends Controller
     public function saveCustomerOrder(Request $request){
         try{
             $book_id = $request->book_id;
-            $idproyek = DB::connection('sqlSrvFPI')
+            $idproyek = DB::connection('sqlSrvBCKI')
                     ->table('site')
                     ->selectRaw('proyek_id')
                     ->where('id_site', $request->id_site)
@@ -260,7 +260,7 @@ class OrderEntryController extends Controller
 
             // dd($order_id);
             // Cek apakah order_id sudah ada
-            $existingOrder = DB::connection('sqlSrvFPI')
+            $existingOrder = DB::connection('sqlSrvBCKI')
             ->table('CustomerOrder')
             ->where('order_id', $order_id)
             ->first();
@@ -290,7 +290,7 @@ class OrderEntryController extends Controller
 
             if ($existingOrder) {
                 // Update jika sudah ada
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrder')
                     ->where('order_id', $order_id)
                     ->update($data);
@@ -298,7 +298,7 @@ class OrderEntryController extends Controller
                 //return $this->sendResponse($order_id, 'Successfully updated Customer Order');
             } else {
                 // Insert jika belum ada
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrder')
                     ->insert($data);
 
@@ -309,7 +309,7 @@ class OrderEntryController extends Controller
             if (!empty($book_id)) {
                 if ($book_id_old && $book_id_old !== $book_id) {
                     // Kosongkan order_id pada book_id lama
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('CustomerBooking')
                         ->where('book_id', $book_id_old)
                         ->update([
@@ -318,7 +318,7 @@ class OrderEntryController extends Controller
                 }
 
                 // Set order_id pada book_id baru
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('CustomerBooking')
                     ->where('book_id', $book_id)
                     ->update([
@@ -326,7 +326,7 @@ class OrderEntryController extends Controller
                     ]);
             }    
             
-            // DB::connection('sqlSrvFPI')
+            // DB::connection('sqlSrvBCKI')
             //     ->table('payment_progress')
             //     ->insert([
             //         'order_id' => $order_id,
@@ -364,7 +364,7 @@ class OrderEntryController extends Controller
 
             // if ($item_num) {
                     // 🔄 Ambil data lama
-                $existing = DB::connection('sqlSrvFPI')
+                $existing = DB::connection('sqlSrvBCKI')
                 ->table('CustomerOrderDetil')
                 ->where('order_id', $request->order_id)
                 ->where('item_num', $item_num)
@@ -379,7 +379,7 @@ class OrderEntryController extends Controller
 
                     // Kalau berubah, update status rumah lama ke 'V'
                     if ($old_id_house !== $new_id_house || $old_id_cluster !== $new_id_cluster) {
-                        DB::connection('sqlSrvFPI')
+                        DB::connection('sqlSrvBCKI')
                             ->table('house_unit')
                             ->where('id_house', $old_id_house)
                             ->where('id_cluster', $old_id_cluster)
@@ -388,7 +388,7 @@ class OrderEntryController extends Controller
                 // }
 
                 // 🔄 Jika item_num dikirim → update data
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrderDetil')
                     ->where('order_id', $request->order_id)
                     ->where('item_num', $item_num)
@@ -396,7 +396,7 @@ class OrderEntryController extends Controller
 
             } else {
                 // ➕ Jika item_num tidak dikirim → insert dengan auto nomor
-                // $lastItem = DB::connection('sqlSrvFPI')
+                // $lastItem = DB::connection('sqlSrvBCKI')
                 //     ->table('CustomerOrderDetil')
                 //     ->where('order_id', $request->order_id)
                 //     // ->orderByDesc('item_num')
@@ -408,20 +408,20 @@ class OrderEntryController extends Controller
                 $data['order_id'] = $request->order_id;
                 $data['item_num'] = $item_num;
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrderDetil')
                     ->insert($data);                
             }
 
             // ✅ Update rumah baru jadi 'P'
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('house_unit')
                 ->where('id_house', $request->id_house)
                 ->where('id_cluster', $request->id_cluster)
                 ->update(['sold_stat' => 'P']);
 
             //update di tabel kwitansi
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('kwitansi')
                 ->where('tr_id', $request->no_kwitansi)
                 ->update([
@@ -429,7 +429,7 @@ class OrderEntryController extends Controller
                 ]);
             
             //update di tabel CustomerOrder
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('CustomerOrder')
                 ->where('order_id', $request->order_id)
                 ->update([
@@ -437,7 +437,7 @@ class OrderEntryController extends Controller
                 ]);
             
             // 👉 Ambil order_date untuk kebutuhan QC insert
-            $order = DB::connection('sqlSrvFPI')
+            $order = DB::connection('sqlSrvBCKI')
                 ->table('CustomerOrder')
                 ->select('order_date')
                 ->where('order_id', $request->order_id)
@@ -447,7 +447,7 @@ class OrderEntryController extends Controller
             //insert data ke tabel qc_trans_hdr dan qc_trans_dtl
             // $qctransid = $this->genQCTransId(Carbon::now());
             // Cari qc_trans_id yang sudah ada berdasarkan rumah dan dokumen SPR
-            $existingTrans = DB::connection('sqlSrvFPI')
+            $existingTrans = DB::connection('sqlSrvBCKI')
                 ->table('qc_trans_hdr')
                 ->where('id_house', $request->id_house)
                 ->where('doc_id', $request->order_id)
@@ -457,14 +457,14 @@ class OrderEntryController extends Controller
 
             $qctransid = $existingTrans ? $existingTrans->qc_trans_id : $this->genQCTransId(Carbon::now('Asia/Jakarta'));
 
-            $id_qc_forms =  DB::connection('sqlSrvFPI')
+            $id_qc_forms =  DB::connection('sqlSrvBCKI')
                 ->table('qc_form')
                 ->selectRaw("LTRIM(RTRIM(id_qc_form)) as id_qc_form, LTRIM(RTRIM(qc_form)) as qc_form")
                 ->where('qc_type', 'BP')
                 ->where('active_flag', 'Y')
                 ->get();
 
-            $id_qc_items = DB::connection('sqlSrvFPI')
+            $id_qc_items = DB::connection('sqlSrvBCKI')
                 ->table('qc_item')
                 ->selectRaw("LTRIM(RTRIM(id_qc_item)) as id_qc_item, LTRIM(RTRIM(qc_item)) as qc_item, LTRIM(RTRIM(id_qc_form)) as id_qc_form")
                 ->where('id_qc_form', 'F250505002')
@@ -472,7 +472,7 @@ class OrderEntryController extends Controller
 
             foreach ($id_qc_forms as $form) {
                  // Cek apakah qc_trans_hdr sudah ada
-                // $existingHdr = DB::connection('sqlSrvFPI')
+                // $existingHdr = DB::connection('sqlSrvBCKI')
                 //     ->table('qc_trans_hdr')
                 //     // ->where('qc_trans_id', $qctransid)
                 //     ->where('id_qc_form', $form->id_qc_form)
@@ -480,7 +480,7 @@ class OrderEntryController extends Controller
                 //     ->whereDate('dt_created', Carbon::now()->toDateString())
                 //     ->first();
 
-                $existingHdr = DB::connection('sqlSrvFPI')
+                $existingHdr = DB::connection('sqlSrvBCKI')
                 ->table('qc_trans_hdr')
                 ->where('id_qc_form', $form->id_qc_form)
                 ->where('id_house', $request->id_house)
@@ -500,7 +500,7 @@ class OrderEntryController extends Controller
 
                 if ($existingHdr) {
                     // 🔄 Update
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_hdr')
                         // ->where('qc_trans_id', $qctransid)
                         ->where('qc_trans_id', $existingHdr->qc_trans_id)
@@ -518,7 +518,7 @@ class OrderEntryController extends Controller
                         'created_by' => getAuth($request)->user_id2,
                     ]);
 
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_hdr')
                         ->insert($dataHdr);
                 }
@@ -526,7 +526,7 @@ class OrderEntryController extends Controller
             
             foreach ($id_qc_items as $item) {
                 // Cek apakah detail sudah ada untuk id_item & qc_trans_id pada tanggal yang sama
-                $existingDtl = DB::connection('sqlSrvFPI')
+                $existingDtl = DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_dtl')
                     ->where('qc_trans_id', $qctransid)
                     ->where('id_qc_item', $item->id_qc_item)
@@ -547,7 +547,7 @@ class OrderEntryController extends Controller
                     // 'stat_closing2' => 'N',
                 // ];
 
-                // $existingDtl = DB::connection('sqlSrvFPI')
+                // $existingDtl = DB::connection('sqlSrvBCKI')
                 //     ->table('qc_trans_dtl')
                 //     ->where('qc_trans_id', $qctransid)
                 //     ->where('id_qc_item', $item->id_qc_item)
@@ -555,7 +555,7 @@ class OrderEntryController extends Controller
 
                 // if ($existingDtl) {
                 //     // 🔄 Update
-                //     DB::connection('sqlSrvFPI')
+                //     DB::connection('sqlSrvBCKI')
                 //         ->table('qc_trans_dtl')
                 //         ->where('qc_trans_id', $qctransid)
                 //         ->where('id_qc_item', $item->id_qc_item)
@@ -565,7 +565,7 @@ class OrderEntryController extends Controller
                 //     // ➕ Insert
                 //     $dataDtl['dt_created'] = Carbon::now();
 
-                //     DB::connection('sqlSrvFPI')
+                //     DB::connection('sqlSrvBCKI')
                 //         ->table('qc_trans_dtl')
                 //         ->insert($dataDtl);
                 // }
@@ -585,7 +585,7 @@ class OrderEntryController extends Controller
                         'stat_closing2' => 'N',
                     ];
 
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('qc_trans_dtl')
                         ->insert($dataDtl);
                 }
@@ -603,11 +603,11 @@ class OrderEntryController extends Controller
             $item_num = $request->item_num;
             $items = $request->items;
 
-            $conn = DB::connection('sqlSrvFPI');
+            $conn = DB::connection('sqlSrvBCKI');
             $table = 'CustomerorderAddonUnit';
 
             // DELETE dengan INNER JOIN berdasarkan kriteria tertentu
-            DB::connection('sqlSrvFPI')->statement("
+            DB::connection('sqlSrvBCKI')->statement("
             DELETE CAU
             FROM CustomerOrderAddonUnit CAU
             INNER JOIN article A ON CAU.article_id = A.article_id
@@ -652,12 +652,12 @@ class OrderEntryController extends Controller
     // public function saveCustomerOrderAddonUnit(Request $request) //untuk bonus - motong stok wh_bal
     // {
     //     try {
-    //         DB::connection('sqlSrvFPI')->beginTransaction();
+    //         DB::connection('sqlSrvBCKI')->beginTransaction();
     //         $order_id = $request->order_id;
     //         $item_num = $request->item_num;
     //         $items = $request->items;
 
-    //         $conn = DB::connection('sqlSrvFPI');
+    //         $conn = DB::connection('sqlSrvBCKI');
     //         $table = 'CustomerorderAddonUnit';
 
     //         // Ambil data lama yang akan dihapus (hanya cat_id != 6)
@@ -813,10 +813,10 @@ class OrderEntryController extends Controller
     //             $conn->table('wh_trans_dtl')->insert($insertDtl);
     //         }
 
-    //         DB::connection('sqlSrvFPI')->commit();
+    //         DB::connection('sqlSrvBCKI')->commit();
     //         return $this->sendResponse('Success', 'Data berhasil disimpan.');
     //     } catch (\Exception $e) {
-    //         DB::connection('sqlSrvFPI')->rollBack();
+    //         DB::connection('sqlSrvBCKI')->rollBack();
     //         return $this->sendError($e->getMessage(), 'Insert Error', 500);
     //     }
     // }
@@ -827,11 +827,11 @@ class OrderEntryController extends Controller
             $item_num = $request->item_num;
             $items = $request->items;
 
-            $conn = DB::connection('sqlSrvFPI');
+            $conn = DB::connection('sqlSrvBCKI');
             $table = 'CustomerorderAddonUnit';
 
             // DELETE dengan INNER JOIN berdasarkan kriteria tertentu
-            DB::connection('sqlSrvFPI')->statement("
+            DB::connection('sqlSrvBCKI')->statement("
             DELETE CAU
             FROM CustomerOrderAddonUnit CAU
             INNER JOIN article A ON CAU.article_id = A.article_id
@@ -878,7 +878,7 @@ class OrderEntryController extends Controller
         $period = Carbon::parse($orderdate)->format('Ym'); // output: "202504"
         $proyekid = $idproyek->proyek_id;
         
-        // $getLastCustID = DB::connection('sqlSrvFPI')
+        // $getLastCustID = DB::connection('sqlSrvBCKI')
         // ->table('CustomerOrder')
         // ->select('order_id')
         // ->where('order_id', 'like', '01/' . $proyekid . '/' . $period . '/%')
@@ -886,7 +886,7 @@ class OrderEntryController extends Controller
         // ->first();
         
         // Cari order terakhir berdasarkan tahun, bukan bulan
-        // $getLastCustID = DB::connection('sqlSrvFPI')
+        // $getLastCustID = DB::connection('sqlSrvBCKI')
         // ->table('CustomerOrder')
         // ->select('order_id')
         // ->where('order_id', 'like', '01/%/' . substr($period, 0, 4) . '%') // hanya tahun
@@ -894,7 +894,7 @@ class OrderEntryController extends Controller
         // ->orderByRaw('CAST(RIGHT(order_id, 4) AS INT) DESC')
         // ->first();
 
-        $getLastCustID = DB::connection('sqlSrvFPI')
+        $getLastCustID = DB::connection('sqlSrvBCKI')
         ->table('CustomerOrder')
         ->select('order_id')
         // ->where('order_id', 'like', '01/%/2025%') // sesuaikan tahun bila perlu
@@ -937,7 +937,7 @@ class OrderEntryController extends Controller
     //         $numofinstallment = $input['numofinstallment'] ?? 0;
     //         $userid = getAuth($request)->user_id2;
 
-    //         $conn = DB::connection('sqlSrvFPI');
+    //         $conn = DB::connection('sqlSrvBCKI');
     //         $table = 'pay_term_dtl';
 
     //         // Cek apakah data untuk order_id sudah ada
@@ -1012,17 +1012,17 @@ class OrderEntryController extends Controller
             $dp_amt = (int)($input['dp_amt'] ?? 0);
             $dt_akad = isset($input['dt_akad']) ? Carbon::parse($input['dt_akad']) : null;
 
-            $conn = DB::connection('sqlSrvFPI');
+            $conn = DB::connection('sqlSrvBCKI');
             $table = 'pay_term_dtl';
             $now = Carbon::now('Asia/Jakarta');
             
-            $existingOrder = DB::connection('sqlSrvFPI')
+            $existingOrder = DB::connection('sqlSrvBCKI')
             ->table('CustomerOrder')
             ->where('order_id', $order_id)
             ->first();
 
             if($existingOrder) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrder')
                     ->where('order_id', $order_id)
                     ->update([
@@ -1311,7 +1311,7 @@ class OrderEntryController extends Controller
         // }
         
         //included price
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('pay_term_dtl')
             ->selectraw('
                 trim(pay_term_id) as pay_term_id,
@@ -1398,7 +1398,7 @@ class OrderEntryController extends Controller
             $sqlWhere.= " and book_id = '$book_id'";
         }
 
-        $no_booking = DB::connection('sqlSrvFPI')
+        $no_booking = DB::connection('sqlSrvBCKI')
             ->table('CustomerBooking')
             ->selectraw('
                 trim(CustomerBooking.book_id) as book_id,
@@ -1444,14 +1444,14 @@ class OrderEntryController extends Controller
     }
 
     public function cancelSPR(Request $request){
-        $order = DB::connection('sqlSrvFPI')
+        $order = DB::connection('sqlSrvBCKI')
         ->table('CustomerOrderDetil')
         ->where('order_id', $request->order_id)
         ->first();
 
         if ($order) {
             // Ambil data header berdasarkan doc_id
-        $existingTransHDR = DB::connection('sqlSrvFPI')
+        $existingTransHDR = DB::connection('sqlSrvBCKI')
             ->table('qc_trans_hdr')
             ->where('doc_id', $request->order_id)
             ->first();
@@ -1459,13 +1459,13 @@ class OrderEntryController extends Controller
         
         if ($existingTransHDR) {
         // Hapus semua detail yang terkait dengan qc_trans_id
-        // DB::connection('sqlSrvFPI')
+        // DB::connection('sqlSrvBCKI')
         //     ->table('qc_trans_dtl')
         //     ->where('qc_trans_id', $existingTransHDR->qc_trans_id)
         //     ->delete();
 
         // Hapus header
-        DB::connection('sqlSrvFPI')
+        DB::connection('sqlSrvBCKI')
             ->table('qc_trans_hdr')
             ->where('qc_trans_id', $existingTransHDR->qc_trans_id)
             // ->delete();
@@ -1474,14 +1474,14 @@ class OrderEntryController extends Controller
             ]); 
         }
 
-        $updateStatHouseUnit = DB::connection('sqlSrvFPI')
+        $updateStatHouseUnit = DB::connection('sqlSrvBCKI')
                 ->table('house_unit')
                 ->where('id_house', $order->id_house)
                 ->where('id_cluster', $order->id_cluster)
                 ->update([
                     'sold_stat' => 'V'
                 ]);    
-        $updateCustomerBooking = DB::connection('sqlSrvFPI')
+        $updateCustomerBooking = DB::connection('sqlSrvBCKI')
                 ->table('CustomerOrder')
                 ->where('order_id', $request->order_id)
                 ->update([
@@ -1586,7 +1586,7 @@ class OrderEntryController extends Controller
             AND $sqlWhere
         ";
 
-        $results = DB::connection('sqlSrvFPI')->select(DB::raw($query));
+        $results = DB::connection('sqlSrvBCKI')->select(DB::raw($query));
         return $this->sendResponse($results, 'Successfully get KPR data');
     }
 
@@ -1598,7 +1598,7 @@ class OrderEntryController extends Controller
             $sqlWhere.= " and a.CustomerId = '$CustomerId'";
         }
 
-        $results = DB::connection('sqlSrvFPI')
+        $results = DB::connection('sqlSrvBCKI')
         ->table('CustomerOrder as a')
         ->leftJoin('pay_term_dtl as b', 'a.order_id', '=', 'b.order_id')
         // ->leftjoin('Customer', 'a.CustomerId', '=', 'Customer.CustomerId')
@@ -1632,7 +1632,7 @@ class OrderEntryController extends Controller
             $sqlWhere.= " and tr_id = '$tr_id'";
         }
 
-        $no_kwitansi = DB::connection('sqlSrvFPI')
+        $no_kwitansi = DB::connection('sqlSrvBCKI')
             ->table('kwitansi')
             // ->selectraw('
             //     trim(order_id) as order_id,
@@ -1653,7 +1653,7 @@ class OrderEntryController extends Controller
         $prefix = "T" . $tanggal;
 
         // Ambil record terakhir untuk tanggal tersebut
-        $getLast = DB::connection('sqlSrvFPI')
+        $getLast = DB::connection('sqlSrvBCKI')
             ->table('qc_trans_hdr')
             ->select('qc_trans_id')
             ->where('qc_trans_id', 'like', $prefix . '%')
@@ -1676,7 +1676,7 @@ class OrderEntryController extends Controller
         $order_id = $request->order_id;
         $plafon_amt = (int)($request->plafon_amt ?? 0);
 
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('CustomerOrder')
             ->where('order_id', $order_id)
             ->update([
@@ -1738,7 +1738,7 @@ class OrderEntryController extends Controller
             }
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('v_list_penjualan')
             ->selectraw('*')
             ->whereRaw($sqlWhere)

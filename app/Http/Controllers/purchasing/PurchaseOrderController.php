@@ -81,7 +81,7 @@ class PurchaseOrderController extends Controller
                 }
             }
             
-            $PoHdr = DB::connection("sqlSrvFPI")
+            $PoHdr = DB::connection("sqlSrvBCKI")
                 ->table('po_hdr as a')
                 ->selectRaw("
                             a.office_id,
@@ -197,7 +197,7 @@ class PurchaseOrderController extends Controller
             if ($request->ArticleName) {
                 $sqlWhere .= "and b.description like '%$request->ArticleName%'";
             }
-            $PoDtl = DB::connection("sqlSrvFPI")
+            $PoDtl = DB::connection("sqlSrvBCKI")
                     ->table('po_item as a')
                     ->selectRaw("
                                 a.office_id,
@@ -279,7 +279,7 @@ class PurchaseOrderController extends Controller
                 $bindings[] = '%' . $request->CategoryName . '%';
             }
             
-            $Category = DB::connection("sqlSrvFPI")
+            $Category = DB::connection("sqlSrvBCKI")
                     ->table('category')
                         ->select(
                             'cat_id',
@@ -311,7 +311,7 @@ class PurchaseOrderController extends Controller
     {
         try
         {
-            $query = DB::connection("sqlSrvFPI")
+            $query = DB::connection("sqlSrvBCKI")
                         ->table('commodity')
                         ->select(
                             'cat_id',
@@ -358,7 +358,7 @@ class PurchaseOrderController extends Controller
     {
         try
         {
-            $query = DB::connection("sqlSrvFPI")
+            $query = DB::connection("sqlSrvBCKI")
                         ->table('commodity_grp')
                         ->select(
                             'cat_id',
@@ -405,7 +405,7 @@ class PurchaseOrderController extends Controller
         $com_grp_id = $request->com_grp_id;
 
         try {
-            $query = DB::connection("sqlSrvFPI")
+            $query = DB::connection("sqlSrvBCKI")
                 ->table('pr_hdr as ph')
                 ->selectRaw("
                     ph.office_id,
@@ -529,7 +529,7 @@ class PurchaseOrderController extends Controller
                 $sqlWhere .= "and d.com_grp = '$request->CommodityGrpId'";
             }
 
-            $ListPr = DB::connection("sqlSrvFPI")
+            $ListPr = DB::connection("sqlSrvBCKI")
                     ->table('pr_item as a')
                     ->selectRaw("a.office_id, a.pr_id, a.pr_item, a.article_id, d.description, a.length, d.berat, d.cat_id, f.descr as cat_name,
                                 d.com_id, g.com_desc as com_name, a.qty - a.qty_po as qty, a.unit_meas as uom, TRIM(a.remark) AS remark,
@@ -561,7 +561,7 @@ class PurchaseOrderController extends Controller
     {
         try {
             $PoId = 'PO' . $request->DtPo . $request->OfficeId;
-            $GenPoId = DB::connection("sqlSrvFPI")
+            $GenPoId = DB::connection("sqlSrvBCKI")
                     ->select(DB::raw("SELECT concat('$PoId', format(isnull(max(po_num),1) + 1,'000')) as po_id, 
                                         isnull(max(po_num),1) + 1 as po_num FROM po_hdr where po_id like'$PoId%'"));
 
@@ -586,7 +586,7 @@ class PurchaseOrderController extends Controller
             $sqlWhere .= "AND office_id = '$request->OfficeId' ";
         }
 
-        $PoItem = DB::connection("sqlSrvFPI")
+        $PoItem = DB::connection("sqlSrvBCKI")
             ->select(DB::raw("SELECT ISNULL(MAX(po_item), 0) + 1 AS po_item FROM po_item WHERE $sqlWhere"));
 
         return response()->json(['PoItem' => $PoItem[0]->po_item], 200);  
@@ -595,12 +595,12 @@ class PurchaseOrderController extends Controller
     public function getSavePoItem(request $request)
     {
         try {
-            $FindPoItem = DB::connection("sqlSrvFPI")
+            $FindPoItem = DB::connection("sqlSrvBCKI")
                     ->select(DB::raw("Select po_id, po_item, stat from po_item where po_id = '$request->PoId' 
                             and office_id = '$request->OfficeId' and po_item = '$request->PoItem'"));
 
             if(!$FindPoItem){
-                $PoItem = DB::connection("sqlSrvFPI")
+                $PoItem = DB::connection("sqlSrvBCKI")
                 ->table('po_item')
                 ->insert([
                     'office_id' => $request->OfficeId ? $request->OfficeId : ' ',
@@ -626,7 +626,7 @@ class PurchaseOrderController extends Controller
                 if ($FindPoItem[0]->stat =='C') {
                     return response()->json(['message' => 'PO Item Already Closed'], 200); 
                 } else {
-                    $PoItem = DB::connection("sqlSrvFPI")
+                    $PoItem = DB::connection("sqlSrvBCKI")
                     ->table('po_item')
                     ->where('po_id', $request->PoId)
                     ->where('office_id', $request->OfficeId)
@@ -659,11 +659,11 @@ class PurchaseOrderController extends Controller
     public function getSavePoHdr(request $request)
     {
         try {
-            $FindPoHdr = DB::connection("sqlSrvFPI")
+            $FindPoHdr = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("Select po_id from po_hdr where po_id = '$request->PoId' 
                         and office_id = '$request->OfficeId'"));
             if($FindPoHdr){
-                $PoHdr = DB::connection("sqlSrvFPI")
+                $PoHdr = DB::connection("sqlSrvBCKI")
                 ->table('po_hdr')
                 ->insert([
                     'po_id' => $request->PoId,
@@ -694,7 +694,7 @@ class PurchaseOrderController extends Controller
                     'po_type' => 'G',
                 ]);
             } else {
-                $PoHdr = DB::connection("sqlSrvFPI")
+                $PoHdr = DB::connection("sqlSrvBCKI")
                 ->table('po_hdr')
                 ->where('po_id', $request->PoId)
                 ->where('office_id', $request->OfficeId)
@@ -745,7 +745,7 @@ class PurchaseOrderController extends Controller
         
 
         // Get subtotal
-        $AmtSubtotalResult = DB::connection("sqlSrvFPI")
+        $AmtSubtotalResult = DB::connection("sqlSrvBCKI")
             ->select(DB::raw("select SUM(amt_net) as subtotal FROM po_item WHERE $sqlWhere"));
         $AmtSubtotal = $AmtSubtotalResult[0]->subtotal ?? 0;
 
@@ -758,7 +758,7 @@ class PurchaseOrderController extends Controller
         $PctPpn = 0;
         $AmtPpn = 0;
         if ($request->tax1) {
-            $getppn = DB::connection("sqlSrvFPI")
+            $getppn = DB::connection("sqlSrvBCKI")
             ->select(DB::raw("SELECT str3 from appl_constant WHERE key_code = 'PPN'"));
             $PctPpn = floatval($getppn[0]->str3 ?? 0);
             $AmtPpn = $AmtAfterDisc * $PctPpn / 100;
@@ -768,7 +768,7 @@ class PurchaseOrderController extends Controller
         $PctPph23 = 0;
         $AmtPph23 = 0;
         if ($request->tax2) {
-            $getpph23 = DB::connection("sqlSrvFPI")
+            $getpph23 = DB::connection("sqlSrvBCKI")
             ->select(DB::raw("SELECT str3 from appl_constant WHERE key_code = 'PPH23'"));
             $PctPph23 = floatval($getpph23[0]->str3 ?? 0);
             $AmtPph23 = $AmtAfterDisc * $PctPph23 / 100;
@@ -778,7 +778,7 @@ class PurchaseOrderController extends Controller
         $PctPph21 = 0;
         $AmtPph21 = 0;
         if ($request->tax4) {
-            $getpph21 = DB::connection("sqlSrvFPI")
+            $getpph21 = DB::connection("sqlSrvBCKI")
             ->select(DB::raw("SELECT str3 from appl_constant WHERE key_code = 'PPH21'"));
             $PctPph21 = floatval($getpph21[0]->str3 ?? 0);
             $AmtPph21 = $AmtAfterDisc * $PctPph21 / 100;
@@ -834,16 +834,16 @@ class PurchaseOrderController extends Controller
     public function getUpdatePr(request $request)
     {
         try {
-        $TotQty = DB::connection("sqlSrvFPI")
+        $TotQty = DB::connection("sqlSrvBCKI")
         ->select(DB::raw("SELECT isnull(sum(qty),0) as qty FROM po_item WHERE pr_id = '$request->PrId' and pr_item = '$request->PrItem'"));
            if ($TotQty > 0) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('pr_item')
                 ->where('pr_id', $request->PrId)
                 ->where('pr_item', $request->PrItem)
                 ->update(['qty_po' => $TotQty[0]->qty]);
 
-                $UpdatStat = DB::connection('sqlSrvFPI')
+                $UpdatStat = DB::connection('sqlSrvBCKI')
                 ->table('po_item')
                 ->selectRaw('pr_id, pr_item, qty, qty_po, stat')
                 ->where('pr_id', $request->PrId)
@@ -851,14 +851,14 @@ class PurchaseOrderController extends Controller
                 ->get();
 
                 if ($UpdatStat[0]->qty <= $UpdatStat[0]->qty_po) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                     ->table('pr_item')
                     ->where('pr_id', $request->PrId)
                     ->where('pr_item', $request->PrItem)
                     ->update(['stat' => 'C']);
 
                 } else {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                     ->table('pr_item')
                     ->where('pr_id', $request->PrId)
                     ->where('pr_item', $request->PrItem)
@@ -866,14 +866,14 @@ class PurchaseOrderController extends Controller
                 }
            }
 
-           $UpdatePrHdr = DB::connection('sqlSrvFPI')
+           $UpdatePrHdr = DB::connection('sqlSrvBCKI')
             ->table('pr_hdr')
             ->where('pr_id', $request->PrId)
             ->where('stat', 'O')
             ->count();
 
             if ($UpdatePrHdr == 0) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('pr_hdr')
                 ->where('pr_id', $request->PrId)
                 ->update(['stat' => 'C']);
@@ -890,7 +890,7 @@ class PurchaseOrderController extends Controller
     public function getRcvList (request $request)
     {
         try {
-            $RcvList = DB::connection('sqlSrvFPI')
+            $RcvList = DB::connection('sqlSrvBCKI')
             ->table('purc_rcv_dtl as a')
             ->selectRaw('a.po_id, a.po_item, a.rcv_id, b.rcv_no, a.article_id, a.qty, a.wgt, a.unit_meas, a.unit_price, a.amt_net')
             ->join('purc_rcv_hdr as b', 'a.purc_rcv_id', '=', 'b.purc_rcv_id')
@@ -908,7 +908,7 @@ class PurchaseOrderController extends Controller
     public function getDelPO(request $request)
     {
         try {
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('po_item')            
             ->where('po_id', $request->PoId)            
             ->where('po_item', $request->PoItem)            
@@ -931,7 +931,7 @@ class PurchaseOrderController extends Controller
         $gen_cluster_id = '';
 
         
-       $getLastTrID = DB::connection('sqlSrvFPI')
+       $getLastTrID = DB::connection('sqlSrvBCKI')
                             ->table('po_hdr')
                             ->select(DB::raw('TRIM(po_id) as po_id'))
                             ->where('po_id', 'like', '%' . $dateNow . '%')
@@ -957,7 +957,7 @@ class PurchaseOrderController extends Controller
     {
         $keys = ['PPN', 'PPH23', 'PPH21', 'PPH4'];
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('appl_constant')
             ->whereIn('key_code', $keys)
             ->pluck('str3', 'key_code'); // key_code jadi key array, str3 jadi value
@@ -1037,7 +1037,7 @@ class PurchaseOrderController extends Controller
                 }
 
                 $resetPR = $this->resetPr($noPo);
-                $hapisItemPo = DB::connection('sqlSrvFPI')
+                $hapisItemPo = DB::connection('sqlSrvBCKI')
                                         ->table('po_item')
                                         ->where('po_id', $noPo)
                                         ->delete();
@@ -1092,7 +1092,7 @@ class PurchaseOrderController extends Controller
         try {
             $nilai_uang = terbilang($request->amt_net);
     
-            $PoHdr = DB::connection("sqlSrvFPI")
+            $PoHdr = DB::connection("sqlSrvBCKI")
                 ->table('po_hdr')
                 ->insert([
                             'po_id' => $noPo,
@@ -1151,7 +1151,7 @@ class PurchaseOrderController extends Controller
                 $detail = (object) $detail;
                 $item_new = $item_new+1;
             
-                $save_item = DB::connection('sqlSrvFPI')
+                $save_item = DB::connection('sqlSrvBCKI')
                         ->table('po_item')
                         ->insert([
                             'office_id' => $request->office_id,
@@ -1199,7 +1199,7 @@ class PurchaseOrderController extends Controller
 
         try {
             if($detail->qtyPo > 0) {
-                $prItem = DB::connection("sqlSrvFPI")
+                $prItem = DB::connection("sqlSrvBCKI")
                                     ->table('pr_item')
                                     ->select('qty_po')
                                     ->where('pr_id', $detail->pr_id)
@@ -1207,13 +1207,13 @@ class PurchaseOrderController extends Controller
                                     ->value('qty_po');
                 $prItem = (float) $prItem;
 
-                $UpdateQtyPOdiPR = DB::connection('sqlSrvFPI')
+                $UpdateQtyPOdiPR = DB::connection('sqlSrvBCKI')
                                     ->table('pr_item')
                                     ->where('pr_id', $detail->pr_id)
                                     ->where('pr_item', $detail->pr_item)
                                     ->update(['qty_po' => $prItem + $detail->qtyPo]);
 
-                $UpdatStat =  DB::connection('sqlSrvFPI')
+                $UpdatStat =  DB::connection('sqlSrvBCKI')
                                     ->table('pr_item')
                                     ->selectRaw('pr_id, pr_item, qty, qty_po, stat')
                                     ->where('pr_id', $detail->pr_id)
@@ -1221,43 +1221,43 @@ class PurchaseOrderController extends Controller
                                     ->get();
 
                 if ($UpdatStat[0]->qty <= $UpdatStat[0]->qty_po) {
-                    $UpdatePrDtl = DB::connection('sqlSrvFPI')
+                    $UpdatePrDtl = DB::connection('sqlSrvBCKI')
                                             ->table('pr_item')
                                             ->where('pr_id', $detail->pr_id)
                                             ->where('pr_item', $detail->pr_item)
                                             ->update(['stat' => 'C']);
 
-                    // $UpdatePrHdr = DB::connection('sqlSrvFPI')
+                    // $UpdatePrHdr = DB::connection('sqlSrvBCKI')
                     //                         ->table('pr_hdr')
                     //                         ->where('pr_id', $detail->pr_id)
                     //                         ->update(['stat' => 'C']);
                     
                 } else {
-                    $UpdatePrDtl = DB::connection('sqlSrvFPI')
+                    $UpdatePrDtl = DB::connection('sqlSrvBCKI')
                                         ->table('pr_item')
                                         ->where('pr_id', $detail->pr_id)
                                         ->where('pr_item', $detail->pr_item)
                                         ->update(['stat' => 'O']);
 
-                    // $UpdatePrHdr = DB::connection('sqlSrvFPI')
+                    // $UpdatePrHdr = DB::connection('sqlSrvBCKI')
                     //                         ->table('pr_hdr')
                     //                         ->where('pr_id', $detail->pr_id)
                     //                         ->update(['stat' => 'O']);
                 }
 
-                // $fItemStat = DB::connection('sqlSrvFPI')
+                // $fItemStat = DB::connection('sqlSrvBCKI')
                 //                 ->table('pr_item')
                 //                 ->selectRaw('pr_id, pr_item, qty, qty_po, stat')
                 //                 ->where('pr_id', $detail->pr_id)
                 //                 ->where('stat', 'O')
                 //                 ->get();
                 // if ($fItemStat) {
-                //     $UpdatePrHdr = DB::connection('sqlSrvFPI')
+                //     $UpdatePrHdr = DB::connection('sqlSrvBCKI')
                 //                         ->table('pr_hdr')
                 //                         ->where('pr_id', $detail->pr_id)
                 //                         ->update(['stat' => 'O']);
                 // }else {
-                //     $UpdatePrHdr = DB::connection('sqlSrvFPI')
+                //     $UpdatePrHdr = DB::connection('sqlSrvBCKI')
                 //                         ->table('pr_hdr')
                 //                         ->where('pr_id', $detail->pr_id)
                 //                         ->update(['stat' => 'C']);
@@ -1271,7 +1271,7 @@ class PurchaseOrderController extends Controller
 
     private function updatePrHdr($pr_id)
     {        
-        $hasOpenItem = DB::connection('sqlSrvFPI')
+        $hasOpenItem = DB::connection('sqlSrvBCKI')
             ->table('pr_item')
             ->where('pr_id', $pr_id)
             ->where('stat', 'O')
@@ -1279,13 +1279,13 @@ class PurchaseOrderController extends Controller
 
         if ($hasOpenItem) {
             // kalau masih ada O, header tetap O
-            $update = DB::connection('sqlSrvFPI')
+            $update = DB::connection('sqlSrvBCKI')
                 ->table('pr_hdr')
                 ->where('pr_id', $pr_id)
                 ->update(['stat' => 'O']);
         } else {
             // kalau tidak ada O sama sekali, ubah ke C
-            $update = DB::connection('sqlSrvFPI')
+            $update = DB::connection('sqlSrvBCKI')
                 ->table('pr_hdr')
                 ->where('pr_id', $pr_id)
                 ->update(['stat' => 'C']);
@@ -1296,7 +1296,7 @@ class PurchaseOrderController extends Controller
 
     private function updatePoHdr($noPo,$last3,$request)
     {        
-        $po = DB::connection("sqlSrvFPI")
+        $po = DB::connection("sqlSrvBCKI")
                     ->table('po_hdr')
                     ->where('po_id', $noPo)
                     ->first();
@@ -1317,7 +1317,7 @@ class PurchaseOrderController extends Controller
 
         $nilai_uang = terbilang($request->amt_net);
 
-        $PoHdr = DB::connection("sqlSrvFPI")
+        $PoHdr = DB::connection("sqlSrvBCKI")
                         ->table('po_hdr')
                         ->where('po_id', $noPo)
                         ->update([
@@ -1357,7 +1357,7 @@ class PurchaseOrderController extends Controller
     private function resetPr($poId)
     {
         try {
-            $list_pr = DB::connection("sqlSrvFPI")
+            $list_pr = DB::connection("sqlSrvBCKI")
                             ->select(DB::raw("
                                 SELECT TRIM(pr_id) as pr_id, pr_item, SUM(qty) as qty_po_item
                                 FROM po_item
@@ -1366,7 +1366,7 @@ class PurchaseOrderController extends Controller
                             "), [$poId]);
 
             foreach ($list_pr as $detail) {
-                $prItem = DB::connection("sqlSrvFPI")
+                $prItem = DB::connection("sqlSrvBCKI")
                                     ->table('pr_item')
                                     ->select('qty_po')
                                     ->where('pr_id', $detail->pr_id)
@@ -1376,7 +1376,7 @@ class PurchaseOrderController extends Controller
                 if ($prItem) {
                     $newQty = max(0, $prItem->qty_po - $detail->qty_po_item); // supaya tidak minus
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('pr_item')
                         ->where('pr_id', $detail->pr_id)
                         ->where('pr_item', $detail->pr_item)
@@ -1385,7 +1385,7 @@ class PurchaseOrderController extends Controller
                             'stat'   => 'O',
                         ]);
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('pr_hdr')
                         ->where('pr_id', $detail->pr_id)
                         ->update([
@@ -1416,7 +1416,7 @@ class PurchaseOrderController extends Controller
         DB::beginTransaction();
 
         try {
-            $po = DB::connection("sqlSrvFPI")
+            $po = DB::connection("sqlSrvBCKI")
                     ->table('po_hdr')
                     ->where('po_id', $noPo)
                     ->first();
@@ -1435,7 +1435,7 @@ class PurchaseOrderController extends Controller
                 ], 403);
             }
 
-            $list_pr = DB::connection("sqlSrvFPI")
+            $list_pr = DB::connection("sqlSrvBCKI")
                             ->select(DB::raw("
                                 SELECT TRIM(pr_id) as pr_id, pr_item, sum(qty) as qty, sum(qty_rcv) as qty_rcv
                                 FROM po_item
@@ -1460,12 +1460,12 @@ class PurchaseOrderController extends Controller
 
             $resetPR = $this->resetPr($noPo);
 
-            $hapusPoHdr = DB::connection('sqlSrvFPI')
+            $hapusPoHdr = DB::connection('sqlSrvBCKI')
                                     ->table('po_hdr')
                                     ->where('po_id', $noPo)
                                     ->delete();
 
-            $hapusPoItem = DB::connection('sqlSrvFPI')
+            $hapusPoItem = DB::connection('sqlSrvBCKI')
                                     ->table('po_item')
                                     ->where('po_id', $noPo)
                                     ->delete();
@@ -1494,7 +1494,7 @@ class PurchaseOrderController extends Controller
         $remark2 = $request->remark2 ?? '';
 
         try {
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('po_item')
             ->where('po_id', $po_id)
             ->where('po_item', $po_item)
@@ -1504,14 +1504,14 @@ class PurchaseOrderController extends Controller
                 'dt_modified' =>now('Asia/Jakarta')
             ]);
 
-            $countActiveItems = DB::connection('sqlSrvFPI')
+            $countActiveItems = DB::connection('sqlSrvBCKI')
             ->table('po_item')
             ->where('po_id', $po_id)
             ->where('stat', '!=', 'X') // Hitung item yang statusnya BUKAN 'X'
             ->count();
 
             if ($countActiveItems == 0) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('po_hdr') // Asumsikan nama tabel header adalah po_hdr
                 ->where('po_id', $po_id)
                 ->update([

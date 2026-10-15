@@ -31,7 +31,7 @@ trait SuratPerintahKerjaTrait
                         employee.remark,
                         CONCAT(employee.idemployee,' - ',employee.name) AS gabungan
                     ")
-            ->where('company_id', 'FDPI')
+            ->where('company_id', 'bcki')
             ->where('active_flag', '=', 'Y')
             ->get();
 

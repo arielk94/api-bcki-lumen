@@ -8,7 +8,7 @@ class Controller extends BaseController
 {
     /**
      * @OA\Info(
-     *   title="API FPI ",
+     *   title="API bcki ",
      *   version="1.0",
      *   @OA\Contact(
      *     email="viva@gmail.com",

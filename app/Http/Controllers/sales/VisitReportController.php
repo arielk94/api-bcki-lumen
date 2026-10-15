@@ -70,7 +70,7 @@ class VisitReportController extends Controller
             }
         }
 
-        $activity_hdr = DB::connection('sqlSrvFPI')
+        $activity_hdr = DB::connection('sqlSrvBCKI')
                         ->table('sales_activity_hdr as a')
                         ->selectRaw("a.tr_id, format(a.tr_date, 'hh:mm tt dd/MM/yyyy') as tr_date, upper(a.sales_id) as sales_id, e.name, a.office_id, case when b.division = 'R' then 'PROJECT' else 'RETAIL' end as division, c.office, count(a.tr_id) as total, 
                         SUM(CASE WHEN d.take_order = 'Y' THEN 1 ELSE 0 END) AS take_order, max(cast(d.vehicle_km as float)) - min(cast(d.vehicle_km as float)) as total_km, format(max(cast(d.gps_distance as float)) - min(cast(d.gps_distance as float)), 'N2') as total_km_gps")
@@ -83,7 +83,7 @@ class VisitReportController extends Controller
                         ->groupByRaw("a.tr_id, a.tr_date, a.sales_id, e.name, a.office_id, case when b.division = 'R' then 'PROJECT' else 'RETAIL' end, c.office")
                         ->get();
 
-        $activity_dtl = DB::connection('sqlSrvFPI')
+        $activity_dtl = DB::connection('sqlSrvBCKI')
                         ->table('sales_activity_dtl as a')
                         ->selectRaw("a.tr_id, a.seq_id, upper(a.customer_name) as customer_name, a.customer_address, a.customer_city, upper(a.gps_address) as gps_address, a.latitude, a.longitude, a.remark, a.start_end_point, a.vehicle_km")
                         ->leftjoin('sales as b', 'a.sales_id', '=', 'b.SalesId')
@@ -114,7 +114,7 @@ class VisitReportController extends Controller
     {
         $customer = $request->customerId;
         if($customer != ''){
-            $result = DB::connection('sqlSrvFPI')
+            $result = DB::connection('sqlSrvBCKI')
                         ->table('Customer')
                         ->selectRaw("top 20 CustomerId, (NamaCustomer + '(' + CustomerId + ')') as NamaCustomer")
                         ->whereRaw("active_flag = 'Y' and NamaCustomer like '%$customer%' or CustomerId like '%$customer%'")
@@ -122,7 +122,7 @@ class VisitReportController extends Controller
                         ->get();
             return response()->json(['result' => $result]);
         } else {
-            $result = DB::connection('sqlSrvFPI')
+            $result = DB::connection('sqlSrvBCKI')
                         ->table('Customer')
                         ->selectRaw("top 20 CustomerId, (NamaCustomer + '(' + CustomerId + ')') as NamaCustomer")
                         ->where('active_flag', '=', 'Y')
@@ -138,7 +138,7 @@ class VisitReportController extends Controller
         $id = $request->region;
 
         if($id){
-            $office = DB::connection('sqlSrvFPI')
+            $office = DB::connection('sqlSrvBCKI')
                     ->table('branch_office')
                     ->selectRaw("office_id, concat(trim(office), '(', office_id, ')' ) as office")
                     ->where('region', '=', $id)
@@ -147,7 +147,7 @@ class VisitReportController extends Controller
 
             return response()->json(['office' => $office]);
         } else {
-            $office = DB::connection('sqlSrvFPI')
+            $office = DB::connection('sqlSrvBCKI')
                     ->table('branch_office')
                     ->selectRaw("office_id, concat(trim(office), '(', office_id, ')' ) as office")
                     ->where('active_flag', '=', 'Y')
@@ -163,7 +163,7 @@ class VisitReportController extends Controller
         $id = $request->office;
 
         if($id){
-            $sales = DB::connection('sqlSrvFPI')
+            $sales = DB::connection('sqlSrvBCKI')
                     ->table('sales')
                     ->selectRaw("SalesId, concat(trim(NamaSales), '(', SalesId, ')' ) as NamaSales")
                     ->where('office_id', '=', $id)
@@ -172,7 +172,7 @@ class VisitReportController extends Controller
 
             return response()->json(['sales' => $sales]);
         } else {
-            $sales = DB::connection('sqlSrvFPI')
+            $sales = DB::connection('sqlSrvBCKI')
                     ->table('sales')
                     ->selectRaw("SalesId, concat(trim(NamaSales), '(', SalesId, ')' ) as NamaSales")
                     ->where('active_flag', '=', 'Y')
@@ -188,7 +188,7 @@ class VisitReportController extends Controller
         $tr_id = $request->tr_id;
         $seqId = $request->seqId;
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
                     ->table('sales_activity_image')
                     ->where('tr_id', '=', $tr_id)
                     ->where('seq_id', '=', $seqId)
@@ -209,7 +209,7 @@ class VisitReportController extends Controller
 
         try {
             
-            $last = DB::connection('sqlSrvFPI')
+            $last = DB::connection('sqlSrvBCKI')
                     ->table('sales_activity_image')
                     ->where('tr_id', $tr_id)
                     ->where('seq_id', $seqId)
@@ -220,7 +220,7 @@ class VisitReportController extends Controller
 
             Storage::disk('public')->put('sales-activity/KMB/' . $nameFinal, $medium->__toString());
 
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('sales_activity_image')
             ->insert([
                 'tr_id' => $tr_id,

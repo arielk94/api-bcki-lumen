@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "API FPI ",
+        "title": "API bcki ",
         "contact": {
             "name": "Support Team",
             "email": "viva@gmail.com"
@@ -9,7 +9,7 @@
         "version": "1.0"
     },
     "paths": {
-        "/api/fpi/cortex/getListFakturCortex": {
+        "/api/bcki/cortex/getListFakturCortex": {
             "post": {
                 "tags": [
                     "Faktur Cortex"
@@ -75,7 +75,7 @@
                 ]
             }
         },
-        "/api/fpi/cortex/getListFakturCortexDtl": {
+        "/api/bcki/cortex/getListFakturCortexDtl": {
             "post": {
                 "tags": [
                     "Faktur Cortex"
@@ -134,7 +134,7 @@
                 ]
             }
         },
-        "/api/fpi/deposit/getListBankNote": {
+        "/api/bcki/deposit/getListBankNote": {
             "post": {
                 "tags": [
                     "Deposit"
@@ -198,7 +198,7 @@
                 ]
             }
         },
-        "/api/fpi/deposit/getListDeposit": {
+        "/api/bcki/deposit/getListDeposit": {
             "post": {
                 "tags": [
                     "Deposit"
@@ -258,7 +258,7 @@
                 ]
             }
         },
-        "/api/fpi/deposit/getListInvoice": {
+        "/api/bcki/deposit/getListInvoice": {
             "post": {
                 "tags": [
                     "Deposit"
@@ -300,7 +300,7 @@
                 ]
             }
         },
-        "/api/fpi/deposit/saveDeposit": {
+        "/api/bcki/deposit/saveDeposit": {
             "post": {
                 "tags": [
                     "Deposit"
@@ -342,7 +342,7 @@
                 ]
             }
         },
-        "/api/fpi/deposit/deleteDeposit": {
+        "/api/bcki/deposit/deleteDeposit": {
             "post": {
                 "tags": [
                     "Deposit"
@@ -384,7 +384,7 @@
                 ]
             }
         },
-        "/api/fpi/deposit/getListPurchDeposit": {
+        "/api/bcki/deposit/getListPurchDeposit": {
             "post": {
                 "tags": [
                     "Deposit"
@@ -444,7 +444,7 @@
                 ]
             }
         },
-        "/api/fpi/article/getArticle": {
+        "/api/bcki/article/getArticle": {
             "post": {
                 "tags": [
                     "Master Article"
@@ -498,7 +498,7 @@
                 ]
             }
         },
-        "/api/fpi/article/getCategory": {
+        "/api/bcki/article/getCategory": {
             "post": {
                 "tags": [
                     "Master Article"
@@ -548,7 +548,7 @@
                 ]
             }
         },
-        "/api/fpi/article/getUOM": {
+        "/api/bcki/article/getUOM": {
             "post": {
                 "tags": [
                     "Master Article"
@@ -590,7 +590,7 @@
                 ]
             }
         },
-        "/api/fpi/article/getWhArticle": {
+        "/api/bcki/article/getWhArticle": {
             "post": {
                 "tags": [
                     "Master Article"
@@ -672,7 +672,7 @@
                 ]
             }
         },
-        "/api/fpi/article/getCommodity": {
+        "/api/bcki/article/getCommodity": {
             "post": {
                 "tags": [
                     "Master Article"
@@ -714,7 +714,7 @@
                 ]
             }
         },
-        "/api/fpi/master/commodity": {
+        "/api/bcki/master/commodity": {
             "post": {
                 "tags": [
                     "Master Commodity"
@@ -748,7 +748,7 @@
                 ]
             }
         },
-        "/api/fpi/master/commodity/show": {
+        "/api/bcki/master/commodity/show": {
             "post": {
                 "tags": [
                     "Master Commodity"

@@ -19,36 +19,36 @@ class KwitansiController extends Controller
     public function index(Request $request)
     {
                 
-        $site = DB::connection('sqlSrvFPI')
+        $site = DB::connection('sqlSrvBCKI')
                     ->table('site')
                     ->selectRaw("id_site, UPPER(TRIM(site_name)) as site_name")
                     ->where('stat', '=', 'Y')
                     ->get();
 
-        $cluster = DB::connection('sqlSrvFPI')
+        $cluster = DB::connection('sqlSrvBCKI')
                     ->table('site_cluster')
                     ->selectRaw("id_cluster, UPPER(TRIM(cluster_name)) as cluster_name")
                     ->where('stat', '=', 'Y')
                     ->get();
 
-        $house = DB::connection('sqlSrvFPI')
+        $house = DB::connection('sqlSrvBCKI')
                     ->table('house_unit')
                     ->selectRaw("id_house, UPPER(TRIM(house_name)) as house_name")
                     ->where('active_flag', '=', 'Y')
                     ->get();
 
-        $bankAccount = DB::connection('sqlSrvFPI')
+        $bankAccount = DB::connection('sqlSrvBCKI')
                     ->table('account as a')
                     ->join('g_ledger as b', 'a.ac_num', '=', 'b.ac_num')
                     ->selectRaw("a.bank_acc, trim(b.ac_name) as ac_name")
                     ->get();
 
-        $city = DB::connection('sqlSrvFPI')
+        $city = DB::connection('sqlSrvBCKI')
                     ->table('city_list')
                     ->selectRaw("city_code, UPPER(TRIM(city)) as city")
                     ->get();
 
-        $province = DB::connection('sqlSrvFPI')
+        $province = DB::connection('sqlSrvBCKI')
                     ->table('province_list')
                     ->selectRaw("province_code, UPPER(TRIM(province)) as province")
                     ->get();
@@ -86,7 +86,7 @@ class KwitansiController extends Controller
         $date = $request->date;
         $installment = $request->installment;
 
-        $lastID = DB::connection('sqlSrvFPI')
+        $lastID = DB::connection('sqlSrvBCKI')
                 ->table('kwitansi')
                 ->max('tr_id');
 
@@ -95,7 +95,7 @@ class KwitansiController extends Controller
 
         try {
             
-            $save = DB::connection('sqlSrvFPI')
+            $save = DB::connection('sqlSrvBCKI')
                 ->table('kwitansi')
                 ->insert([
                     'tr_id' => $formattedID,
@@ -138,7 +138,7 @@ class KwitansiController extends Controller
             $sqlWhere .= "and id_site = '$site' ";
         }
 
-        $cluster = DB::connection('sqlSrvFPI')
+        $cluster = DB::connection('sqlSrvBCKI')
                     ->table('site_cluster')
                     ->selectRaw("id_cluster, UPPER(TRIM(cluster_name)) as cluster_name")
                     ->where('stat', '=', 'Y')
@@ -161,7 +161,7 @@ class KwitansiController extends Controller
             $sqlWhere .= "and a.id_cluster = '$cluster' ";
         }
 
-        $house = DB::connection('sqlSrvFPI')
+        $house = DB::connection('sqlSrvBCKI')
                     ->table('house_unit as a')
                     ->join('site_cluster as b', 'a.id_cluster', '=', 'b.id_cluster')
                     ->selectRaw("a.id_house, concat(UPPER(TRIM(a.house_name)), ' (', UPPER(TRIM(b.cluster_name)), ')') as house_name")
@@ -182,7 +182,7 @@ class KwitansiController extends Controller
         if($sprId)
         {
 
-            $spr = DB::connection('sqlSrvFPI')
+            $spr = DB::connection('sqlSrvBCKI')
                     ->table('v_list_penjualan')
                     ->selectRaw("order_id, concat(UPPER(TRIM(NamaCustomer)), ' (', CustomerId, ')') as NamaCustomer")
                     ->whereRaw("order_id like '%$sprId%'")
@@ -243,7 +243,7 @@ class KwitansiController extends Controller
             }
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
                     ->table('kwitansi as a')
                     ->selectRaw("
                         a.id_site, 
@@ -301,7 +301,7 @@ class KwitansiController extends Controller
         if($customerId)
         {
 
-            $customer = DB::connection('sqlSrvFPI')
+            $customer = DB::connection('sqlSrvBCKI')
                         ->select(DB::raw("select CustomerId, concat(UPPER(TRIM(NamaCustomer)), ' (', CustomerId, ')') as NamaCustomer, NamaCustomer as NamaCustomerStr, Alamat_id_card, Telepon from Customer 
                         where CustomerId like '%$customerId%' or NamaCustomer like '%$customerId%'"));
 
@@ -319,7 +319,7 @@ class KwitansiController extends Controller
         if($CustomerId)
         {
 
-            $customer = DB::connection('sqlSrvFPI')
+            $customer = DB::connection('sqlSrvBCKI')
                         ->select(DB::raw("select * from Customer 
                         where CustomerId = '$CustomerId'"));
 
@@ -337,7 +337,7 @@ class KwitansiController extends Controller
         if($trId)
         {
 
-            $delete = DB::connection('sqlSrvFPI')
+            $delete = DB::connection('sqlSrvBCKI')
                     ->table('kwitansi')
                     ->where('tr_id', '=', $trId)
                     ->delete();
@@ -368,7 +368,7 @@ class KwitansiController extends Controller
             $bank = [];
             $date =  $request->date;
 
-            $editData = DB::connection('sqlSrvFPI')
+            $editData = DB::connection('sqlSrvBCKI')
                     ->table('kwitansi')
                     ->where('tr_id', '=', $trId)
                     ->update([
@@ -403,7 +403,7 @@ class KwitansiController extends Controller
         if($id)
         {
 
-            $spr = DB::connection('sqlSrvFPI')
+            $spr = DB::connection('sqlSrvBCKI')
                         ->select(DB::raw("select top 5 order_id, concat(order_id, '(', trim(NamaCustomer), ')') as NamaCustomer from v_list_penjualan 
                         where order_id like '%$id%' or NamaCustomer like '%$id%'"));
 

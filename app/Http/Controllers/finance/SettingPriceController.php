@@ -31,7 +31,7 @@ class SettingPriceController extends Controller
                 $sqlWhere .= " and a.cust_type = '" . $request->cust_type . "'";
             }
 
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                 ->table('price_list as a')
                 ->selectRaw("a.region, a.article_id, b.description, b.uom, a.art_price, a.avg_price, a.cust_type, c.str2 as cust_type_name,
                     a.price1, a.qty1, a.price2, a.qty2, a.price3, a.qty3, a.price4, a.qty4, 
@@ -53,7 +53,7 @@ class SettingPriceController extends Controller
     public function Region(Request $request)
     {
         try {
-            $results = DB::connection('sqlSrvFPI')
+            $results = DB::connection('sqlSrvBCKI')
                 ->select(DB::raw("
                     SELECT DISTINCT TRIM(region) AS region
                     FROM branch_office"));
@@ -67,7 +67,7 @@ class SettingPriceController extends Controller
     public function GetArticle(Request $request)
     {
         try {
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                 ->select(DB::raw("
                     select article_id, description, uom
                     FROM article"));
@@ -81,7 +81,7 @@ class SettingPriceController extends Controller
     public function GetPrice(Request $request)
     {
         try {
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                 ->select(DB::raw("
                     select a.region, a.article_id, b.description, b.uom, a.cust_type, 
                     case when a.art_price <=0 then c.last_price else a.art_price end as art_price,
@@ -102,7 +102,7 @@ class SettingPriceController extends Controller
     public function GetSave(Request $request)
     {
         try {
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                 ->table('price_list')
                 ->where('region', $request->region)
                 ->where('article_id', $request->article_id)
@@ -110,7 +110,7 @@ class SettingPriceController extends Controller
                 ->first();
 
             if ($datas) {
-                $update = DB::connection('sqlSrvFPI')
+                $update = DB::connection('sqlSrvBCKI')
                     ->table('price_list')
                     ->where('region', $request->region)
                     ->where('article_id', $request->article_id)
@@ -134,7 +134,7 @@ class SettingPriceController extends Controller
                         'user_id' => getAuth($request)->user_id2
                     ]);
             } else {
-                $insert = DB::connection('sqlSrvFPI')
+                $insert = DB::connection('sqlSrvBCKI')
                     ->table('price_list')
                     ->insert([
                         'region' => $request->region,
@@ -171,7 +171,7 @@ class SettingPriceController extends Controller
             $dataArray = $request->dataArray;
             if ($dataArray) {
                 foreach ($dataArray as $key => $value) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('price_list')
                         ->updateOrInsert([
                             'region' => $value['region'],
@@ -208,7 +208,7 @@ class SettingPriceController extends Controller
     public function getCustomerType()
     {
         try {
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                 ->table('appl_constant')
                 ->where('key_code', 'CUST_TYPE')
                 ->select('str1', 'str2')

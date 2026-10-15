@@ -23,7 +23,7 @@ class OtherDepositController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/OtherDeposit/getDataMasterFinance",
+     *     path="/api/bcki/OtherDeposit/getDataMasterFinance",
      *     tags={"Finance"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -55,7 +55,7 @@ class OtherDepositController extends Controller
         $type = $request->type;
 
         try {
-            $connection = DB::connection("sqlSrvFPI");
+            $connection = DB::connection("sqlSrvBCKI");
 
             switch ($type) {
                 case 'vendor':
@@ -265,7 +265,7 @@ class OtherDepositController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/fpi/OtherDeposit/getDataById",
+     *     path="/api/bcki/OtherDeposit/getDataById",
      *     tags={"Finance"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -303,7 +303,7 @@ class OtherDepositController extends Controller
             return $this->sendError("Empty office ID", 'Error', 500);
         }
         try {
-            $connection = DB::connection("sqlSrvFPI");
+            $connection = DB::connection("sqlSrvBCKI");
 
             switch ($type) {
                 case 'header':
@@ -371,7 +371,7 @@ class OtherDepositController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/fpi/OtherDeposit/storeDeposit",
+     *     path="/api/bcki/OtherDeposit/storeDeposit",
      *     tags={"Finance"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -399,7 +399,7 @@ class OtherDepositController extends Controller
         if ($this->serviceAcc->ifAcctClosed($data['tanggal'], $request)) {
             return $this->sendError("This periode already closed, cannot be modified", 'Error', 500);
         }
-        $exist = DB::connection('sqlSrvFPI')->table('cash_tran_hdr')
+        $exist = DB::connection('sqlSrvBCKI')->table('cash_tran_hdr')
             ->select('tr_date')
             ->where('tr_type', $data['tr_type'])
             ->where('office_id', $data['office_id'])
@@ -415,10 +415,10 @@ class OtherDepositController extends Controller
                 $trId = $data['tr_id'];
             }
             try {
-                DB::connection('sqlSrvFPI')->transaction(function () use ($data, $userId, $trId) {
+                DB::connection('sqlSrvBCKI')->transaction(function () use ($data, $userId, $trId) {
 
 
-                    DB::connection('sqlSrvFPI')->table('cash_tran_hdr')->insert([
+                    DB::connection('sqlSrvBCKI')->table('cash_tran_hdr')->insert([
                         'office_id' => trim($data['office_id']),
                         'tr_id' => $trId,
                         'tr_type' => $data['tr_type'],
@@ -442,7 +442,7 @@ class OtherDepositController extends Controller
 
                     foreach ($data['details'] as $key => $detail) {
 
-                        DB::connection('sqlSrvFPI')->table('cash_tran_dtl')->insert([
+                        DB::connection('sqlSrvBCKI')->table('cash_tran_dtl')->insert([
                             'office_id' => trim($data['office_id']),
                             'tr_id' => $trId,
                             'tr_type' => $data['tr_type'],
@@ -455,12 +455,12 @@ class OtherDepositController extends Controller
                             'seq_num' => $key + 1,
                         ]);
                         if (@$detail['included_price']) {
-                            $includedPriceAmt = DB::connection('sqlSrvFPI')->table('cash_tran_dtl')
+                            $includedPriceAmt = DB::connection('sqlSrvBCKI')->table('cash_tran_dtl')
                                 ->where('order_id', $detail['no_spr'])
                                 ->where('item_bonus', $detail['included_price'])
                                 ->selectRaw('ISNULL(SUM(amount), 0) as jumlah')
                                 ->value("jumlah");
-                            DB::connection('sqlSrvFPI')->table('CustomerorderAddonUnit')
+                            DB::connection('sqlSrvBCKI')->table('CustomerorderAddonUnit')
                                 ->where('order_id', $detail['no_spr'])
                                 ->where('tr_seq', $detail['included_price'])
                                 ->update([
@@ -469,14 +469,14 @@ class OtherDepositController extends Controller
                         }
                     }
                     if (!empty(trim($data['tr_id']))) {
-                        DB::connection('sqlSrvFPI')->table('bank_note')
+                        DB::connection('sqlSrvBCKI')->table('bank_note')
                             ->where('tr_id', $data['tr_id'])
                             ->update([
                                 'voucher' => 1,
                                 'pay_id' => $data['tr_id']
                             ]);
 
-                        DB::connection('sqlSrvFPI')->table('kb_hdr')
+                        DB::connection('sqlSrvBCKI')->table('kb_hdr')
                             ->where('tr_id', $data['tr_id'])
                             ->update([
                                 'voucher' => 1
@@ -484,14 +484,14 @@ class OtherDepositController extends Controller
                     }
 
                     if (@$data['kwitansi_id']) {
-                        DB::connection('sqlSrvFPI')->table('kwitansi')
+                        DB::connection('sqlSrvBCKI')->table('kwitansi')
                             ->where('tr_id', $data['kwitansi_id'])
                             ->update([
                                 'tr_id_ref' => $data['tr_id']
                             ]);
                     }
                     if (@$data['no_giro']) {
-                        DB::connection('sqlSrvFPI')->table('giro_trans')
+                        DB::connection('sqlSrvBCKI')->table('giro_trans')
                             ->where('giro_num', $data['no_giro'])
                             ->update([
                                 'stat' => 'C',
@@ -500,14 +500,14 @@ class OtherDepositController extends Controller
                             ]);
                     }
                     if (@$data['debit_note']) {
-                        DB::connection('sqlSrvFPI')->table('credit_note')
+                        DB::connection('sqlSrvBCKI')->table('credit_note')
                             ->where('tr_id', $data['debit_note'])
                             ->update([
                                 'stat' => 'P'
                             ]);
                     }
                     if (@$data['tr_id_ref']) {
-                        DB::connection('sqlSrvFPI')->table('bank_note')
+                        DB::connection('sqlSrvBCKI')->table('bank_note')
                             ->where('tr_id', $data['tr_id_ref'])
                             ->update([
                                 'voucher' => 1,
@@ -531,7 +531,7 @@ class OtherDepositController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/fpi/OtherDeposit/getBankStatement",
+     *     path="/api/bcki/OtherDeposit/getBankStatement",
      *     tags={"Finance"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -599,7 +599,7 @@ class OtherDepositController extends Controller
         }
         try {
             if (trim($tr_type === 'K')) {
-                $result = DB::connection("sqlSrvFPI")
+                $result = DB::connection("sqlSrvBCKI")
                     ->table('kb_hdr as a')
                     ->selectRaw("
                          a.remark Descr,'' cabang,'' cabang1,'' City,'' cr_code,0 diprint,'' remark1,'' link_id,'' db_code,kb_amt db_amt,0 cr_amt,0 saldo,trim(a.tr_id) tr_id,
@@ -617,7 +617,7 @@ class OtherDepositController extends Controller
                     ->get();
                 //where a.stat='C' and a.dt_kb='20250710' and voucher=0 CAST(bn.dt_trans AS DATE) = CONVERT(DATE, '" . $tr_date . "')
             } else {
-                $result = DB::connection("sqlSrvFPI")
+                $result = DB::connection("sqlSrvBCKI")
                     ->table('bank_note as bn')
                     ->selectRaw("
                         bn.Descr,bn.cabang,bn.db_amt,bn.cr_amt,bn.saldo,bn.tr_id,bn.voucher,bn.run_number,bn.dt_trans,
@@ -640,7 +640,7 @@ class OtherDepositController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/fpi/OtherDeposit/getDataTransaction",
+     *     path="/api/bcki/OtherDeposit/getDataTransaction",
      *     tags={"Finance"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -707,7 +707,7 @@ class OtherDepositController extends Controller
             $sqlWhere = $sqlWhere . "and ct.id_house = " . "'" . $id_house . "'";
         }
         try {
-            $connection = DB::connection("sqlSrvFPI");
+            $connection = DB::connection("sqlSrvBCKI");
 
             $result = $connection->table('cash_tran_hdr as ct')
                 ->selectRaw("ct.*, gl.ac_name,site_name,cluster_name,house_name, 
@@ -768,9 +768,9 @@ class OtherDepositController extends Controller
             return $this->sendError("This periode already closed, cannot be modified", 'Error', 500);
         }
         try {
-            DB::connection('sqlSrvFPI')->transaction(function () use ($data, $userId) {
+            DB::connection('sqlSrvBCKI')->transaction(function () use ($data, $userId) {
 
-                DB::connection('sqlSrvFPI')->table('cash_tran_hdr')
+                DB::connection('sqlSrvBCKI')->table('cash_tran_hdr')
                     ->where('tr_type', $data['tr_type'])
                     ->where('office_id', $data['office_id'])
                     ->where('tr_id', $data['tr_id'])
@@ -792,7 +792,7 @@ class OtherDepositController extends Controller
                         'user_id' => $userId
                     ]);
 
-                DB::connection('sqlSrvFPI')->table('cash_tran_dtl')
+                DB::connection('sqlSrvBCKI')->table('cash_tran_dtl')
                     ->where('tr_id', $data['tr_id'])
                     ->where('tr_type', $data['tr_type'])
                     ->where('office_id', $data['office_id'])
@@ -800,7 +800,7 @@ class OtherDepositController extends Controller
 
                 foreach ($data['details'] as $key => $detail) {
 
-                    DB::connection('sqlSrvFPI')->table('cash_tran_dtl')->insert([
+                    DB::connection('sqlSrvBCKI')->table('cash_tran_dtl')->insert([
                         'office_id' => trim($data['office_id']),
                         'tr_id' => $data['tr_id'],
                         'tr_type' => $data['tr_type'],
@@ -814,7 +814,7 @@ class OtherDepositController extends Controller
                     ]);
                 }
                 if (!empty($data['tr_id'])) {
-                    DB::connection('sqlSrvFPI')->table('bank_note')
+                    DB::connection('sqlSrvBCKI')->table('bank_note')
                         ->where('pay_id', $data['tr_id'])
                         ->update([
                             'voucher' => 1,
@@ -823,7 +823,7 @@ class OtherDepositController extends Controller
                 }
 
                 if (@$data['tr_id_ref']) {
-                    DB::connection('sqlSrvFPI')->table('bank_note')
+                    DB::connection('sqlSrvBCKI')->table('bank_note')
                         ->where('tr_id', $data['tr_id_ref'])
                         ->update([
                             'voucher' => 1,
@@ -831,14 +831,14 @@ class OtherDepositController extends Controller
                         ]);
                 }
                 if (@$data['kwitansi_id']) {
-                    DB::connection('sqlSrvFPI')->table('kwitansi')
+                    DB::connection('sqlSrvBCKI')->table('kwitansi')
                         ->where('tr_id', $data['kwitansi_id'])
                         ->update([
                             'tr_id_ref' => $data['tr_id']
                         ]);
                 }
                 if (@$data['no_giro']) {
-                    DB::connection('sqlSrvFPI')->table('giro_trans')
+                    DB::connection('sqlSrvBCKI')->table('giro_trans')
                         ->where('giro_num', $data['no_giro'])
                         ->update([
                             'stat' => 'C',
@@ -847,7 +847,7 @@ class OtherDepositController extends Controller
                         ]);
                 }
                 if (@$data['debit_note']) {
-                    DB::connection('sqlSrvFPI')->table('credit_note')
+                    DB::connection('sqlSrvBCKI')->table('credit_note')
                         ->where('tr_id', $data['debit_note'])
                         ->update([
                             'stat' => 'P'
@@ -886,7 +886,7 @@ class OtherDepositController extends Controller
         }
 
         try {
-            $result = DB::connection('sqlSrvFPI')->table('cash_tran_hdr')
+            $result = DB::connection('sqlSrvBCKI')->table('cash_tran_hdr')
                 ->selectRaw("isnull(tr_date,'') tr_date")
                 ->where('tr_type', $tr_type)
                 ->where('office_id', $office_id)
@@ -896,19 +896,19 @@ class OtherDepositController extends Controller
             if ($this->serviceAcc->ifAcctClosed($tr_date, $request)) {
                 return $this->sendError("This periode already closed, cannot be modified", 'Error', 500);
             }
-            DB::connection('sqlSrvFPI')->transaction(function () use ($tr_id, $tr_type, $office_id) {
-                DB::connection('sqlSrvFPI')->table('cash_tran_dtl')
+            DB::connection('sqlSrvBCKI')->transaction(function () use ($tr_id, $tr_type, $office_id) {
+                DB::connection('sqlSrvBCKI')->table('cash_tran_dtl')
                     ->where('tr_type', $tr_type)
                     ->where('office_id', $office_id)
                     ->where('tr_id', $tr_id)
                     ->delete();
-                DB::connection('sqlSrvFPI')->table('cash_tran_hdr')
+                DB::connection('sqlSrvBCKI')->table('cash_tran_hdr')
                     ->where('tr_type', $tr_type)
                     ->where('office_id', $office_id)
                     ->where('tr_id', $tr_id)
                     ->delete();
                 //if (!empty($data['tr_id'])) {
-                DB::connection('sqlSrvFPI')->table('bank_note')
+                DB::connection('sqlSrvBCKI')->table('bank_note')
                     ->where('pay_id', $tr_id)
                     ->update([
                         'voucher' => 0,
@@ -917,7 +917,7 @@ class OtherDepositController extends Controller
                 //}
 
                 //if (!empty($tr_id_ref)) {
-                DB::connection('sqlSrvFPI')->table('bank_note')
+                DB::connection('sqlSrvBCKI')->table('bank_note')
                     ->where('tr_id', $tr_id)
                     ->update([
                         'voucher' => 0,
@@ -945,7 +945,7 @@ class OtherDepositController extends Controller
         $prefix = ($type == 'OD') ? 'BKM01' : 'BKK01';
         $tahun2digit = date('y', strtotime($tanggal));
         $bulan2digit = date('m', strtotime($tanggal));
-        $last = DB::connection("sqlSrvFPI")
+        $last = DB::connection("sqlSrvBCKI")
             ->table('cash_tran_hdr')
             ->selectRaw('RIGHT(trim(tr_id), 3) as kode_akhir')
             ->where('tr_id', 'like', "%{$prefix}{$tahun2digit}{$bulan2digit}%")

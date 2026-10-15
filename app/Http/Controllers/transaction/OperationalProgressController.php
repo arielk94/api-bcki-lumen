@@ -18,7 +18,7 @@ class OperationalProgressController extends Controller
     {
         // dd("test");
         // -- get sites
-        $sites = DB::connection("sqlSrvFPI")
+        $sites = DB::connection("sqlSrvBCKI")
             ->table('site as st')
             ->join('city_list as lc', 'st.city', 'lc.city_code')
             ->where('stat', 'Y')
@@ -31,7 +31,7 @@ class OperationalProgressController extends Controller
             ->get();
 
         // -- get province
-        $provinces = DB::connection("sqlSrvFPI")
+        $provinces = DB::connection("sqlSrvBCKI")
             ->table('province_list')
             ->selectRaw("
                 province_code as id_province,
@@ -40,7 +40,7 @@ class OperationalProgressController extends Controller
             ->get();
 
         // -- get appl_contant PUTUSAN_AK
-        $putusan = DB::connection("sqlSrvFPI")
+        $putusan = DB::connection("sqlSrvBCKI")
             ->table('appl_constant')
             ->where('key_code', 'PUTUSAN_AK')
             ->selectRaw("
@@ -50,7 +50,7 @@ class OperationalProgressController extends Controller
             ->get();
 
         // -- get banks
-        $bank = DB::connection("sqlSrvFPI")
+        $bank = DB::connection("sqlSrvBCKI")
             ->table('account')
             ->selectraw('trim(bank_name) as bank_name')
             ->distinct()
@@ -60,7 +60,7 @@ class OperationalProgressController extends Controller
         $aprvPP = $this->getEnvConf('FINANCE', 'APRV_PP');
 
         // -- get appl_constant PAY_PROG
-        $payprog = DB::connection("sqlSrvFPI")
+        $payprog = DB::connection("sqlSrvBCKI")
             ->table('appl_constant')
             ->where('key_code', 'OPL_PROG')
             ->selectRaw("
@@ -92,7 +92,7 @@ class OperationalProgressController extends Controller
         // return $this->sendResponse([], 'Successfully get Payment Progress');
 
         try {
-            // $datas = DB::connection("sqlSrvFPI")
+            // $datas = DB::connection("sqlSrvBCKI")
             //     ->table('v_operational_progress as pp')
             //     ->selectRaw('
             //         pp.*,
@@ -106,7 +106,7 @@ class OperationalProgressController extends Controller
             //             ->where('op.job_code', '=', `APRV9`);
             //     })
             //     ->where('pp.status', 'O');
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
               ->table('v_operational_progress as pp')
               ->selectRaw('
                           pp.*
@@ -233,7 +233,7 @@ class OperationalProgressController extends Controller
         try {
 
           if($approve_type == 'APRV09') {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('operational_progress')
                 ->updateOrInsert([
                   'order_id' => $order_id
@@ -241,14 +241,14 @@ class OperationalProgressController extends Controller
                 $dataSave);
           }else{
             // -- approve data            
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('operational_progress')
                 ->insert($dataSave);
           }
 
           // -- file attachments
           if ($file_attachments) {
-              DB::connection("sqlSrvFPI")
+              DB::connection("sqlSrvBCKI")
                   ->table('operational_progress_doc')
                   ->insert($file_attachments);
           }
@@ -264,7 +264,7 @@ class OperationalProgressController extends Controller
         $order_id = $request->order_id ?? '';
         $progress = $request->progress ?? '';
 
-        $resp = DB::connection("sqlSrvFPI")
+        $resp = DB::connection("sqlSrvBCKI")
             ->table('operational_progress')
             ->select('tr_id')
             ->where('order_id', $order_id)
@@ -292,7 +292,7 @@ class OperationalProgressController extends Controller
         }
 
         try {
-          DB::connection("sqlSrvFPI")
+          DB::connection("sqlSrvBCKI")
               ->table('operational_progress')
               ->updateOrInsert([
                 'order_id' => $order_id,
@@ -321,7 +321,7 @@ class OperationalProgressController extends Controller
             // ======================
             // GET QC FORM
             // ======================
-            $form = DB::connection('sqlSrvFPI')
+            $form = DB::connection('sqlSrvBCKI')
                 ->table('qc_form')
                 ->where('qc_type', 'KK')
                 ->where('active_flag', 'Y')
@@ -334,7 +334,7 @@ class OperationalProgressController extends Controller
             // ======================
             // CEK / INSERT HEADER
             // ======================
-            $existingHdr = DB::connection('sqlSrvFPI')
+            $existingHdr = DB::connection('sqlSrvBCKI')
                 ->table('qc_trans_hdr')
                 ->where('id_qc_form', $form->id_qc_form)
                 ->where('id_house', $id_house)
@@ -344,7 +344,7 @@ class OperationalProgressController extends Controller
 
                 $qc_trans_id = $this->generateQcTransId();
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_hdr')
                     ->insert([
                         'qc_trans_id' => $qc_trans_id,
@@ -370,7 +370,7 @@ class OperationalProgressController extends Controller
             // AMBIL QC ITEM
             // ======================
             // dd($form->id_qc_form);
-            $qcItems = DB::connection('sqlSrvFPI')
+            $qcItems = DB::connection('sqlSrvBCKI')
                 ->table('qc_item')
                 ->where('id_qc_form', $form->id_qc_form)
                 ->get();
@@ -389,7 +389,7 @@ class OperationalProgressController extends Controller
             // ======================
             // AMBIL EXISTING DETAIL
             // ======================
-            $existingDtl = DB::connection('sqlSrvFPI')
+            $existingDtl = DB::connection('sqlSrvBCKI')
                 ->table('qc_trans_dtl')
                 ->where('qc_trans_id', $qc_trans_id)
                 ->get();
@@ -445,7 +445,7 @@ class OperationalProgressController extends Controller
             // BULK INSERT
             // ======================
             if (!empty($insertData)) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('qc_trans_dtl')
                     ->insert($insertData);
             }
@@ -465,7 +465,7 @@ class OperationalProgressController extends Controller
 
         $prefix = $dateYear2digit . $dateMonth . $dateDay;
 
-        $getLastIdQC = DB::connection('sqlSrvFPI')
+        $getLastIdQC = DB::connection('sqlSrvBCKI')
             ->table('qc_trans_hdr')
             ->where('qc_trans_id', 'like', "%$prefix%")
             ->max('qc_trans_id');
@@ -490,7 +490,7 @@ class OperationalProgressController extends Controller
         $tr_id = $request->tr_id;
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('operational_progress_doc')
                 ->where('doc_type', $order_id)
                 ->where('aprv_type', $approve_type)
@@ -522,7 +522,7 @@ class OperationalProgressController extends Controller
         $order_id = $request->order_id ?? '';
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('operational_progress as pp')
                 ->join('appl_constant as ack', function ($q) {
                     $q->on('pp.job_code', '=', 'ack.str1')
@@ -558,7 +558,7 @@ class OperationalProgressController extends Controller
     public function getNoSpr()
     {
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('CustomerOrder as co')
                 ->join('Customer as cu', 'co.CustomerId', '=', 'cu.CustomerId')
                 ->join('site as st', 'co.id_site', '=', 'st.id_site')
@@ -578,7 +578,7 @@ class OperationalProgressController extends Controller
     private function genTrId()
     {
         $datePrefix = now()->format('ymd'); // YYMMDD
-        $lastRecord = DB::connection("sqlSrvFPI")
+        $lastRecord = DB::connection("sqlSrvBCKI")
             ->table('operational_progress')
             ->where('tr_id', 'like', $datePrefix . '%')
             ->orderByDesc('tr_id')
@@ -606,9 +606,9 @@ class OperationalProgressController extends Controller
 
         try {
             // Memulai transaksi database untuk memastikan operasi atomik
-            DB::connection("sqlSrvFPI")->beginTransaction();
+            DB::connection("sqlSrvBCKI")->beginTransaction();
 
-            $query = DB::connection("sqlSrvFPI")
+            $query = DB::connection("sqlSrvBCKI")
                 ->table('operational_progress'); // Fokus langsung pada tabel yang akan dihapus
 
             // Menambahkan kondisi WHERE berdasarkan parameter yang diberikan
@@ -628,7 +628,7 @@ class OperationalProgressController extends Controller
             $deletedRows = $query->delete();
 
             // Update yang ada, hapus gambar yg mau dihapus
-            $listAttch = DB::connection('sqlSrvFPI')
+            $listAttch = DB::connection('sqlSrvBCKI')
                 ->table('operational_progress_doc')
                 ->where('doc_type', $order_id)
                 ->where('tr_id', $tr_id)
@@ -644,7 +644,7 @@ class OperationalProgressController extends Controller
             }
 
             //delete image
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('operational_progress_doc')
                 ->where('doc_type', $order_id)
                 ->where('tr_id', $tr_id)
@@ -652,7 +652,7 @@ class OperationalProgressController extends Controller
                 ->delete();
 
             // Melakukan commit transaksi jika berhasil
-            DB::connection("sqlSrvFPI")->commit();
+            DB::connection("sqlSrvBCKI")->commit();
 
             if ($deletedRows > 0) {
                 return $this->sendResponse([], 'Data berhasil dihapus. Jumlah baris yang dihapus: ' . $deletedRows);
@@ -662,7 +662,7 @@ class OperationalProgressController extends Controller
 
         } catch (\Exception $e) {
             // Melakukan rollback transaksi jika terjadi kesalahan
-            DB::connection("sqlSrvFPI")->rollBack();
+            DB::connection("sqlSrvBCKI")->rollBack();
             return $this->sendError($e->getMessage(), 'Gagal menghapus data', 500);
         }
     }

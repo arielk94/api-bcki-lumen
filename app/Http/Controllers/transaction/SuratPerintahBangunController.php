@@ -37,7 +37,7 @@ class SuratPerintahBangunController extends Controller
         $aprv_2 = $request->aprv_2;
 
         try {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('spb_hdr')
                 ->join('site', 'site.id_site', '=', 'spb_hdr.id_site')
                 ->join('site_cluster', 'site_cluster.id_cluster', '=', 'spb_hdr.id_cluster')
@@ -73,7 +73,7 @@ class SuratPerintahBangunController extends Controller
         $typeSPK = $request->type_spk;
 
         try {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('spb_hdr')
                 ->join('site', 'site.id_site', '=', 'spb_hdr.id_site')
                 ->join('site_cluster', 'site_cluster.id_cluster', '=', 'spb_hdr.id_cluster')
@@ -103,7 +103,7 @@ class SuratPerintahBangunController extends Controller
         $typeSPK = $request->type_spk;
 
         try {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('spb_hdr')
                 ->join('site', 'site.id_site', '=', 'spb_hdr.id_site')
                 ->join('site_cluster', 'site_cluster.id_cluster', '=', 'spb_hdr.id_cluster')
@@ -127,7 +127,7 @@ class SuratPerintahBangunController extends Controller
     public function getAllSPBForSPKnoWhere()
     {
         try {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('spb_hdr')
                 ->join('site', 'site.id_site', '=', 'spb_hdr.id_site')
                 ->join('site_cluster', 'site_cluster.id_cluster', '=', 'spb_hdr.id_cluster')
@@ -163,7 +163,7 @@ class SuratPerintahBangunController extends Controller
         // $gen_qc = $this->generateIdQcTrans($qc_form_id);
 
         // -- validated
-        $isExist = DB::connection('sqlSrvFPI')
+        $isExist = DB::connection('sqlSrvBCKI')
             ->table('spb_hdr')
             ->where('id_site', $site_id)
             ->where('id_cluster', $cluster_id)
@@ -205,7 +205,7 @@ class SuratPerintahBangunController extends Controller
         }
 
         // -- get qc_item
-        // $qcItems = DB::connection('sqlSrvFPI')
+        // $qcItems = DB::connection('sqlSrvBCKI')
         //     ->table('qc_item')
         //     ->where('id_qc_form', $qc_form_id)
         //     ->get()
@@ -221,7 +221,7 @@ class SuratPerintahBangunController extends Controller
         //     ->toArray();
 
         try {
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('spb_hdr')
                 ->insert([
                     'id_spb' => $gen_spb,
@@ -240,14 +240,14 @@ class SuratPerintahBangunController extends Controller
 
             // -- save file uploads
             if ($fileAttachments) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('spb_file')
                     ->insert($fileAttachments);
             }
 
             // -- insert qc_trans_dtl
             // if ($qcItems) {
-            //     DB::connection('sqlSrvFPI')
+            //     DB::connection('sqlSrvBCKI')
             //         ->table('qc_trans_hdr')
             //         ->insert([
             //             'qc_trans_id' => $gen_qc,
@@ -260,7 +260,7 @@ class SuratPerintahBangunController extends Controller
             //         ]);
 
             //     // -- insert qc_trans_hdr
-            //     DB::connection('sqlSrvFPI')
+            //     DB::connection('sqlSrvBCKI')
             //         ->table('qc_trans_dtl')
             //         ->insert($qcItems);
             // }
@@ -284,7 +284,7 @@ class SuratPerintahBangunController extends Controller
         $removed_file = $request->remove_attachments ?? [];
 
         // -- check approve
-        // $dataSpb =  DB::connection('sqlSrvFPI')
+        // $dataSpb =  DB::connection('sqlSrvBCKI')
         //     ->table('spb_hdr as sh')
         //     ->join('qc_trans_hdr as qth', 'qth.doc_id', '=', 'sh.id_spb')
         //     ->where('id_spb', $spb_id)
@@ -295,7 +295,7 @@ class SuratPerintahBangunController extends Controller
         //     ->first();
 
         // -- remove files
-        $listAttch = DB::connection('sqlSrvFPI')
+        $listAttch = DB::connection('sqlSrvBCKI')
             ->table('spb_file')
             ->where('id_spb', $spb_id)
             ->whereIn('doc_file', $removed_file)
@@ -312,7 +312,7 @@ class SuratPerintahBangunController extends Controller
 
         // -- enviroment, item_num
         $secEnv = $this->getEnvConf("TRANSACTION", "SPPJB", getAuth($request)->user_id2);
-        $lastItemNum = DB::connection('sqlSrvFPI')
+        $lastItemNum = DB::connection('sqlSrvBCKI')
             ->table('spb_file')
             ->where('id_spb', $spb_id)
             ->max('item_num') ?? 0;
@@ -364,13 +364,13 @@ class SuratPerintahBangunController extends Controller
             //     $dataUpdate['id_qc_form'] = $qc_form_id;
             // }
 
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('spb_hdr')
                 ->where('id_spb', $spb_id)
                 ->update($dataUpdate);
 
             // -- remove file uploads
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('spb_file')
                 ->where('id_spb', $spb_id)
                 ->whereIn('doc_file', $removed_file)
@@ -378,7 +378,7 @@ class SuratPerintahBangunController extends Controller
 
             // -- save file uploads
             if ($fileAttachments) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('spb_file')
                     ->insert($fileAttachments);
             }
@@ -386,7 +386,7 @@ class SuratPerintahBangunController extends Controller
             // -- qc_trans not approved
             // if (!$dataSpb->aprv1_by && !$dataSpb->aprv2_by) {
             //     // -- get qc_item
-            //     $qcItems = DB::connection('sqlSrvFPI')
+            //     $qcItems = DB::connection('sqlSrvBCKI')
             //         ->table('qc_item')
             //         ->where('id_qc_form', $qc_form_id)
             //         ->get()
@@ -402,7 +402,7 @@ class SuratPerintahBangunController extends Controller
             //         ->toArray();
 
             //     // -- update qc_trans_hdr
-            //     DB::connection('sqlSrvFPI')
+            //     DB::connection('sqlSrvBCKI')
             //         ->table('qc_trans_hdr')
             //         ->where('doc_id', $spb_id)
             //         ->update([
@@ -413,14 +413,14 @@ class SuratPerintahBangunController extends Controller
             //         ]);
 
             //     // -- update qc_trans_dtl
-            //     DB::connection('sqlSrvFPI')
+            //     DB::connection('sqlSrvBCKI')
             //         ->table('qc_trans_dtl')
             //         ->where('qc_trans_id', $dataSpb->qc_trans_id)
             //         ->delete();
 
             //     // -- insert qc_trans_dtl
             //     if ($qcItems) {
-            //         DB::connection('sqlSrvFPI')
+            //         DB::connection('sqlSrvBCKI')
             //             ->table('qc_trans_dtl')
             //             ->insert($qcItems);
             //     }
@@ -437,7 +437,7 @@ class SuratPerintahBangunController extends Controller
         $spb_id = $request->spb_id;
 
         try {
-            $result = DB::connection('sqlSrvFPI')
+            $result = DB::connection('sqlSrvBCKI')
                 ->table('spb_file')
                 ->where('id_spb', $spb_id)
                 ->selectRaw("
@@ -467,7 +467,7 @@ class SuratPerintahBangunController extends Controller
         $dateMonth = date("m");
 
         // Ambil id_urut terbesar berdasarkan tahun dan bulan sekarang
-        $getLastTrID = DB::connection('sqlSrvFPI')
+        $getLastTrID = DB::connection('sqlSrvBCKI')
             ->table('spb_hdr')
             ->where('id_spb', 'like', "%" . $dateYear . $dateMonth . "%")
             ->max('id_spb');
@@ -488,7 +488,7 @@ class SuratPerintahBangunController extends Controller
         $dateNow = date("ymd");
         $genId = "T{$dateNow}001";
 
-        $lastId = DB::connection('sqlSrvFPI')
+        $lastId = DB::connection('sqlSrvBCKI')
             ->table('qc_trans_hdr')
             ->where('qc_trans_id', 'like', "%T$dateNow%")
             ->max('qc_trans_id');

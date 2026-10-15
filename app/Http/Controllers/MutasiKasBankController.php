@@ -61,7 +61,7 @@ class MutasiKasBankController extends Controller
         // $sqlWhere = "a.tr_date BETWEEN '$start_date' AND '$end_date' AND a.ac_num = '$acNum'";
 
         // 3. Ambil data mutasi
-        $mutasi = DB::connection('sqlSrvFPI')
+        $mutasi = DB::connection('sqlSrvBCKI')
         ->table('journal_voucher as a')
         ->selectRaw("
             a.ac_num,
@@ -154,7 +154,7 @@ class MutasiKasBankController extends Controller
         $amtCr = 0;
 
         // Ambil data dari g_ledger_year dan g_ledger
-        $record = DB::connection('sqlSrvFPI')
+        $record = DB::connection('sqlSrvBCKI')
             ->table('g_ledger_year as a')
             ->join('g_ledger as b', function($join) {
                 $join->on('a.office_id', '=', 'b.office_id')
@@ -184,7 +184,7 @@ class MutasiKasBankController extends Controller
         $isSame = $bom === date('Y-m-d', strtotime($dtAw));
 
         if (!$isSame) {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('journal_voucher')
                 ->selectRaw('rate, SUM(amt_dr) as amt_dr, SUM(amt_cr) as amt_cr')
                 ->where('office_id', $office_id)
@@ -243,7 +243,7 @@ class MutasiKasBankController extends Controller
             $sqlWhere .= " AND a.office_id = '$office_id'";
         }
 
-        $results = DB::connection('sqlSrvFPI')
+        $results = DB::connection('sqlSrvBCKI')
             ->table('journal_voucher as a')
             ->leftJoin('journal_voucher as z', function ($join) {
                 $join->on('a.source_num', '=', 'z.source_num')

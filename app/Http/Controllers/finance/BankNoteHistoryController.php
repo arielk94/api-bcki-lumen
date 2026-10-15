@@ -57,7 +57,7 @@ class BankNoteHistoryController extends Controller
             }
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
                 ->table('v_bank_split as v')
                 ->selectRaw("
                     v.*, 
@@ -86,7 +86,7 @@ class BankNoteHistoryController extends Controller
         
         $mother_id = $request->mother_id;
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
                 ->table('v_bank_split')
                 ->where('mother_id', $mother_id)
                 ->where('mother_child', 'CHILD')

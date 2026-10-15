@@ -15,7 +15,7 @@ class TransferWarehouseController extends Controller
     use WarehouseTrait;
 
     public function getPeriod(Request $request){
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                     ->table('period')
                     ->where('dept_id', 'PRODWH')
                     ->where('office_id', $request->office_id)
@@ -95,7 +95,7 @@ class TransferWarehouseController extends Controller
 
             $sqlWhere = $sqlWhere . "and article.cat_id IN (1,2) and inv_bal.qty_oh > 0";
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('inv_bal')
                                 ->selectRaw("
                                 inv_bal.office_id, 
@@ -207,7 +207,7 @@ class TransferWarehouseController extends Controller
             }
         }
 
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('inv_trans_dtl')
                 ->selectRaw("
                 inv_trans_dtl.office_id, 
@@ -385,7 +385,7 @@ class TransferWarehouseController extends Controller
     {
         $arrayReusable = [];
 
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('inv_trans_dtl')
                 ->selectRaw("
                 inv_trans_dtl.office_id, 
@@ -442,7 +442,7 @@ class TransferWarehouseController extends Controller
                 ->get();
         
         foreach ($datas as $key => $value) {
-            $rcv = DB::connection("sqlSrvFPI")
+            $rcv = DB::connection("sqlSrvBCKI")
                     ->table('inv_trans_dtl')
                     ->selectRaw("SUM(qty) as qty_total")
                     ->where('tr_id_ref', $value->tr_id)

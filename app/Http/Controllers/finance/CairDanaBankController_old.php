@@ -21,7 +21,7 @@ class CairDanaBankController extends Controller
         $id_house = $request->id_house ?? '';
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('qc_trans_hdr as qth')
                 ->join("v_penjualan_payment as vpp", "qth.id_house", "=", "vpp.id_house")
                 ->where('qth.doc_type', 'SPR') // only SPR
@@ -74,14 +74,14 @@ class CairDanaBankController extends Controller
 
         try {
             // -- data pernah save
-            $saved = DB::connection("sqlSrvFPI")
+            $saved = DB::connection("sqlSrvBCKI")
                 ->table('pencairan_spr')
                 ->where('qc_trans_id', $qc_trans_id)
                 ->where('cat_id', $cat_id)
                 ->first();
 
             // -- data bank, progress bangunan image per type
-            $progress = DB::connection("sqlSrvFPI")
+            $progress = DB::connection("sqlSrvBCKI")
                 ->table('qc_trans_hdr as qth')
                 ->join("v_penjualan_payment as vpp", "qth.id_house", "=", "vpp.id_house")
                 ->join('qc_trans_dtl as qtd', 'qtd.qc_trans_id', '=', 'qth.qc_trans_id')
@@ -147,7 +147,7 @@ class CairDanaBankController extends Controller
         $tanggal = $request->tanggal ?? '';
 
         try {
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('pencairan_spr')
                 ->where('qc_trans_id', $qc_trans_id)
                 ->where('cat_id', $cat_id)
@@ -168,7 +168,7 @@ class CairDanaBankController extends Controller
                 $data['dt_modified'] = now();
                 $data['modified_by'] = getAuth($request)->user_id2;
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('pencairan_spr')
                     ->where('qc_trans_id', $qc_trans_id)
                     ->where('cat_id', $cat_id)
@@ -179,7 +179,7 @@ class CairDanaBankController extends Controller
                 $data['dt_created'] = now();
                 $data['created_by'] = getAuth($request)->user_id2;
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('pencairan_spr')
                     ->insert($data);
             }
@@ -200,7 +200,7 @@ class CairDanaBankController extends Controller
         $bank = $request->bank_name;
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('account as acc')
                 ->join('g_ledger as gl', 'gl.ac_num', '=', 'acc.ac_num')
                 ->where('acc.bank_name', $bank)
@@ -219,7 +219,7 @@ class CairDanaBankController extends Controller
     private function docStatus($qcTransId)
     {
         // -- cek qc_trans_dtl -> dt_aprv berdasarkan cat_id
-        $result = DB::connection("sqlSrvFPI")
+        $result = DB::connection("sqlSrvBCKI")
             ->table('qc_trans_dtl as qtd')
             ->join('qc_item as qi', 'qtd.id_qc_item', '=', 'qi.id_qc_item')
             ->where('qc_trans_id', $qcTransId)
@@ -276,7 +276,7 @@ class CairDanaBankController extends Controller
         $romanMonth = $romanMonths[$month];
 
         // -- nomor urut terakhir berdasarkan tahun
-        $lastDoc = DB::connection("sqlSrvFPI")
+        $lastDoc = DB::connection("sqlSrvBCKI")
             ->table('pencairan_spr')
             ->whereYear('dt_created', $year)
             ->whereNotNull('print_id')
@@ -297,7 +297,7 @@ class CairDanaBankController extends Controller
 
     private function paymentStatus($order_id)
     {
-        $result = DB::connection("sqlSrvFPI")
+        $result = DB::connection("sqlSrvBCKI")
             ->table('pay_term_dtl AS p')
             ->leftjoin('pencairan_spr as ps', function ($join){
                         $join->on('ps.doc_id', '=', 'p.order_id')
@@ -338,7 +338,7 @@ class CairDanaBankController extends Controller
         $item_num = $request->item_num ?? '';
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                             ->table('pencairan_spr as ps')
                             ->join('v_penjualan_payment as vpp', 'ps.doc_id', '=', 'vpp.order_id')
                             ->where('ps.doc_type', $doc_type)
@@ -385,7 +385,7 @@ class CairDanaBankController extends Controller
         $item_num = $request->item_num ?? '';
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                             ->table('pay_term_dtl as p')
                             ->join('CustomerOrder as co', 'p.order_id', '=', 'co.order_id')
                             ->join('CustomerOrderDetil as cod', 'p.order_id', '=', 'cod.order_id')
@@ -425,7 +425,7 @@ class CairDanaBankController extends Controller
         $amt_request = $request->amt_request ?? 0;
 
         if (empty($bank_acc)) {
-            $bank_acc_cek = DB::connection("sqlSrvFPI")
+            $bank_acc_cek = DB::connection("sqlSrvBCKI")
                             ->table('account')
                             ->selectraw('TRIM(bank_acc) AS bank_acc')
                             ->where("ac_num", $ac_num)
@@ -434,12 +434,12 @@ class CairDanaBankController extends Controller
         }
 
         try {
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             $tr_id = $this->generateTrId($request);
             // dd($tr_id);
 
-            $save_log = DB::connection('sqlSrvFPI')
+            $save_log = DB::connection('sqlSrvBCKI')
                 ->table('pencairan_spr')
                 ->insert([
                     'tr_id' => $tr_id,
@@ -458,14 +458,14 @@ class CairDanaBankController extends Controller
                 ]);
             
             if ($save_log) {
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
                 return $this->sendResponse(true, 'Successfully saved log Pencairan Dana Bank');
             } else {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError('Failed to save either header or detail data.', 'Error', 500);
             }
         } catch (\Throwable $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -476,7 +476,7 @@ class CairDanaBankController extends Controller
         $datePrefix = $now->format('ymd'); // YYMMDD
 
         // Ambil tr_id terakhir di hari ini
-        $last = DB::connection("sqlSrvFPI")
+        $last = DB::connection("sqlSrvBCKI")
             ->table('pencairan_spr')
             ->whereRaw("LEFT(tr_id, 6) = ?", [$datePrefix])
             ->orderByDesc('tr_id')

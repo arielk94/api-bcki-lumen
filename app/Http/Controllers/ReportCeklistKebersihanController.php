@@ -40,7 +40,7 @@ class ReportCeklistKebersihanController extends Controller
             }
         }
 
-        $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
             SELECT
                 site.id_site,
                 site.site_name,
@@ -90,7 +90,7 @@ class ReportCeklistKebersihanController extends Controller
         $spk_type = trim($request->spk_type);
         $com_id = $request->com_id;
 
-        $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
                     SELECT
                         site.id_site,
                         site.site_name + ' ' + site.site_address AS site_name,
@@ -138,7 +138,7 @@ class ReportCeklistKebersihanController extends Controller
         $doc_type = trim($request->doc_type);
         $qc_trans_id = trim($request->qc_trans_id);
 
-        DB::connection('sqlSrvFPI')
+        DB::connection('sqlSrvBCKI')
         ->table('qc_trans_hdr')
         ->where('doc_id', $spk_id)
         ->where('doc_type', $doc_type)

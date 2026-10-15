@@ -89,7 +89,7 @@ class WarehouseController extends Controller
 
             $sqlWhere = $sqlWhere . "and article.cat_id IN (1,2)";
 
-            $inv_bal = DB::connection("sqlSrvFPI")
+            $inv_bal = DB::connection("sqlSrvBCKI")
                                 ->table('inv_bal')
                                 ->selectRaw("
                                 inv_bal.office_id, 
@@ -137,7 +137,7 @@ class WarehouseController extends Controller
                                 })                                
                                 ->whereRaw($sqlWhere);
 
-            $jasa_article = DB::connection("sqlSrvFPI")
+            $jasa_article = DB::connection("sqlSrvBCKI")
                             ->table('article')
                             ->selectRaw("
                                 1 as office_id, 
@@ -257,7 +257,7 @@ class WarehouseController extends Controller
                 $sqlWhere = $sqlWhere . "and inv_bal.qty_oh > 0";
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('inv_bal')
                                 ->selectRaw("
                                 inv_bal.office_id, 
@@ -426,7 +426,7 @@ class WarehouseController extends Controller
     // {
     //     $GetBeratBarangJadi = 0;
 
-    //     $data = DB::connection("sqlSrvFPI")
+    //     $data = DB::connection("sqlSrvBCKI")
     //             ->table('BarangJadi')
     //             ->selectRaw('conversion.wgt_unit, BarangJadi.matrl_width')
     //             ->join('conversion', 'BarangJadi.tebal', '=', 'conversion.thick')
@@ -516,7 +516,7 @@ class WarehouseController extends Controller
 
     public function listDetailTransaction(Request $request)
     {
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('inv_trans_dtl')
                 ->selectRaw("
                 inv_trans_dtl.office_id, 
@@ -605,7 +605,7 @@ class WarehouseController extends Controller
             }
         }
 
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('inv_trans_hdr')
                 ->selectRaw("
                     inv_trans_hdr.*, whouse.descr as warehouse, branch_office.office

@@ -6,7 +6,7 @@ return [
 
     'connections' => [
 
-        'sqlSrvFPI' => [
+        'sqlSrvBCKI' => [
             'driver' => 'sqlsrv',
             'host' => env('DB_HOST_FPI', 'localhost'),
             'port' => env('DB_PORT_FPI', '1433'),

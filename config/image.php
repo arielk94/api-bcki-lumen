@@ -7,6 +7,6 @@ return [
     'loc-thumb' => env('APP_URL') . '/storage/loc-thumb/',
     'loc-doc' => env('APP_URL') . '/storage/loc-doc/',
     'rab' => env('APP_URL') . '/storage/rabs/',
-    'fpi' => env('APP_URL') . '/storage/fpis/',
+    'bcki' => env('APP_URL') . '/storage/fpis/',
     'visitor' => env('APP_URL') . '/storage/visitors/',
 ];

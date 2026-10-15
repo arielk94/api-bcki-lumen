@@ -81,7 +81,7 @@ class ListTransactionWarehouseController extends Controller
             }
         }
 
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('inv_trans_dtl')
                 ->selectRaw("
                     inv_trans_dtl.*, inv_trans_hdr.tr_date, inv_trans_hdr.id_site,

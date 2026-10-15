@@ -17,7 +17,7 @@ class masterController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getProvince",
+     *     path="/api/bcki/master/getProvince",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -40,7 +40,7 @@ class masterController extends Controller
     public function getProvince(Request $request)
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('province_list')
                 ->selectRaw("
                                     province_list.province_code as id_province, 
@@ -57,7 +57,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getCity",
+     *     path="/api/bcki/master/getCity",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -87,7 +87,7 @@ class masterController extends Controller
 
             $sqlWhere = $sqlWhere . "and city_list.province_code = " . "'" . $id_province . "'";
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('city_list')
                 ->selectRaw("
                                         city_list.city_code as id_city,
@@ -106,7 +106,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getDistrict",
+     *     path="/api/bcki/master/getDistrict",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -142,7 +142,7 @@ class masterController extends Controller
             $sqlWhere = $sqlWhere . "and city_code = " . "'" . $city_code . "'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('district_list')
             ->selectRaw("TRIM(district_code) as district_code, district, city_code, province_code")
             ->whereRaw($sqlWhere)
@@ -154,7 +154,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getVillage",
+     *     path="/api/bcki/master/getVillage",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -197,7 +197,7 @@ class masterController extends Controller
             $sqlWhere = $sqlWhere . "and district_code = " . "'" . $district_code . "'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('village_list')
             ->selectRaw("TRIM(village_code) as village_code, village, district_code, city_code, province_code")
             ->whereRaw($sqlWhere)
@@ -209,7 +209,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getApplConstant",
+     *     path="/api/bcki/master/getApplConstant",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -241,7 +241,7 @@ class masterController extends Controller
         }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('appl_constant')
                 ->selectRaw("*")
                 ->whereRaw($sqlWhere)
@@ -264,7 +264,7 @@ class masterController extends Controller
         }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('appl_constant')
                 ->selectRaw("*")
                 ->whereRaw($sqlWhere)
@@ -295,7 +295,7 @@ class masterController extends Controller
         }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('region')
                 ->selectRaw("region_id, descr as region_name,
                                 CASE 
@@ -316,17 +316,17 @@ class masterController extends Controller
 
     public function updateRegion(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $region = DB::connection('sqlSrvFPI')
+            $region = DB::connection('sqlSrvBCKI')
                 ->table('region')
                 ->where('region_id', $request->region_id)
                 ->first();
 
             if ($region) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('region')
                     ->where('region_id', $request->region_id)
                     ->update([
@@ -335,31 +335,31 @@ class masterController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
 
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully update Region');
             } else {
                 return $this->sendError('Region tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function deleteRegion(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $region = DB::connection('sqlSrvFPI')
+            $region = DB::connection('sqlSrvBCKI')
                 ->table('region')
                 ->where('region_id', $request->region_id)
                 ->first();
 
             if ($region) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('region')
                     ->where('region_id', $request->region_id)
                     ->update([
@@ -368,31 +368,31 @@ class masterController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
 
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully Delete Region');
             } else {
                 return $this->sendError('Region tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function activateRegion(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $region = DB::connection('sqlSrvFPI')
+            $region = DB::connection('sqlSrvBCKI')
                 ->table('region')
                 ->where('region_id', $request->region_id)
                 ->first();
 
             if ($region) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('region')
                     ->where('region_id', $request->region_id)
                     ->update([
@@ -401,37 +401,37 @@ class masterController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
 
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully Activate Region');
             } else {
                 return $this->sendError('Region tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function storeRegion(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
             $region_id = $this->generateRegionID($request);
             // dd($region_id);
 
-            $save = DB::connection('sqlSrvFPI')
+            $save = DB::connection('sqlSrvBCKI')
                 ->table('region')
                 ->insert([
                     'region_id' => $region_id,
                     'descr' => $request->region_name,
                     'active_flag' => 'Y'
                 ]);
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
             return $this->sendResponse($save, 'Successfully saved Region');
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -440,7 +440,7 @@ class masterController extends Controller
     {
         $gen_region_id = '';
 
-        $getLastTrID =  DB::connection('sqlSrvFPI')
+        $getLastTrID =  DB::connection('sqlSrvBCKI')
             ->table('region')
             ->max('region_id');
 
@@ -479,7 +479,7 @@ class masterController extends Controller
         }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('branch_office')
                 ->selectRaw("
                                             branch_office.office_id, 
@@ -512,11 +512,11 @@ class masterController extends Controller
 
     public function updateOffice(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $region = DB::connection('sqlSrvFPI')
+            $region = DB::connection('sqlSrvBCKI')
                 ->table('branch_office')
                 ->where('office_id', $request->office_id)
                 ->first();
@@ -533,7 +533,7 @@ class masterController extends Controller
                 //     $status_ofc = 'Y';
                 // }
 
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('branch_office')
                     ->where('office_id', $request->office_id)
                     ->update([
@@ -546,31 +546,31 @@ class masterController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
 
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully update Office');
             } else {
                 return $this->sendError('Office tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function deleteOffice(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $office = DB::connection('sqlSrvFPI')
+            $office = DB::connection('sqlSrvBCKI')
                 ->table('branch_office')
                 ->where('office_id', $request->office_id)
                 ->first();
 
             if ($office) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('branch_office')
                     ->where('office_id', $request->office_id)
                     ->update([
@@ -579,31 +579,31 @@ class masterController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
 
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully Delete Office');
             } else {
                 return $this->sendError('Office tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function activateOffice(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $office = DB::connection('sqlSrvFPI')
+            $office = DB::connection('sqlSrvBCKI')
                 ->table('branch_office')
                 ->where('office_id', $request->office_id)
                 ->first();
 
             if ($office) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('branch_office')
                     ->where('office_id', $request->office_id)
                     ->update([
@@ -612,24 +612,24 @@ class masterController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
 
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully Activate Office');
             } else {
                 return $this->sendError('Office tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function storeOffice(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
         try {
             if ($request->office_id) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('branch_office')
                     ->where('office_id', $request->office_id)
                     ->update([
@@ -643,7 +643,7 @@ class masterController extends Controller
                     ]);
             } else {
                 $office_id = $this->generateOfficeID($request);
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('branch_office')
                     ->insert([
                         'office_id' => $office_id,
@@ -657,10 +657,10 @@ class masterController extends Controller
                     ]);
             }
 
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
             return $this->sendResponse($save, 'Successfully saved Office');
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -669,7 +669,7 @@ class masterController extends Controller
     {
         $gen_region_id = '';
 
-        $getLastTrID =  DB::connection('sqlSrvFPI')
+        $getLastTrID =  DB::connection('sqlSrvBCKI')
             ->table('branch_office')
             ->max('office_id');
 
@@ -686,7 +686,7 @@ class masterController extends Controller
     //  ========== HOUSE TYPE ===========
     /**
      * @OA\Post(
-     *     path="/api/fpi/houseType/getHouseType",
+     *     path="/api/bcki/houseType/getHouseType",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -759,7 +759,7 @@ class masterController extends Controller
         }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('house_type')
                 ->selectRaw("house_type.*, site.site_name")
                 ->leftjoin('site', 'house_type.id_site', '=', 'site.id_site')
@@ -779,12 +779,12 @@ class masterController extends Controller
         $house_category = $request->houses_category;
         $id_site = $request->site_id;
 
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
             $house_type_id = $this->generateHouseTypeID($request);
 
-            $save = DB::connection('sqlSrvFPI')
+            $save = DB::connection('sqlSrvBCKI')
                 ->table('house_type')
                 ->insert([
                     'id_house_type' => $house_type_id,
@@ -808,7 +808,7 @@ class masterController extends Controller
                     'map_color_name' => $request->map_color_name,
                     'map_color_rgb' => $request->map_color_rgb,
                 ]);
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
 
             // --  insert house unit
             // $x = 1;
@@ -816,7 +816,7 @@ class masterController extends Controller
             //     $house_name = $house_category . ' ' . $x;
             //     $id_house = $this->generateHouseItemID($request);
 
-            //     DB::connection('sqlSrvFPI')
+            //     DB::connection('sqlSrvBCKI')
             //         ->table('house_unit')
             //         ->insert([
             //             'id_house' => $id_house,
@@ -845,7 +845,7 @@ class masterController extends Controller
 
             return $this->sendResponse($save, 'Successfully Saved House Type');
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -858,7 +858,7 @@ class masterController extends Controller
         // $dateDay = date("d");
         $gen_cluster_id = '';
 
-        $getLastTrID = DB::connection('sqlSrvFPI')
+        $getLastTrID = DB::connection('sqlSrvBCKI')
             ->table('house_type')
             ->where('id_house_type', 'like', "%" . $dateYear . "%")
             ->max('id_house_type');
@@ -878,7 +878,7 @@ class masterController extends Controller
     {
         try {
             // dd($sqlWhere);
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('house_type')
                 ->selectRaw("
                                             *
@@ -902,7 +902,7 @@ class masterController extends Controller
         $house_category = $request->houses_category;
 
         try {
-            $site = DB::connection('sqlSrvFPI')
+            $site = DB::connection('sqlSrvBCKI')
                 ->table('house_type')
                 ->where('id_house_type', $house_type_id)
                 ->first();
@@ -912,7 +912,7 @@ class masterController extends Controller
             }
 
             // -- get jumlah house item before, jumlah status Y/N
-            $getInfoHouse = DB::connection("sqlSrvFPI")
+            $getInfoHouse = DB::connection("sqlSrvBCKI")
                 ->table('house_unit')
                 ->where('id_house_type', $house_type_id)
                 ->orderBy("id_house", "desc")
@@ -929,8 +929,8 @@ class masterController extends Controller
             //     return $this->sendError('Jumlah pengurangan harus lebih dari rumah yang sudah dibangun', 'Error', 500);
             // }
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')
                 ->table('house_type')
                 ->where('id_house_type', $house_type_id)
                 ->update([
@@ -955,7 +955,7 @@ class masterController extends Controller
 
             // -- mengurangi house item
             // if ($houseItemCount < 0) {
-            //     DB::connection("sqlSrvFPI")
+            //     DB::connection("sqlSrvBCKI")
             //         ->table('house_unit')
             //         ->whereIn('id_house', function ($query) use ($houseItemCount, $house_type_id) {
             //             $query->select('id_house')
@@ -973,7 +973,7 @@ class masterController extends Controller
 
             // -- menambah house item
             // if ($houseItemCount > 0) {
-            //     DB::connection("sqlSrvFPI")
+            //     DB::connection("sqlSrvBCKI")
             //         ->table('house_unit')
             //         ->whereIn('id_house', function ($query) use ($houseItemCount, $house_type_id) {
             //             $query->select('id_house')
@@ -994,7 +994,7 @@ class masterController extends Controller
             //         $house_name = $house_category . ' ' . $i + $getInfoHouse->jumlah_total;
             //         $id_house = $this->generateHouseItemID($request);
 
-            //         DB::connection('sqlSrvFPI')
+            //         DB::connection('sqlSrvBCKI')
             //             ->table('house_unit')
             //             ->insert([
             //                 'id_house' => $id_house,
@@ -1018,27 +1018,27 @@ class masterController extends Controller
             //     }
             // }
 
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
             return $this->sendResponse('Success Update', 'Successfully update House Type');
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function deleteHouseType(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $site = DB::connection('sqlSrvFPI')
+            $site = DB::connection('sqlSrvBCKI')
                 ->table('house_type')
                 ->where('id_house_type', $request->id_house_type)
                 ->first();
 
             if ($site) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('house_type')
                     ->where('id_house_type', $request->id_house_type)
                     ->update([
@@ -1048,7 +1048,7 @@ class masterController extends Controller
                     ]);
 
                 // -- house unit
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('house_unit')
                     ->where('id_house_type', $request->id_house_type)
                     ->update([
@@ -1058,31 +1058,31 @@ class masterController extends Controller
                     ]);
 
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Delete', 'Successfully Delete');
             } else {
                 return $this->sendError('No site tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function activateHouseType(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $site = DB::connection('sqlSrvFPI')
+            $site = DB::connection('sqlSrvBCKI')
                 ->table('house_type')
                 ->where('id_house_type', $request->id_house_type)
                 ->first();
 
             if ($site) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('house_type')
                     ->where('id_house_type', $request->id_house_type)
                     ->update([
@@ -1090,14 +1090,14 @@ class masterController extends Controller
                         'date_modified' => now(),
                         'modified_by' => getAuth($request)->user_id2,
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success activate', 'Successfully activate');
             } else {
                 return $this->sendError('No cluster tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -1105,7 +1105,7 @@ class masterController extends Controller
     //  ========== SITE ==========
     /**
      * @OA\Post(
-     *     path="/api/fpi/site/getSite",
+     *     path="/api/bcki/site/getSite",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -1154,7 +1154,7 @@ class masterController extends Controller
             }
 
             // dd($sqlWhere);
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('site')
                 ->selectRaw("
                                             site.*, 
@@ -1192,7 +1192,7 @@ class masterController extends Controller
             }
 
             // dd($sqlWhere);
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('site')
                 ->selectRaw("
                     site.*, 
@@ -1223,7 +1223,7 @@ class masterController extends Controller
             }
 
             // dd($sqlWhere);
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('site')
                 ->selectRaw("
                                             site.*,
@@ -1251,13 +1251,13 @@ class masterController extends Controller
     public function storeSite(Request $request)
     {
 
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
             $site_id = $this->generateSiteID($request);
 
             // dd($site_id);
-            $save = DB::connection('sqlSrvFPI')
+            $save = DB::connection('sqlSrvBCKI')
                 ->table('site')
                 ->insert([
                     'id_site' => $site_id,
@@ -1280,12 +1280,12 @@ class masterController extends Controller
                     'stat' => 'Y',
                     'dpp_percentage' => $request->dpp_percentage ? $request->dpp_percentage : 0
                 ]);
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
 
 
             return $this->sendResponse($save, 'Successfully saved Site');
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -1298,7 +1298,7 @@ class masterController extends Controller
         $dateDay = date("d");
         $gen_site_id = '';
 
-        $getLastTrID = DB::connection('sqlSrvFPI')
+        $getLastTrID = DB::connection('sqlSrvBCKI')
             ->table('site')
             ->where('id_site', 'like', "%" . $dateYear . $dateMonth . $dateDay . "%")
             ->max('id_site');
@@ -1315,18 +1315,18 @@ class masterController extends Controller
 
     public function updateSite(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
 
         try {
 
-            $site = DB::connection('sqlSrvFPI')
+            $site = DB::connection('sqlSrvBCKI')
                 ->table('site')
                 ->where('id_site', $request->id_site)
                 ->first();
 
             if ($site) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('site')
                     ->where('id_site', $request->id_site)
                     ->update([
@@ -1345,31 +1345,31 @@ class masterController extends Controller
                         'sku' => $request->sku ? $request->sku : '',
                         'dpp_percentage' => $request->dpp_percentage ? $request->dpp_percentage : 0
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully saved');
             } else {
                 return $this->sendError('No site tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function deleteSite(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $site = DB::connection('sqlSrvFPI')
+            $site = DB::connection('sqlSrvBCKI')
                 ->table('site')
                 ->where('id_site', $request->id_site)
                 ->first();
 
             if ($site) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('site')
                     ->where('id_site', $request->id_site)
                     ->update([
@@ -1377,31 +1377,31 @@ class masterController extends Controller
                         'date_modified' => now(),
                         'modified_by' => getAuth($request)->user_id2,
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Delete', 'Successfully Delete');
             } else {
                 return $this->sendError('No site tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function activateSite(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $site = DB::connection('sqlSrvFPI')
+            $site = DB::connection('sqlSrvBCKI')
                 ->table('site')
                 ->where('id_site', $request->id_site)
                 ->first();
 
             if ($site) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('site')
                     ->where('id_site', $request->id_site)
                     ->update([
@@ -1409,14 +1409,14 @@ class masterController extends Controller
                         'date_modified' => now(),
                         'modified_by' => getAuth($request)->user_id2,
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success activate', 'Successfully activate');
             } else {
                 return $this->sendError('No site tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -1424,7 +1424,7 @@ class masterController extends Controller
     //  ========== CLUSTER ==========
     /**
      * @OA\Post(
-     *     path="/api/fpi/cluster/getCluster",
+     *     path="/api/bcki/cluster/getCluster",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -1481,7 +1481,7 @@ class masterController extends Controller
                 $sqlWhere = $sqlWhere . "and site_cluster.stat='Y' ";
             }
             // dd($sqlWhere);
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('site_cluster')
                 ->selectRaw("
                                             site_cluster.*, 
@@ -1521,7 +1521,7 @@ class masterController extends Controller
 
     public function storeCluster(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
             // $house_qty = $request->house_qty;
@@ -1566,7 +1566,7 @@ class masterController extends Controller
             }
 
 
-            $save = DB::connection('sqlSrvFPI')
+            $save = DB::connection('sqlSrvBCKI')
                 ->table('site_cluster')
                 ->insert([
                     'id_cluster' => $cluster_id,
@@ -1586,7 +1586,7 @@ class masterController extends Controller
                 ]);
 
             // --  dipindah di house type
-            // $getCategory =  DB::connection('sqlSrvFPI')
+            // $getCategory =  DB::connection('sqlSrvBCKI')
             //     ->table('house_type')
             //     ->where('id_house_type', 'like', $request->id_house_type)
             //     ->max('category');
@@ -1597,7 +1597,7 @@ class masterController extends Controller
 
             //     $id_house = $this->generateHouseItemID($request);
 
-            //     $saveHI = DB::connection('sqlSrvFPI')
+            //     $saveHI = DB::connection('sqlSrvBCKI')
             //         ->table('house_unit')
             //         ->insert([
             //             'id_house' => $id_house,
@@ -1616,10 +1616,10 @@ class masterController extends Controller
             // }
             // -- end dipindah di house type
 
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
             return $this->sendResponse('Success', 'Successfully saved Site');
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -1632,7 +1632,7 @@ class masterController extends Controller
         // $dateDay = date("d");
         $gen_cluster_id = '';
 
-        $getLastTrID = DB::connection('sqlSrvFPI')
+        $getLastTrID = DB::connection('sqlSrvBCKI')
             ->table('site_cluster')
             ->where('id_cluster', 'like', "%" . $dateYear . "%")
             ->max('id_cluster');
@@ -1666,7 +1666,7 @@ class masterController extends Controller
                 $sqlWhere = $sqlWhere . "and site_cluster.id_cluster = " . "'" . $id_cluster . "'";
 
                 // dd($sqlWhere);
-                $datas = DB::connection("sqlSrvFPI")
+                $datas = DB::connection("sqlSrvBCKI")
                     ->table('site_cluster')
                     ->selectRaw("
                                             site_cluster.*, 
@@ -1721,12 +1721,12 @@ class masterController extends Controller
             $id_house_type = $request->id_house_type;
             $id_cluster = $request->id_cluster;
 
-            $site = DB::connection('sqlSrvFPI')
+            $site = DB::connection('sqlSrvBCKI')
                 ->table('site_cluster')
                 ->where('id_cluster', $id_cluster)
                 ->first();
 
-            // $getCategory =  DB::connection('sqlSrvFPI')
+            // $getCategory =  DB::connection('sqlSrvBCKI')
             //     ->table('house_type')
             //     ->where('id_house_type', 'like', $request->id_house_type)
             //     ->max('category');
@@ -1734,7 +1734,7 @@ class masterController extends Controller
             // -- dipindah pada house type
             //
             // // -- get jumlah house item before, jumlah status Y/N
-            // $getInfoHouse = DB::connection("sqlSrvFPI")
+            // $getInfoHouse = DB::connection("sqlSrvBCKI")
             //     ->table('house_unit')
             //     ->where('id_cluster', $id_cluster)
             //     ->orderBy("id_house", "desc")
@@ -1753,7 +1753,7 @@ class masterController extends Controller
             //
             // -- end dipindah pada house type
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             if ($site) {
                 // Proses gambar
@@ -1801,7 +1801,7 @@ class masterController extends Controller
                 }
 
                 if (!empty($id_site) && !empty($id_house_type)) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('site_cluster')
                         ->where('id_cluster', $request->id_cluster)
                         ->update([
@@ -1817,7 +1817,7 @@ class masterController extends Controller
                             'img_cluster_tmb' => $path2
                         ]);
                 } elseif (!empty($id_site) && empty($id_house_type)) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('site_cluster')
                         ->where('id_cluster', $request->id_cluster)
                         ->update([
@@ -1832,7 +1832,7 @@ class masterController extends Controller
                             'img_cluster_tmb' => $path2
                         ]);
                 } elseif (empty($id_site) && !empty($id_house_type)) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('site_cluster')
                         ->where('id_cluster', $request->id_cluster)
                         ->update([
@@ -1847,7 +1847,7 @@ class masterController extends Controller
                             'img_cluster_tmb' => $path2
                         ]);
                 } elseif (empty($id_site) && empty($id_house_type)) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('site_cluster')
                         ->where('id_cluster', $request->id_cluster)
                         ->update([
@@ -1869,7 +1869,7 @@ class masterController extends Controller
 
                 // // -- mengurangi house item
                 // if ($houseItemCount < 0) {
-                //     DB::connection("sqlSrvFPI")
+                //     DB::connection("sqlSrvBCKI")
                 //         ->table('house_unit')
                 //         ->whereIn('id_house', function ($query) use ($houseItemCount, $id_cluster) {
                 //             $query->select('id_house')
@@ -1887,7 +1887,7 @@ class masterController extends Controller
 
                 // // -- menambah house item
                 // if ($houseItemCount > 0) {
-                //     DB::connection("sqlSrvFPI")
+                //     DB::connection("sqlSrvBCKI")
                 //         ->table('house_unit')
                 //         ->whereIn('id_house', function ($query) use ($houseItemCount, $id_cluster) {
                 //             $query->select('id_house')
@@ -1908,7 +1908,7 @@ class masterController extends Controller
                 //         $house_name = $getCategory . ' ' . $i + $getInfoHouse->jumlah_total;
                 //         $id_house = $this->generateHouseItemID($request);
 
-                //         DB::connection('sqlSrvFPI')
+                //         DB::connection('sqlSrvBCKI')
                 //             ->table('house_unit')
                 //             ->insert([
                 //                 'id_house' => $id_house,
@@ -1928,30 +1928,30 @@ class masterController extends Controller
                 //
                 // -- end dipindah pada house type
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
                 return $this->sendResponse('Success Update', 'Successfully saved');
             } else {
                 return $this->sendError('No site tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function deleteCluster(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $site = DB::connection('sqlSrvFPI')
+            $site = DB::connection('sqlSrvBCKI')
                 ->table('site_cluster')
                 ->where('id_cluster', $request->id_cluster)
                 ->first();
 
             if ($site) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('site_cluster')
                     ->where('id_cluster', $request->id_cluster)
                     ->update([
@@ -1960,7 +1960,7 @@ class masterController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
                     ]);
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('house_unit')
                     ->where('id_cluster', $request->id_cluster)
                     ->update([
@@ -1969,31 +1969,31 @@ class masterController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
                     ]);
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Delete', 'Successfully Delete');
             } else {
                 return $this->sendError('No site tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function activateCluster(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $site = DB::connection('sqlSrvFPI')
+            $site = DB::connection('sqlSrvBCKI')
                 ->table('site_cluster')
                 ->where('id_cluster', $request->id_cluster)
                 ->first();
 
             if ($site) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('site_cluster')
                     ->where('id_cluster', $request->id_cluster)
                     ->update([
@@ -2001,14 +2001,14 @@ class masterController extends Controller
                         'date_modified' => now(),
                         'modified_by' => getAuth($request)->user_id2,
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success activate', 'Successfully activate');
             } else {
                 return $this->sendError('No cluster tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -2016,7 +2016,7 @@ class masterController extends Controller
     //  ========== CONTRACTOR ==========
     /**
      * @OA\Post(
-     *     path="/api/fpi/contractor/getContractor",
+     *     path="/api/bcki/contractor/getContractor",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -2063,7 +2063,7 @@ class masterController extends Controller
                 $sqlWhere = $sqlWhere . "and contractor.stat='Y' ";
             }
             // dd($sqlWhere);
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('contractor')
                 ->selectRaw("
                                             contractor.id_contractor, 
@@ -2097,13 +2097,13 @@ class masterController extends Controller
     public function storeContractor(Request $request)
     {
 
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
             $gen_contractor_id = $this->generateContractorID($request);
             // dd($gen_contractor_id);
 
-            $save = DB::connection('sqlSrvFPI')
+            $save = DB::connection('sqlSrvBCKI')
                 ->table('contractor')
                 ->insert([
                     'id_contractor' => $gen_contractor_id,
@@ -2123,13 +2123,13 @@ class masterController extends Controller
                     'remark' => $request->remark ? $request->remark : ''
 
                 ]);
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
 
             // dd($save);
             // return $this->sendResponse('Success', 'Successfully saved Site');
             return $this->sendResponse($save, 'Successfully saved Contractor');
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -2142,7 +2142,7 @@ class masterController extends Controller
         // $dateDay = date("d");
         $gen_contractor_id = '';
 
-        $getLastTrID = DB::connection('sqlSrvFPI')
+        $getLastTrID = DB::connection('sqlSrvBCKI')
             ->table('contractor')
             ->where('id_contractor', 'like', "%" . $dateYear . "%")
             ->max('id_contractor');
@@ -2176,7 +2176,7 @@ class masterController extends Controller
                 $sqlWhere = $sqlWhere . "and contractor.id_contractor = " . "'" . $id_contractor . "'";
 
                 // dd($sqlWhere);
-                $datas = DB::connection("sqlSrvFPI")
+                $datas = DB::connection("sqlSrvBCKI")
                     ->table('contractor')
                     ->selectRaw("
                                             contractor.id_contractor, 
@@ -2211,14 +2211,14 @@ class masterController extends Controller
 
     public function updateContractor(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
             $sqlUpdate = '';
             $id_contractor = $request->id_contractor;
             $id_prov_city = $request->id_prov_city;
 
-            $contractor = DB::connection('sqlSrvFPI')
+            $contractor = DB::connection('sqlSrvBCKI')
                 ->table('contractor')
                 ->where('id_contractor', $request->id_contractor)
                 ->first();
@@ -2227,7 +2227,7 @@ class masterController extends Controller
                 // dd($contractor);
 
                 if (!empty($id_prov_city)) {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                         ->table('contractor')
                         ->where('id_contractor', $request->id_contractor)
                         ->update([
@@ -2243,11 +2243,11 @@ class masterController extends Controller
                             'date_modified' => now(),
                             'modified_by' => getAuth($request)->user_id2,
                         ]);
-                    DB::connection('sqlSrvFPI')->commit();
+                    DB::connection('sqlSrvBCKI')->commit();
 
                     return $this->sendResponse('Success Update', 'Successfully saved');
                 } elseif (empty($id_prov_city)) {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                         ->table('contractor')
                         ->where('id_contractor', $request->id_contractor)
                         ->update([
@@ -2262,7 +2262,7 @@ class masterController extends Controller
                             'date_modified' => now(),
                             'modified_by' => getAuth($request)->user_id2,
                         ]);
-                    DB::connection('sqlSrvFPI')->commit();
+                    DB::connection('sqlSrvBCKI')->commit();
 
                     return $this->sendResponse('Success Update', 'Successfully saved');
                 }
@@ -2270,24 +2270,24 @@ class masterController extends Controller
                 return $this->sendError('No site tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function deleteContractor(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $site = DB::connection('sqlSrvFPI')
+            $site = DB::connection('sqlSrvBCKI')
                 ->table('contractor')
                 ->where('id_contractor', $request->id_contractor)
                 ->first();
 
             if ($site) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('contractor')
                     ->where('id_contractor', $request->id_contractor)
                     ->update([
@@ -2295,31 +2295,31 @@ class masterController extends Controller
                         'date_modified' => now(),
                         'modified_by' => getAuth($request)->user_id2,
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Delete', 'Successfully Delete');
             } else {
                 return $this->sendError('No contractor tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function activateContractor(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $site = DB::connection('sqlSrvFPI')
+            $site = DB::connection('sqlSrvBCKI')
                 ->table('contractor')
                 ->where('id_contractor', $request->id_contractor)
                 ->first();
 
             if ($site) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('contractor')
                     ->where('id_contractor', $request->id_contractor)
                     ->update([
@@ -2327,14 +2327,14 @@ class masterController extends Controller
                         'date_modified' => now(),
                         'modified_by' => getAuth($request)->user_id2,
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success activate', 'Successfully activate');
             } else {
                 return $this->sendError('No contractor tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -2342,7 +2342,7 @@ class masterController extends Controller
     //  ========== HOUSE ITEM ==========
     /**
      * @OA\Post(
-     *     path="/api/fpi/houseUnit/getHouseUnit",
+     *     path="/api/bcki/houseUnit/getHouseUnit",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -2405,7 +2405,7 @@ class masterController extends Controller
                 $sqlWhere = $sqlWhere . "and house_unit.id_house_type = " . "'" . $id_house_type . "'";
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('house_unit')
                 ->selectRaw("
                             house_unit.*, 
@@ -2469,7 +2469,7 @@ class masterController extends Controller
         }
 
         try {
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('house_unit')
                 ->where('id_house', $houseUnitId)
                 ->update([
@@ -2502,7 +2502,7 @@ class masterController extends Controller
     {
         try {
             $id_house = $this->generateHouseItemID($request);
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('house_unit')
                 ->insert([
                     "id_house" => $id_house ?? '',
@@ -2540,7 +2540,7 @@ class masterController extends Controller
         $active_flag = $request->active_flag ?? 'N';
 
         try {
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('house_unit')
                 ->where('id_house', $id_house)
                 ->update([
@@ -2565,7 +2565,7 @@ class masterController extends Controller
         }
 
         try {
-            $save = DB::connection('sqlSrvFPI')
+            $save = DB::connection('sqlSrvBCKI')
                 ->table('house_unit')
                 ->where('id_house', $houseUnitId)
                 ->update([
@@ -2573,7 +2573,7 @@ class masterController extends Controller
                     'date_modified' => now(),
                     'modified_by' => getAuth($request)->user_id2,
                 ]);
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
 
 
             return $this->sendResponse($save, 'Successfully saved Koordinate');
@@ -2584,7 +2584,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/houseUnit/getKoordinat",
+     *     path="/api/bcki/houseUnit/getKoordinat",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -2611,7 +2611,7 @@ class masterController extends Controller
         $id_cluster = $request->id_cluster;
 
         try {
-            $response = DB::connection('sqlSrvFPI')
+            $response = DB::connection('sqlSrvBCKI')
                 ->table('house_unit')
                 ->selectRaw("
                     house_unit.id_house,
@@ -2672,7 +2672,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getCustomer",
+     *     path="/api/bcki/master/getCustomer",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -2695,7 +2695,7 @@ class masterController extends Controller
     public function getCustomer()
     {
         try {
-            $customer = DB::connection("sqlSrvFPI")
+            $customer = DB::connection("sqlSrvBCKI")
                 ->table('Customer')
                 ->select("*")
                 ->where('active_flag', 'Y')
@@ -2713,7 +2713,7 @@ class masterController extends Controller
         $price = $request->price;
 
         try {
-            $house = DB::connection("sqlSrvFPI")
+            $house = DB::connection("sqlSrvBCKI")
                 ->table('house_unit')
                 ->where('id_house', $id_house)
                 ->first();
@@ -2723,7 +2723,7 @@ class masterController extends Controller
             }
 
             // Update house price
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('house_unit')
                 ->where('id_house', $id_house)
                 ->update([
@@ -2733,7 +2733,7 @@ class masterController extends Controller
                 ]);
 
             // -- save log price
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('house_price_log')
                 ->insert([
                     'id_house' => $id_house,
@@ -2756,7 +2756,7 @@ class masterController extends Controller
         // $dateDay = date("d");
         $id_house = '';
 
-        $getLastTrID = DB::connection('sqlSrvFPI')
+        $getLastTrID = DB::connection('sqlSrvBCKI')
             ->table('house_unit')
             ->where('id_house', 'like', "%" . $dateYear . $dateMonth . "%")
             ->max('id_house');
@@ -2785,7 +2785,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/sales/getKaCab",
+     *     path="/api/bcki/sales/getKaCab",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -2821,7 +2821,7 @@ class masterController extends Controller
         }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('Sales')
                 ->selectRaw("*")
                 ->whereRaw($sqlWhere)
@@ -2835,7 +2835,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/sales/getSales",
+     *     path="/api/bcki/sales/getSales",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -2890,7 +2890,7 @@ class masterController extends Controller
         }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('Sales')
                 ->selectRaw("   
                                             Sales.SalesId, 
@@ -2945,7 +2945,7 @@ class masterController extends Controller
     {
         try {
             $jabatan = $request->sales_type_id;
-            $officeAndRegion = DB::connection('sqlSrvFPI')
+            $officeAndRegion = DB::connection('sqlSrvBCKI')
                 ->table('Sales_area')
                 ->selectRaw("   
                                                         Sales_area.id_area, 
@@ -2957,7 +2957,7 @@ class masterController extends Controller
                 ->first();
             // dd($officeAndRegion);
             if ($jabatan == 'SPV') {
-                $updateSalesType = DB::connection('sqlSrvFPI')
+                $updateSalesType = DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->where('area', $request->area)
                     ->where('sales_type', 'SPV')
@@ -2965,13 +2965,13 @@ class masterController extends Controller
                         'sales_type' => 'SLS'
                     ]);
                 // dd($updateSalesType);
-                $sales_id = DB::connection('sqlSrvFPI')
+                $sales_id = DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->where('SalesId', $request->sales_id)
                     ->first();
                 // dd($sales_id);
                 if ($sales_id) {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                         ->table('Sales')
                         ->where('SalesId', $request->sales_id)
                         ->update([
@@ -2992,7 +2992,7 @@ class masterController extends Controller
                             'area' => $request->area ? $request->area : ''
                         ]);
                     // dd($save);
-                    $updateArea = DB::connection('sqlSrvFPI')
+                    $updateArea = DB::connection('sqlSrvBCKI')
                         ->table('Sales_area')
                         ->where('id_area', $request->area)
                         ->update([
@@ -3001,7 +3001,7 @@ class masterController extends Controller
                             'modified_by' => getAuth($request)->user_id2,
                         ]);
                     // dd($updateArea);
-                    // $updateSales = DB::connection('sqlSrvFPI')
+                    // $updateSales = DB::connection('sqlSrvBCKI')
                     //     ->table('Sales')
                     //     ->where('office_id', $request->office_id)
                     //     ->update([
@@ -3013,7 +3013,7 @@ class masterController extends Controller
                     return $this->sendError('Sales tidak ditemukan', 'Error', 500);
                 }
             } elseif ($jabatan == 'MGR') {
-                $updateSalesType = DB::connection('sqlSrvFPI')
+                $updateSalesType = DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->where('office_id', $request->office_id)
                     ->where('sales_type', 'MGR')
@@ -3021,13 +3021,13 @@ class masterController extends Controller
                         'sales_type' => 'SLS'
                     ]);
 
-                $sales_id = DB::connection('sqlSrvFPI')
+                $sales_id = DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->where('SalesId', $request->sales_id)
                     ->first();
 
                 if ($sales_id) {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                         ->table('Sales')
                         ->where('SalesId', $request->sales_id)
                         ->update([
@@ -3048,7 +3048,7 @@ class masterController extends Controller
                             'area' => $request->area ? $request->area : ''
                         ]);
 
-                    $updateArea = DB::connection('sqlSrvFPI')
+                    $updateArea = DB::connection('sqlSrvBCKI')
                         ->table('Sales_area')
                         ->where('id_area', $request->area)
                         ->update([
@@ -3057,7 +3057,7 @@ class masterController extends Controller
                             'modified_by' => getAuth($request)->user_id2,
                         ]);
 
-                    // $updateSales = DB::connection('sqlSrvFPI')
+                    // $updateSales = DB::connection('sqlSrvBCKI')
                     //     ->table('Sales')
                     //     ->where('office_id', $request->office_id)
                     //     ->update([
@@ -3069,13 +3069,13 @@ class masterController extends Controller
                     return $this->sendError('Sales tidak ditemukan', 'Error', 500);
                 }
             } else {
-                $sales_id = DB::connection('sqlSrvFPI')
+                $sales_id = DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->where('SalesId', $request->sales_id)
                     ->first();
 
                 if ($sales_id) {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                         ->table('Sales')
                         ->where('SalesId', $request->sales_id)
                         ->update([
@@ -3108,17 +3108,17 @@ class masterController extends Controller
 
     public function deleteSales(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $sales = DB::connection('sqlSrvFPI')
+            $sales = DB::connection('sqlSrvBCKI')
                 ->table('Sales')
                 ->where('SalesId', $request->SalesId)
                 ->first();
 
             if ($sales) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->where('SalesId', $request->SalesId)
                     ->update([
@@ -3126,31 +3126,31 @@ class masterController extends Controller
                         'dt_modified' => now(),
                         'modified_by' => getAuth($request)->user_id2,
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully Delete Sales');
             } else {
                 return $this->sendError('Sales tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function activateSales(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $sales = DB::connection('sqlSrvFPI')
+            $sales = DB::connection('sqlSrvBCKI')
                 ->table('Sales')
                 ->where('SalesId', $request->SalesId)
                 ->first();
 
             if ($sales) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->where('SalesId', $request->SalesId)
                     ->update([
@@ -3159,14 +3159,14 @@ class masterController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
 
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully Activate Sales');
             } else {
                 return $this->sendError('Sales tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -3176,7 +3176,7 @@ class masterController extends Controller
         try {
             $jabatan = $request->sales_type_id;
 
-            $officeAndRegion = DB::connection('sqlSrvFPI')
+            $officeAndRegion = DB::connection('sqlSrvBCKI')
                 ->table('Sales_area')
                 ->selectRaw("   
                     Sales_area.id_area, 
@@ -3190,7 +3190,7 @@ class masterController extends Controller
             if ($jabatan == 'SPV') {
                 $sales_id = $this->generateSalesID($request);
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->where('area', $request->area)
                     ->where('sales_type', 'SPV')
@@ -3198,13 +3198,13 @@ class masterController extends Controller
                         'sales_type' => 'SLS'
                     ]);
 
-                $getSales = DB::connection('sqlSrvFPI')
+                $getSales = DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->where('SalesId', $request->sales_id)
                     ->first();
 
                 if ($getSales) {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                         ->table('Sales')
                         ->where('SalesId', $getSales->SalesId)
                         ->update([
@@ -3228,7 +3228,7 @@ class masterController extends Controller
                             'province' => $request->province ? $request->province : ''
                         ]);
                 } else {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                         ->table('Sales')
                         ->insert([
                             'SalesId' => $sales_id,
@@ -3253,7 +3253,7 @@ class masterController extends Controller
                         ]);
                 }
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('Sales_area')
                     ->where('id_area', $request->area)
                     ->update([
@@ -3264,7 +3264,7 @@ class masterController extends Controller
             } elseif ($jabatan == 'MGR') {
                 $sales_id = $this->generateSalesID($request);
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->where('area', $request->area)
                     ->where('sales_type', 'MGR')
@@ -3272,13 +3272,13 @@ class masterController extends Controller
                         'sales_type' => 'SLS'
                     ]);
 
-                $getSales = DB::connection('sqlSrvFPI')
+                $getSales = DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->where('SalesId', $request->sales_id)
                     ->first();
 
                 if ($getSales) {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                         ->table('Sales')
                         ->where('SalesId', $getSales->SalesId)
                         ->update([
@@ -3302,7 +3302,7 @@ class masterController extends Controller
                             'province' => $request->province ? $request->province : ''
                         ]);
                 } else {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                         ->table('Sales')
                         ->insert([
                             'SalesId' => $sales_id,
@@ -3328,7 +3328,7 @@ class masterController extends Controller
                 }
 
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('Sales_area')
                     ->where('office_id', $officeAndRegion->office_id)
                     ->update([
@@ -3339,7 +3339,7 @@ class masterController extends Controller
             } else {
                 $sales_id = $this->generateSalesID($request);
 
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('Sales')
                     ->insert([
                         'SalesId' => $sales_id,
@@ -3375,7 +3375,7 @@ class masterController extends Controller
         $dateMonth = date("m");
         $gen_cluster_id = '';
 
-        $getLastTrID = DB::connection('sqlSrvFPI')
+        $getLastTrID = DB::connection('sqlSrvBCKI')
             ->table('Sales')
             ->max('SalesId');
 
@@ -3391,7 +3391,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/sales/getPayTerm",
+     *     path="/api/bcki/sales/getPayTerm",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -3413,7 +3413,7 @@ class masterController extends Controller
     public function getPayTerm()
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('appl_constant')
                 ->selectRaw("key_code, str1, str2")
                 ->where('key_code', 'PAYTYPE')
@@ -3427,7 +3427,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/sales/getIncludePrice",
+     *     path="/api/bcki/sales/getIncludePrice",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -3449,7 +3449,7 @@ class masterController extends Controller
     public function getIncludePrice()
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('appl_constant')
                 ->selectRaw("key_code, str1, str2")
                 ->where('key_code', 'ORDERADDON')
@@ -3465,7 +3465,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getPayTerm2",
+     *     path="/api/bcki/master/getPayTerm2",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -3487,7 +3487,7 @@ class masterController extends Controller
     public function getPayTerm2()
     { //dari tabel pay_term
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('pay_term')
                 ->selectRaw("pay_term_id, pay_term_desc")
                 ->where('active_flag', 'Y')
@@ -3501,7 +3501,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getbankaccount",
+     *     path="/api/bcki/master/getbankaccount",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -3523,7 +3523,7 @@ class masterController extends Controller
     public function getbankaccount()
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('account')
                 ->selectraw('trim(bank_name) as bank_name')
                 ->distinct()
@@ -3536,7 +3536,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getbankacc",
+     *     path="/api/bcki/master/getbankacc",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -3559,7 +3559,7 @@ class masterController extends Controller
     {
         try {
             $bank_name = $request->bank_name;
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('account as a')
                 ->join('g_ledger as b', 'a.ac_num', '=', 'b.ac_num')
                 ->selectraw('trim(a.bank_acc) as bank_acc, trim(b.ac_name) as ac_name')
@@ -3573,7 +3573,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/sales/getEmployeeForSales",
+     *     path="/api/bcki/sales/getEmployeeForSales",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -3615,7 +3615,7 @@ class masterController extends Controller
                                 employee.remark,
                                 CONCAT(employee.idemployee,' - ',employee.name) AS gabungan
                             ")
-                ->whereIn('company_id', ['EXT', 'FDPI'])
+                ->whereIn('company_id', ['EXT', 'bcki'])
                 ->where('active_flag', '=', 'Y')
                 ->get();
             return $this->sendResponse($data, 'Successfully get employee');
@@ -3626,7 +3626,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/sales/getSalesArea",
+     *     path="/api/bcki/sales/getSalesArea",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -3648,7 +3648,7 @@ class masterController extends Controller
     public function getSalesArea()
     {
         try {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('Sales_area')
                 ->selectRaw("   
                                 *
@@ -3664,7 +3664,7 @@ class masterController extends Controller
     // ======================= SITE TARGET =========================== //
     /**
      * @OA\Post(
-     *     path="/api/fpi/site_target/getSiteTarget",
+     *     path="/api/bcki/site_target/getSiteTarget",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -3696,7 +3696,7 @@ class masterController extends Controller
         $year = $request->year ?? '';
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('site_cluster_target as st')
                 ->selectRaw('
                     st.id_site,
@@ -3769,7 +3769,7 @@ class masterController extends Controller
         $price_akad = $request->price_akad ?? 0;
 
         try {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('site_cluster_target')
                 ->where('id_site', $site_id)
                 ->where('id_cluster', $cluster_id)
@@ -3791,7 +3791,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getVendor",
+     *     path="/api/bcki/master/getVendor",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -3819,7 +3819,7 @@ class masterController extends Controller
                 $sqlWhere .= " and vendor_id = '$vendor_id'";
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('vendor')
                 ->selectRaw("trim(vendor_id) as vendor_id, trim(vendor_name) as vendor_name,
                     case
@@ -3844,7 +3844,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getDeptHrdOl",
+     *     path="/api/bcki/master/getDeptHrdOl",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -3870,7 +3870,7 @@ class masterController extends Controller
             $departmenthrd = DB::connection("sqlsrvHrd")
                 ->select(DB::raw("select dept_id, dept_name 
                                 from  department 
-                                where company_id = 'FDPI'"));
+                                where company_id = 'bcki'"));
 
             return response()->json(['departmenthrd' => $departmenthrd]);
         } catch (\Exception $e) {
@@ -3880,7 +3880,7 @@ class masterController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/master/getEmployeeHrdOl",
+     *     path="/api/bcki/master/getEmployeeHrdOl",
      *     tags={"Master"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -3914,7 +3914,7 @@ class masterController extends Controller
                                 CONCAT(a.idemployee,' - ',a.name) AS gabungan
                                 from employee a left outer join
                                 department AS b ON a.company_id = b.company_id and a.dept_id = b.dept_id 
-                                where $sqlWhere and a.active_flag = 'Y' and a.company_id='FDPI' "));
+                                where $sqlWhere and a.active_flag = 'Y' and a.company_id='bcki' "));
 
             return response()->json(['employee' => $employee]);
         } catch (\Exception $e) {
@@ -3941,7 +3941,7 @@ class masterController extends Controller
         }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('env_conf_belong')
                 ->selectRaw("*")
                 ->where('var_id', $var_id)
@@ -3978,7 +3978,7 @@ class masterController extends Controller
         }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('v_document_status')
                 ->selectRaw("*")
                 // ->where('doc_id', $doc_id)
@@ -3997,7 +3997,7 @@ class masterController extends Controller
         $type = $request->type;
 
         try {
-            $connection = DB::connection("sqlSrvFPI");
+            $connection = DB::connection("sqlSrvBCKI");
 
             switch ($type) {
                 case 'coa':
@@ -4200,7 +4200,7 @@ class masterController extends Controller
             $sqlWhere .= " AND office_id = '$office_id'";
         }
 
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
             ->table('currency')
             ->whereRaw($sqlWhere)
             ->selectRaw('TRIM(curr_id) as curr_id')
@@ -4225,7 +4225,7 @@ class masterController extends Controller
             $ac_num_old  = $request->ac_num_old;
             $userId      = getAuth($request)->user_id2;
             $now         = Carbon::now();
-            $currPeriod  = DB::connection('sqlSrvFPI')
+            $currPeriod  = DB::connection('sqlSrvBCKI')
                 ->table('period')
                 ->where('office_id', $office_id)
                 ->value('curr_period'); // langsung ambil nilai kolom
@@ -4233,14 +4233,14 @@ class masterController extends Controller
             $yearId = $currPeriod ? substr($currPeriod, 0, 4) : null;
 
             // === Insert or Update g_ledger ===
-            $exists = DB::connection('sqlSrvFPI')
+            $exists = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger')
                 ->where('office_id', $office_id)
                 ->where('ac_num', $ac_num)
                 ->exists();
 
             if ($exists) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('g_ledger')
                     ->where('office_id', $office_id)
                     ->where('ac_num', $ac_num)
@@ -4257,7 +4257,7 @@ class masterController extends Controller
                         'ac_num_old'  => $ac_num_old ?? ''
                     ]);
             } else {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('g_ledger')
                     ->insert([
                         'office_id'   => $office_id ?? '',
@@ -4277,7 +4277,7 @@ class masterController extends Controller
             }
 
             // === Insert or Update g_ledger_year ===
-            $existsYear = DB::connection('sqlSrvFPI')
+            $existsYear = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger_year')
                 ->where('office_id', $office_id)
                 ->where('year_id', $yearId)
@@ -4285,7 +4285,7 @@ class masterController extends Controller
                 ->exists();
 
             if ($existsYear) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('g_ledger_year')
                     ->where('office_id', $office_id)
                     ->where('year_id', $yearId)
@@ -4296,7 +4296,7 @@ class masterController extends Controller
                         'amt_type'    => $dr_cr ?? ''
                     ]);
             } else {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('g_ledger_year')
                     ->insert([
                         'office_id'   => $office_id,
@@ -4342,7 +4342,7 @@ class masterController extends Controller
 
 
         try {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger')
                 ->selectRaw("
                     TRIM(ac_num) as ac_num,
@@ -4376,7 +4376,7 @@ class masterController extends Controller
             $sqlWhere .= " AND office_id = '$office_id'";
         }
 
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             ->table('journal_voucher')
             ->selectRaw('trim(source) as source') // Select the 'source' column
             ->distinct()      // Apply the DISTINCT keyword
@@ -4411,7 +4411,7 @@ class masterController extends Controller
         }
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('vendor')
                 ->selectRaw("
                                             vendor.office_id,
@@ -4492,17 +4492,17 @@ class masterController extends Controller
 
     public function updateVendor(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $vendor = DB::connection('sqlSrvFPI')
+            $vendor = DB::connection('sqlSrvBCKI')
                 ->table('vendor')
                 ->where('vendor_id', $request->vendor_id)
                 ->first();
 
             if ($vendor) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('vendor')
                     ->where('vendor_id', $request->vendor_id)
                     ->update([
@@ -4526,31 +4526,31 @@ class masterController extends Controller
                         'dt_modified' => now(),
                         'modified_by' => getAuth($request)->user_id2,
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully update vendor');
             } else {
                 return $this->sendError('Vendor tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function deleteVendor(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $vendor = DB::connection('sqlSrvFPI')
+            $vendor = DB::connection('sqlSrvBCKI')
                 ->table('vendor')
                 ->where('vendor_id', $request->vendor_id)
                 ->first();
 
             if ($vendor) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('vendor')
                     ->where('vendor_id', $request->vendor_id)
                     ->update([
@@ -4559,31 +4559,31 @@ class masterController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
 
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully Delete vendor');
             } else {
                 return $this->sendError('vendor tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function activateVendor(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
-            $vendor = DB::connection('sqlSrvFPI')
+            $vendor = DB::connection('sqlSrvBCKI')
                 ->table('vendor')
                 ->where('vendor_id', $request->vendor_id)
                 ->first();
 
             if ($vendor) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                     ->table('vendor')
                     ->where('vendor_id', $request->vendor_id)
                     ->update([
@@ -4592,27 +4592,27 @@ class masterController extends Controller
                         'modified_by' => getAuth($request)->user_id2,
 
                     ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Update', 'Successfully Activate vendor');
             } else {
                 return $this->sendError('vendor tidak ditemukan', 'Error', 500);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function storeVendor(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
             $vendor_id = $this->generateVendorID($request);
             // dd($region_id);
 
-            $save = DB::connection('sqlSrvFPI')
+            $save = DB::connection('sqlSrvBCKI')
                 ->table('vendor')
                 ->insert([
                     'vendor_id' => $vendor_id,
@@ -4638,10 +4638,10 @@ class masterController extends Controller
                     'user_id'    => getAuth($request)->user_id2,
                     'dt_created'   => now(),
                 ]);
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
             return $this->sendResponse($save, 'Successfully saved Region');
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -4650,7 +4650,7 @@ class masterController extends Controller
     {
         $gen_vendor_id = '';
 
-        $getLastTrID =  DB::connection('sqlSrvFPI')
+        $getLastTrID =  DB::connection('sqlSrvBCKI')
             ->table('vendor')
             ->max('vendor_id');
 

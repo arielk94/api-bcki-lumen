@@ -47,7 +47,7 @@ class ComparisonPriceController extends Controller
 
             $arrayReusable = [];
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('submit_po')
                 ->selectRaw("
                         submit_po.office_id,submit_po.trx_id, submit_po.dt_trx, submit_po.finalize_date, submit_po.note, branch_office.office, submit_po.finalized_by, submit_po.type_code, 
@@ -134,7 +134,7 @@ class ComparisonPriceController extends Controller
     {
         $arrayReusable = [];
 
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
             ->table('submit_po_item')
             ->where('office_id', $value->office_id)
             ->where('trx_id', $value->trx_id)
@@ -240,7 +240,7 @@ class ComparisonPriceController extends Controller
                 submit_po_item.approved_price,
                 submit_po_item.approved_date,
                 submit_po_item.approved_by";
-            $query = DB::connection('sqlSrvFPI')
+            $query = DB::connection('sqlSrvBCKI')
                 ->table('submit_po_item')
                 ->selectRaw($sqlRaw)
                 ->leftjoin('article', function ($join) {
@@ -267,7 +267,7 @@ class ComparisonPriceController extends Controller
     public function update(Request $request)
     {
         // ['office_id', 'trx_id', 'items', 'approve']
-        $submit_po = DB::connection('sqlSrvFPI')
+        $submit_po = DB::connection('sqlSrvBCKI')
             ->table('submit_po')
             ->where('office_id', $request->office_id)
             ->where('trx_id', $request->trx_id)
@@ -278,7 +278,7 @@ class ComparisonPriceController extends Controller
                 return $this->sendError('Comparison price already finalized', 'Comparison price already finalized', 500);
             }
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
 
@@ -310,7 +310,7 @@ class ComparisonPriceController extends Controller
                         }
                     }
 
-                    DB::connection('sqlSrvFPI')->update(
+                    DB::connection('sqlSrvBCKI')->update(
                         "UPDATE submit_po_item WITH (ROWLOCK)
                         SET cek1 = ?, cek2 = ?, cek3 = ?, cek4 = ?, cek5 = ?, approved_date = ?, approved_by = ?, aprroved_vendor = ?, approved_price = ?, dt_modified = ?, user_id = ?
                         WHERE office_id = ? AND trx_id = ? AND num = ?",
@@ -334,7 +334,7 @@ class ComparisonPriceController extends Controller
                 }
 
                 if ($request->approve) {
-                    DB::connection('sqlSrvFPI')->update(
+                    DB::connection('sqlSrvBCKI')->update(
                         "UPDATE submit_po WITH (ROWLOCK)
                         SET finalize_date = ?, finalized_by = ?
                         WHERE office_id = ? AND trx_id = ?",
@@ -347,9 +347,9 @@ class ComparisonPriceController extends Controller
                     );
                 }
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
-                $submit_po = DB::connection('sqlSrvFPI')
+                $submit_po = DB::connection('sqlSrvBCKI')
                     ->table('submit_po')
                     ->where('office_id', $request->office_id)
                     ->where('trx_id', $request->trx_id)
@@ -357,7 +357,7 @@ class ComparisonPriceController extends Controller
 
                 return $this->sendResponse($submit_po, 'Successfully saved');
             } catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
         } else {
@@ -368,7 +368,7 @@ class ComparisonPriceController extends Controller
     public function unapprove(Request $request)
     {
         // ['office_id', 'trx_id', 'items', 'approve']
-        $submit_po = DB::connection('sqlSrvFPI')
+        $submit_po = DB::connection('sqlSrvBCKI')
             ->table('submit_po')
             ->where('office_id', $request->office_id)
             ->where('trx_id', $request->trx_id)
@@ -376,7 +376,7 @@ class ComparisonPriceController extends Controller
 
         if ($submit_po) {
 
-            $poId = DB::connection("sqlSrvFPI")
+            $poId = DB::connection("sqlSrvBCKI")
                 ->table('po_item')
                 ->selectRaw('po_id')
                 ->where('office_id', $request->office_id)
@@ -386,10 +386,10 @@ class ComparisonPriceController extends Controller
                 return $this->sendError('Comparison price already raised into PO', 'Comparison price already raised into PO', 500);
             }
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
-                DB::connection("sqlSrvFPI")->table('submit_po_item')
+                DB::connection("sqlSrvBCKI")->table('submit_po_item')
                     ->where('office_id', $request->office_id)
                     ->where('trx_id', $request->trx_id)
                     ->update([
@@ -398,14 +398,14 @@ class ComparisonPriceController extends Controller
                         'dt_modified' => now(),
                         'user_id' => getAuth($request)->user_id2,
                     ]);
-                DB::connection("sqlSrvFPI")->table('submit_po')
+                DB::connection("sqlSrvBCKI")->table('submit_po')
                     ->where('office_id', $request->office_id)
                     ->where('trx_id', $request->trx_id)
                     ->update(['finalize_date' => '1900-01-01 00:00:00.000', 'finalized_by' => ""]);
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
-                $submit_po = DB::connection('sqlSrvFPI')
+                $submit_po = DB::connection('sqlSrvBCKI')
                     ->table('submit_po')
                     ->where('office_id', $request->office_id)
                     ->where('trx_id', $request->trx_id)
@@ -413,7 +413,7 @@ class ComparisonPriceController extends Controller
 
                 return $this->sendResponse($submit_po, 'Successfully saved');
             } catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
         } else {
@@ -428,7 +428,7 @@ class ComparisonPriceController extends Controller
         try {
             $SppoId = 'SPPO/' . $request->office_id . '/' . getRomawi(date('m', strtotime($request->dt_trx))) . '/' . substr(date('Y', strtotime($request->dt_trx)), -2) . '/';
 
-            $GenTrId = DB::connection("sqlSrvFPI")
+            $GenTrId = DB::connection("sqlSrvBCKI")
                 ->table('submit_po')
                 ->selectRaw('RIGHT(TRIM(MAX(trx_id)), 3) + 1 as trx_id')
                 ->where('office_id', $request->office_id)
@@ -452,7 +452,7 @@ class ComparisonPriceController extends Controller
     public function getSppoNum(Request $request)
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('submit_po_item')
                 ->selectRaw('isnull(max(num),0) + 1  as num')
                 ->where('trx_id', $request->Trx_Id)
@@ -467,7 +467,7 @@ class ComparisonPriceController extends Controller
     public function getLastPrice(Request $request)
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('po_item as a')
                 ->selectRaw('b.dt_po, b.po_id, b.vendor_id, c.vendor_name, a.article_id, d.description, a.unit_price, b.tax1')
                 ->join('po_hdr as b', function ($join) {
@@ -493,7 +493,7 @@ class ComparisonPriceController extends Controller
     public function getPrHdr(Request $request)
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('pr_item as a')
                 ->selectRaw('DISTINCT a.office_id, a.pr_id, b.dt_pr, b.dept_id, g.dept_name, b.pic_id, h.pic_name')
                 ->join('pr_hdr as b', function ($join) {
@@ -534,7 +534,7 @@ class ComparisonPriceController extends Controller
                 $sqlWhere = $sqlWhere . "and a.pr_id = '$request->pr_id'";
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('pr_item as a')
                 ->selectRaw('a.pr_id, a.pr_item, a.article_id, b.description, a.qty, a.unit_meas, a.remark')
                 ->join('article as b', function ($join) {
@@ -572,7 +572,7 @@ class ComparisonPriceController extends Controller
     public function getPayTermId(Request $request)
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('pay_term')
                 ->selectRaw('pay_term_id, pay_term_desc, num_of_days')
                 ->get();
@@ -586,13 +586,13 @@ class ComparisonPriceController extends Controller
     public function getSaveSppo(Request $request)
     {
         try {
-            $getppn = DB::connection("sqlSrvFPI")
+            $getppn = DB::connection("sqlSrvBCKI")
                 ->table('appl_constant')
                 ->selectRaw('str3')
                 ->where('key_code', 'PPN')
                 ->first();
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('submit_po_item')
                 ->selectRaw('trx_id, num')
                 ->where('office_id', $request->office_id)
@@ -601,7 +601,7 @@ class ComparisonPriceController extends Controller
                 ->first();
 
             if (!$datas) {
-                $datas = DB::connection("sqlSrvFPI")
+                $datas = DB::connection("sqlSrvBCKI")
                     ->table('submit_po_item')
                     ->insert([
                         'office_id'      => $request->office_id ?? '',
@@ -632,7 +632,7 @@ class ComparisonPriceController extends Controller
                     ]);
 
             } else {
-                $datas = DB::connection("sqlSrvFPI")
+                $datas = DB::connection("sqlSrvBCKI")
                     ->table('submit_po_item')
                     ->where('office_id', $request->office_id)
                     ->where('trx_id', $request->trx_id)
@@ -662,14 +662,14 @@ class ComparisonPriceController extends Controller
                     ]);
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('submit_po')
                 ->selectRaw('trx_id')
                 ->where('office_id', $request->office_id)
                 ->where('trx_id', $request->trx_id)
                 ->first();
             if (!$datas) {
-                $datas = DB::connection("sqlSrvFPI")
+                $datas = DB::connection("sqlSrvBCKI")
                     ->table('submit_po')
                     ->insert([
                         'office_id'         => $request->office_id ?? 0,
@@ -742,7 +742,7 @@ class ComparisonPriceController extends Controller
                         'type_code'         => 'N'
                     ]);
             } else {
-                $datas = DB::connection("sqlSrvFPI")
+                $datas = DB::connection("sqlSrvBCKI")
                     ->table('submit_po')
                     ->where('office_id', $request->office_id)
                     ->where('trx_id', $request->trx_id)

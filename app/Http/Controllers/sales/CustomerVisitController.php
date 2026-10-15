@@ -31,7 +31,7 @@ class CustomerVisitController extends Controller
         // $salesid = DB::connection('sqlsrv')
         //             ->table('sec_env_conf')
         //             ->select('var_value')
-        //             ->where('entity_id', '=', 'FDPI')
+        //             ->where('entity_id', '=', 'bcki')
         //             ->where('var_id', '=', 'SALESID' )
         //             ->where('active_flag', '=', 'Y' )
         //             ->where('user_id2', '=', getAuth($request)->user_id2 )
@@ -76,13 +76,13 @@ class CustomerVisitController extends Controller
 
         if ($salesid) {
 
-            $sales = DB::connection('sqlSrvFPI')
+            $sales = DB::connection('sqlSrvBCKI')
                     ->table('sales')
                     ->where('SalesId', $salesid)
                     ->where('active_flag', '=', 'Y')
                     ->first();
 
-            $office = DB::connection('sqlSrvFPI')
+            $office = DB::connection('sqlSrvBCKI')
                     ->table('branch_office')
                     ->where('office_id', '=', $sales->office_id)
                     ->where('active_flag', '=', 'Y')
@@ -178,14 +178,14 @@ class CustomerVisitController extends Controller
 
         if($payload->salesid != null | $payload->salesid != '') {
             
-            $office_id = DB::connection('sqlSrvFPI')
+            $office_id = DB::connection('sqlSrvBCKI')
                     ->table('sales')
                     ->where('SalesId', $payload->salesid)
                     ->first();
 
         }
 
-        $checkTodayActivity = DB::connection('sqlSrvFPI')
+        $checkTodayActivity = DB::connection('sqlSrvBCKI')
                     ->table('sales_activity_hdr')
                     ->where('user_id2', $payload->user_id2)
                     ->whereDate('tr_date', '=', now()->toDateString())
@@ -195,14 +195,14 @@ class CustomerVisitController extends Controller
 
         if (!$checkTodayActivity) {
 
-            $checkLastTrId = DB::connection('sqlSrvFPI')
+            $checkLastTrId = DB::connection('sqlSrvBCKI')
                     ->table('sales_activity_hdr')
                     ->whereDate('tr_date', '=', now()->toDateString())
                     ->first();
 
             if (!$checkLastTrId) {
 
-                $trId = 'SA/FPI/' . date('Ymd') . '/' . '0001';
+                $trId = 'SA/bcki/' . date('Ymd') . '/' . '0001';
 
             } else {
                 $tr_id = $checkLastTrId->tr_id;
@@ -213,10 +213,10 @@ class CustomerVisitController extends Controller
                 $trId = implode('/', $parts);
             }
 
-            $insertHeader = DB::connection('sqlSrvFPI')
+            $insertHeader = DB::connection('sqlSrvBCKI')
                         ->table('sales_activity_hdr')
                         ->insert([
-                            'entity_id' => 'FPI',
+                            'entity_id' => 'bcki',
                             'tr_id' => $trId,
                             'sales_id' => $payload->salesid,
                             'office_id' => $office_id ? $office_id->office_id : null,
@@ -225,10 +225,10 @@ class CustomerVisitController extends Controller
                             'employee_id' => getAuth($request)->idemployee,
                         ]);
                 
-            $insertDetail = DB::connection('sqlSrvFPI')
+            $insertDetail = DB::connection('sqlSrvBCKI')
                         ->table('sales_activity_dtl')
                         ->insert([
-                            'entity_id' => 'FPI',
+                            'entity_id' => 'bcki',
                             'sales_id' => $payload->salesid ? $payload->salesid : '',
                             'tr_id' => $trId,
                             'seq_id' => 1,
@@ -269,7 +269,7 @@ class CustomerVisitController extends Controller
 
             foreach ($payload->images as $key => $value) {
 
-                $last = DB::connection('sqlSrvFPI')
+                $last = DB::connection('sqlSrvBCKI')
                         ->table('sales_activity_image')
                         ->where('tr_id', $trId)
                         ->max('seq_id_img');
@@ -277,9 +277,9 @@ class CustomerVisitController extends Controller
                 $medium = Image::make($value['src'])->encode('jpg', 75);
                 $nameFinal = Str::random(40). '.jpg';
     
-                Storage::disk('public')->put('sales-activity/FPI/' . $nameFinal, $medium->__toString());
+                Storage::disk('public')->put('sales-activity/bcki/' . $nameFinal, $medium->__toString());
     
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('sales_activity_image')
                 ->insert([
                     'tr_id' => $trId,
@@ -299,7 +299,7 @@ class CustomerVisitController extends Controller
 
         } else {
 
-            $checkLastDetail = DB::connection('sqlSrvFPI')
+            $checkLastDetail = DB::connection('sqlSrvBCKI')
                         ->table('sales_activity_dtl')
                         ->where('sales_id', $payload->salesid ?? '')
                         ->where('tr_id', $checkTodayActivity->tr_id)
@@ -312,10 +312,10 @@ class CustomerVisitController extends Controller
 
             $distanceInKm = $distance['routes'][0]['distance'] / 1000;
 
-            $insertDetail = DB::connection('sqlSrvFPI')
+            $insertDetail = DB::connection('sqlSrvBCKI')
                         ->table('sales_activity_dtl')
                         ->insert([
-                            'entity_id' => 'FPI',
+                            'entity_id' => 'bcki',
                             'sales_id' => $payload->salesid ? $payload->salesid : '',
                             'tr_id' => $checkTodayActivity->tr_id,
                             'seq_id' => $seq_id,
@@ -356,7 +356,7 @@ class CustomerVisitController extends Controller
 
             foreach ($payload->images as $key => $value) {
 
-                $last = DB::connection('sqlSrvFPI')
+                $last = DB::connection('sqlSrvBCKI')
                         ->table('sales_activity_image')
                         ->where('tr_id', $checkTodayActivity->tr_id)
                         ->where('seq_id', $seq_id)
@@ -365,9 +365,9 @@ class CustomerVisitController extends Controller
                 $medium = Image::make($value['src'])->encode('jpg', 75);
                 $nameFinal = Str::random(40). '.jpg';
     
-                Storage::disk('public')->put('sales-activity/FPI/' . $nameFinal, $medium->__toString());
+                Storage::disk('public')->put('sales-activity/bcki/' . $nameFinal, $medium->__toString());
     
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('sales_activity_image')
                 ->insert([
                     'tr_id' => $checkTodayActivity->tr_id,
@@ -427,7 +427,7 @@ class CustomerVisitController extends Controller
 
         $customer_id = $request->customer_id;
 
-        $customer = DB::connection('sqlSrvFPI')
+        $customer = DB::connection('sqlSrvBCKI')
                     ->table('customer')
                     ->where('CustomerId', '=', $customer_id)
                     ->where('active_flag', '=', 'Y')
@@ -442,7 +442,7 @@ class CustomerVisitController extends Controller
 
         $id = $request->id;
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
                     ->table('customer as a')
                     ->selectRaw("top 20 a.CustomerId, upper(a.CustomerId + ' - ' + a.NamaCustomer + ' - ' + b.city) as NamaCustomer")
                     ->join('hrd_ol.dbo.list_city as b', 'a.Kota', 'b.city_code')

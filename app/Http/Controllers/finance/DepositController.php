@@ -24,7 +24,7 @@ class DepositController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/deposit/getListBankNote",
+     *     path="/api/bcki/deposit/getListBankNote",
      *     tags={"Deposit"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -93,7 +93,7 @@ class DepositController extends Controller
             }
 
             // Get List Bank Note
-            $getListBankNote = DB::connection("sqlSrvFPI")
+            $getListBankNote = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("Select descr, 
                                     case when rtrim(isnull(case when bn.tr_type='S' then (select office from branch_office where office_id=cast( bn.Cabang as int)) end,'')) = '' 
                                     then bn.cabang +' : ' + rTrim(isnull(branch_descr,'')) + ' : ' + rTrim(isnull(City,''))
@@ -118,7 +118,7 @@ class DepositController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/deposit/getListDeposit",
+     *     path="/api/bcki/deposit/getListDeposit",
      *     tags={"Deposit"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -171,7 +171,7 @@ class DepositController extends Controller
                 $sqlWhere2 .= " and dp_amt - a.used_amt > 0 ";
             }
             //Get List Deposit ini query lama
-            $getListDeposit = DB::connection("sqlSrvFPI")
+            $getListDeposit = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select  distinct rtrim(cust_id) as cust_id, namacustomer, rtrim(dp_id) as dp_id,dt_dp,
                                         a.curr_id, inv_id, rtrim(a.ac_num) as ac_num, isnull(ac_name,'') ac_name, rtrim(ac_num_DP) as ac_num_DP,  dp_amt, a.used_amt,
                                         bal_amt, dp_num, a.Remark,  bkm, IsNull(alamat_id_card, '') alamat_id_card, 
@@ -206,7 +206,7 @@ class DepositController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/deposit/getListInvoice",
+     *     path="/api/bcki/deposit/getListInvoice",
      *     tags={"Deposit"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -233,7 +233,7 @@ class DepositController extends Controller
             $sqlWhere = '1=1 ';
             $sqlWhere .= " and di.dp_id  = '$request->dp_id'";
             // Get List Invoice
-            $getListInvoice = DB::connection("sqlSrvFPI")
+            $getListInvoice = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select a.tr_date,rtrim(b.penjualanno) penjualanno,b.pay_amt,b.voucher,b.pay_id,c.namacustomer 
                                 from dp_sales di inner join 
                                 payment_hdr a on di.dp_id=a.bukti inner join 
@@ -256,7 +256,7 @@ class DepositController extends Controller
         $month =  Carbon::parse($tgl)->format('m');  // contoh: 05
 
         // Ambil record terakhir berdasarkan tahun dan bulan
-        $last = DB::connection("sqlSrvFPI")
+        $last = DB::connection("sqlSrvBCKI")
             ->table('dp_sales')
             // ->selectRaw("top 1 tr_id")
             ->whereRaw("SUBSTRING(dp_id, 4, 2) = ?", [$year])
@@ -282,7 +282,7 @@ class DepositController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/deposit/saveDeposit",
+     *     path="/api/bcki/deposit/saveDeposit",
      *     tags={"Deposit"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -336,7 +336,7 @@ class DepositController extends Controller
         try {
             if (!$dp_id) {
                 // cek apakah ada Voucher yang sudah digunakan
-                $cekTRIDUse = DB::connection("sqlSrvFPI")
+                $cekTRIDUse = DB::connection("sqlSrvBCKI")
                     ->table('bank_note')
                     ->where('tr_id', $bkm)
                     ->where('tr_type', 'C')
@@ -347,7 +347,7 @@ class DepositController extends Controller
                 }
 
                 // cek apakah ada BKM yang sudah digunakan
-                $cekBKMUse = DB::connection("sqlSrvFPI")
+                $cekBKMUse = DB::connection("sqlSrvBCKI")
                     ->table('dp_sales')
                     ->where('bkm', $bkm)
                     ->first();
@@ -361,7 +361,7 @@ class DepositController extends Controller
                 $dp_num = $genID['dp_num'];
             }
 
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('dp_sales')
                 ->where('dp_id', $dp_id)
                 ->first();
@@ -385,7 +385,7 @@ class DepositController extends Controller
             ];
 
             if ($cekDoc) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('dp_sales')
                     ->where('dp_id', $dp_id)
                     ->update($data);
@@ -394,12 +394,12 @@ class DepositController extends Controller
                 $data['stat'] = "O";
                 $data['dt_created'] = Carbon::now();
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('dp_sales')
                     ->insert($data);
             }
 
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('bank_note')
                 ->where('run_number', $run_number)
                 ->where('tr_type', $tr_typeDN)
@@ -413,7 +413,7 @@ class DepositController extends Controller
             ];
 
             if ($cekDoc) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('bank_note')
                     ->where('run_number', $run_number)
                     ->where('tr_type', $tr_typeDN)
@@ -434,7 +434,7 @@ class DepositController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/deposit/deleteDeposit",
+     *     path="/api/bcki/deposit/deleteDeposit",
      *     tags={"Deposit"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -463,7 +463,7 @@ class DepositController extends Controller
 
         try {
             // cek apakah DP Sudah dibuatkan Faktur Pajak
-            $cekDPdiPajak = DB::connection("sqlSrvFPI")
+            $cekDPdiPajak = DB::connection("sqlSrvBCKI")
                 ->table('dp_sales')
                 ->where('dp_id', $dp_id)
                 ->where('dp_pajak', '<>', '')
@@ -472,7 +472,7 @@ class DepositController extends Controller
                 return $this->sendError('Sudah dibuatkan Faktur Pajak DP', 'Error', 500);
             }
 
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('dp_sales')
                 ->where('dp_id', $dp_id)
                 ->first();
@@ -489,14 +489,14 @@ class DepositController extends Controller
                 if ($cekDoc->used_amt > 0) {
                     return $this->sendError('Sudah Terpakai Tidak Bisa Dihapus', 'Error', 500);
                 } else {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('dp_sales')
                         ->where('dp_id', $dp_id)
                         ->where('office_id', '1')
                         ->where('tr_type', 'DP')
                         ->delete();
                 }
-                $cekDoc2 = DB::connection("sqlSrvFPI")
+                $cekDoc2 = DB::connection("sqlSrvBCKI")
                     ->table('bank_note')
                     ->where('tr_id', $bkm)
                     ->first();
@@ -507,7 +507,7 @@ class DepositController extends Controller
                 ];
 
                 if ($cekDoc2) {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('bank_note')
                         ->where('tr_id', $bkm)
                         ->update($data);
@@ -523,7 +523,7 @@ class DepositController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/deposit/getListPurchDeposit",
+     *     path="/api/bcki/deposit/getListPurchDeposit",
      *     tags={"Deposit"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -569,7 +569,7 @@ class DepositController extends Controller
                 $sqlWhere .= " and dp_amt - dp_used > 0 ";
             }
             // Get List Deposit
-            // $getListPurchDeposit = DB::connection("sqlSrvFPI")
+            // $getListPurchDeposit = DB::connection("sqlSrvBCKI")
             //     ->select(DB::raw("select distinct dt_dp, rtrim(a.dp_id) dp_id, rtrim(a.vendor_id) vendor_id, vendor_name, dp_amt, a.inv_amt, a.Remark, 'H' baris, 
             //                         case when c.dp_id is not null then 'Y' else 'N' end as split, 
             //                         f.run_number, rtrim(f.bank_acc) as faccount, rtrim(a.ac_num) as ac_num, rtrim(a.ac_num_dp) as ac_num_dp, bkm, 
@@ -594,7 +594,7 @@ class DepositController extends Controller
             //                         left outer join bank_note f ON  a.bkm=f.tr_id 
             //                     where $sqlWhere                                
             //                         order by dp_id "));
-             $getListPurchDeposit = DB::connection("sqlSrvFPI")
+             $getListPurchDeposit = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select distinct dt_dp, rtrim(a.dp_id) dp_id, rtrim(a.vendor_id) vendor_id, vendor_name, dp_amt, a.dp_used inv_amt, a.Remark, 'H' baris, 
                                     case when c.dp_id is not null then 'Y' else 'N' end as split, 
                                     f.run_number, rtrim(f.bank_acc) as faccount, rtrim(a.ac_num) as ac_num, rtrim(a.ac_num_dp) as ac_num_dp, bkm, 
@@ -629,7 +629,7 @@ class DepositController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/deposit/getListPInvoice",
+     *     path="/api/bcki/deposit/getListPInvoice",
      *     tags={"Deposit"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -656,7 +656,7 @@ class DepositController extends Controller
             $sqlWhere = '1=1 ';
             $sqlWhere .= " and a.dp_id  = '$request->dp_id'";
             // Get List Invoice
-            $getListPInvoice = DB::connection("sqlSrvFPI")
+            $getListPInvoice = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select distinct a.dt_dp,rtrim(j.inv_id) inv_id,rtrim(c.pay_id) pay_id,rtrim(voucher) voucher,rtrim(b.vendor_name) vendor_name,
                                     rtrim(isnull(k.inv_id,'')) BPH, rtrim(isnull(k.vendor_inv,'')) Ext_Inv, k.dt_inv inv_date, k.dt_due due_date, isnull(j.pay_amt ,0) pay_amt
                                 from purc_down_payment a
@@ -682,7 +682,7 @@ class DepositController extends Controller
         $month =  Carbon::parse($tgl)->format('m');  // contoh: 05
 
         // Ambil record terakhir berdasarkan tahun dan bulan
-        $last = DB::connection("sqlSrvFPI")
+        $last = DB::connection("sqlSrvBCKI")
             ->table('purc_down_payment')
             // ->selectRaw("top 1 tr_id")
             ->whereRaw("SUBSTRING(dp_id, 9, 2) = ?", [$year])
@@ -708,7 +708,7 @@ class DepositController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/deposit/savePDeposit",
+     *     path="/api/bcki/deposit/savePDeposit",
      *     tags={"Deposit"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -763,7 +763,7 @@ class DepositController extends Controller
         try {
             if (!$dp_id) {
                 // cek apakah ada Voucher yang sudah digunakan
-                $cekTRIDUse = DB::connection("sqlSrvFPI")
+                $cekTRIDUse = DB::connection("sqlSrvBCKI")
                     ->table('bank_note')
                     ->where('tr_id', $bkm)
                     ->where('tr_type', 'D')
@@ -779,7 +779,7 @@ class DepositController extends Controller
                 $dp_num = $genID['dp_num'];
             }
 
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('purc_down_payment')
                 ->where('dp_id', $dp_id)
                 ->first();
@@ -804,7 +804,7 @@ class DepositController extends Controller
             ];
 
             if ($cekDoc) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('purc_down_payment')
                     ->where('dp_id', $dp_id)
                     ->update($data);
@@ -813,12 +813,12 @@ class DepositController extends Controller
                 //$data['stat'] = "O";
                 $data['dt_created'] = Carbon::now();
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('purc_down_payment')
                     ->insert($data);
             }
 
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('bank_note')
                 ->where('run_number', $run_number)
                 ->where('tr_type', $tr_typeDN)
@@ -832,7 +832,7 @@ class DepositController extends Controller
             ];
 
             if ($cekDoc) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('bank_note')
                     ->where('run_number', $run_number)
                     ->where('tr_type', $tr_typeDN)
@@ -853,7 +853,7 @@ class DepositController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/deposit/deleteDeposit",
+     *     path="/api/bcki/deposit/deleteDeposit",
      *     tags={"Deposit"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -882,7 +882,7 @@ class DepositController extends Controller
 
         try {
             // cek apakah DP Sudah dibuatkan Faktur Pajak
-            // $cekDPdiPajak = DB::connection("sqlSrvFPI")
+            // $cekDPdiPajak = DB::connection("sqlSrvBCKI")
             //     ->table('purc_down_payment')
             //     ->where('dp_id', $dp_id)
             //     ->first();
@@ -890,7 +890,7 @@ class DepositController extends Controller
             //     return $this->sendError('Sudah dibuatkan Faktur Pajak DP', 'Error', 500);
             // }
 
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('purc_down_payment')
                 ->where('dp_id', $dp_id)
                 ->first();
@@ -907,13 +907,13 @@ class DepositController extends Controller
                 if ($cekDoc->dp_used > 0) {
                     return $this->sendError('Sudah Terpakai Tidak Bisa Dihapus', 'Error', 500);
                 } else {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('purc_down_payment')
                         ->where('dp_id', $dp_id)
                         ->where('office_id', '1')
                         ->delete();
                 }
-                $cekDoc2 = DB::connection("sqlSrvFPI")
+                $cekDoc2 = DB::connection("sqlSrvBCKI")
                     ->table('bank_note')
                     ->where('tr_id', $bkm)
                     ->first();
@@ -924,7 +924,7 @@ class DepositController extends Controller
                 ];
 
                 if ($cekDoc2) {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('bank_note')
                         ->where('tr_id', $bkm)
                         ->update($data);

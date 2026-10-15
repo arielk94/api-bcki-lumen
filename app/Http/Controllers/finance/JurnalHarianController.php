@@ -62,7 +62,7 @@ class JurnalHarianController extends Controller
 
         // Jika ac_num terisi, tambahkan subquery source_num
         if ($ac_num) {
-            $subQuery = DB::connection('sqlSrvFPI')
+            $subQuery = DB::connection('sqlSrvBCKI')
                 ->table('v_general_ledger_detail')
                 ->selectRaw('DISTINCT source_num')
                 ->where('ac_num', $ac_num)
@@ -72,7 +72,7 @@ class JurnalHarianController extends Controller
             $sqlWhere .= " AND source_num IN (SELECT DISTINCT source_num FROM v_general_ledger_detail WHERE ac_num = '$ac_num')";
         }
 
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             ->table('v_general_ledger_detail')
             ->selectRaw("
                 office_id,
@@ -110,7 +110,7 @@ class JurnalHarianController extends Controller
     }
 
     public function getSourceData(){
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             ->table('v_general_ledger_detail')
             ->selectRaw('trim(source) as source')
             ->distinct()
@@ -136,7 +136,7 @@ class JurnalHarianController extends Controller
         $ac_num_baru = trim($request->ac_num_baru);
         $ac_num_lama = trim($request->ac_num_lama);
 
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             ->table('v_general_ledger_detail')
             ->where('source', $source)
             ->where('source_num', $source_num)

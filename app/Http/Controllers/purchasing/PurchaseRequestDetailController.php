@@ -46,7 +46,7 @@ class PurchaseRequestDetailController extends Controller
             }
         }
 
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('pr_item')
                 ->selectRaw("
                     pr_item.office_id,

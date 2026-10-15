@@ -82,7 +82,7 @@ class PurchaseReturController extends Controller
                 }
             }
             // dd($sqlWhere);
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('purc_rtn_hdr as a')
                 ->selectRaw("a.office_id, c.office, a.dt_rtn, a.purc_rtn_id, a.vendor_id, b.vendor_name
                         ,a.sj_no,a.qty, a.amt_total, a.curr_id, a.rate, a.remark, a.stat, STRING_AGG(LTRIM(RTRIM(ISNULL(d.po_id, ''))), ', ') AS po_id, a.pct_ppn, a.pct_pph, a.tax1, a.tax2")
@@ -133,7 +133,7 @@ class PurchaseReturController extends Controller
                 $sqlWhere .= " and a.purc_rtn_id = '" . $request->purc_rtn_id . "'";
             }
             // dd($sqlWhere);
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('purc_rtn_dtl as a')
                 ->selectRaw("a.office_id, a.purc_rtn_id, a.seq_num, a.article_id, 
                             b.description, a.qty, a.unit_meas, a.unit_price, a.amt_item, 
@@ -193,7 +193,7 @@ class PurchaseReturController extends Controller
             if ($request->cat_id) {
                 $sqlWhere .= " and (cat_id = '" . $request->cat_id . "' or descr like '%" . $request->cat_id . "%')";
             }
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('category')
                 ->selectRaw('cat_id, descr as category')
                 ->whereRaw($sqlWhere)
@@ -212,7 +212,7 @@ class PurchaseReturController extends Controller
             if ($request->com_id) {
                 $sqlWhere .= " and (com_id = '" . $request->com_id . "' or com_desc like '%" . $request->com_id . "%')";
             }
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('commodity')
                 ->selectRaw('com_id, com_desc as commodity')
                 ->whereRaw($sqlWhere)
@@ -243,7 +243,7 @@ class PurchaseReturController extends Controller
                     $sqlWhere .= "and b.cat_id = '$request->cat_id'";
                 }
 
-                $datas = DB::connection("sqlSrvFPI")
+                $datas = DB::connection("sqlSrvBCKI")
                     ->table('inv_bal as a')
                     ->selectRaw("a.article_id, b.description, b.uom, b.cat_id, c.descr as category, 
                             b.com_id, d.com_desc as commodity, a.office_id, a.wh_id, a.bin_id,
@@ -272,7 +272,7 @@ class PurchaseReturController extends Controller
                     $sqlWhere .= "and a.purc_rcv_id = '$request->purc_rcv_id'";
                 }
 
-                $datas = DB::connection("sqlSrvFPI")
+                $datas = DB::connection("sqlSrvBCKI")
                     ->table('purc_rcv_dtl as a')
                     ->selectRaw("a.purc_rcv_id, a.article_id, b.description, a.seq_num, a.sj_no,
                             a.pr_id, a.pr_item, a.po_id, a.po_item, a.amt_item, e.unit_meas, e.qty, e.unit_price, 
@@ -317,7 +317,7 @@ class PurchaseReturController extends Controller
             if ($request->vendor_id) {
                 $sqlWhere.= "and vendor_id = '$request->vendor_id'";
             }
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('purc_rcv_hdr')
                 ->selectRaw('office_id, purc_rcv_id, sj_no, dt_rcv, vendor_id ')
                 ->whereRaw($sqlWhere)
@@ -333,44 +333,44 @@ class PurchaseReturController extends Controller
 
     public function GetAcNum()
     {
-        $AcNumHut = DB::connection("sqlSrvFPI")
+        $AcNumHut = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'HUTANG PEMBELIAN')
             ->value("ac_num");
 
-        $AcNumBbt = DB::connection("sqlSrvFPI")
+        $AcNumBbt = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'PERSEDIAAN BARANG BELUM TERTAGIH')
             ->value("ac_num");
 
-        $AcNumDisc = DB::connection("sqlSrvFPI")
+        $AcNumDisc = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'DISKON PEMBELIAN')
             ->value("ac_num");
 
-        $AcNumPpn = DB::connection("sqlSrvFPI")
+        $AcNumPpn = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'PPN MASUKAN')
             ->value("ac_num");
 
-        $AcNumPph = DB::connection("sqlSrvFPI")
+        $AcNumPph = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'PPH23')
             ->value("ac_num");
 
-        $AcNumPph21 = DB::connection("sqlSrvFPI")
+        $AcNumPph21 = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'PPH21')
             ->where('divisi', '=', 'L')
             ->value("ac_num");
 
-        $AcNumPph4 = DB::connection("sqlSrvFPI")
+        $AcNumPph4 = DB::connection("sqlSrvBCKI")
             ->table('g_ledger_std')
             ->selectRaw("ac_num")
             ->where('ac_name', '=', 'PPH4')
@@ -405,12 +405,12 @@ class PurchaseReturController extends Controller
             $getRcvDtl = null;
 
             if($purc_rcv_id){
-                $getRcv = DB::connection("sqlSrvFPI")
+                $getRcv = DB::connection("sqlSrvBCKI")
                     ->table('purc_rcv_hdr')
                     ->where('purc_rcv_id', $purc_rcv_id)
                     ->first();
                 // dd($getRcv);
-                $getRcvDtl = DB::connection("sqlSrvFPI")
+                $getRcvDtl = DB::connection("sqlSrvBCKI")
                     ->table('purc_rcv_dtl')
                     ->where('purc_rcv_id', $purc_rcv_id)
                     ->get();
@@ -424,7 +424,7 @@ class PurchaseReturController extends Controller
             $rtn_num = null;
             if ($isEditing) {
                 // Jika edit, ambil rtn_num dari database yang sudah ada
-                $existingRtnHdr = DB::connection('sqlSrvFPI')
+                $existingRtnHdr = DB::connection('sqlSrvBCKI')
                     ->table('purc_rtn_hdr')
                     ->where('purc_rtn_id', $purc_rtn_id)
                     ->first();
@@ -433,7 +433,7 @@ class PurchaseReturController extends Controller
                 // Jika buat baru, generate rtn_num yang baru secara otomatis
                 $date = Carbon::parse($request->dt_rtn);
                 $prefix = 'PR' . $date->format('ym') . (int) $office_id;
-                $getLastRtnNum = DB::connection('sqlSrvFPI')
+                $getLastRtnNum = DB::connection('sqlSrvBCKI')
                     ->table('purc_rtn_hdr')
                     ->where('office_id', $office_id)
                     ->where(DB::raw("LTRIM(RTRIM(purc_rtn_id))"), 'like', $prefix . '%')
@@ -447,7 +447,7 @@ class PurchaseReturController extends Controller
             $retursaid = terbilang($request->amt_total);
             $sj_no = trim($getRcv ? $getRcv->sj_no : '');
 
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('purc_rtn_hdr')
             ->updateOrInsert(['purc_rtn_id' => $purc_rtn_id], [
                 'office_id' => $office_id,
@@ -489,10 +489,10 @@ class PurchaseReturController extends Controller
 
             // dd($retursaid);
             // dd($ac_num_hut, $ac_num_ppn, $ac_num_pph, $ac_num_bbt, $ac_num_invent, $purc_rtn_id, $rtn_num,$getLastRtnNum,$sj_no,$unit_price,$amt_subtotal,$retursaid);
-            // $datas = DB::connection("sqlSrvFPI")
+            // $datas = DB::connection("sqlSrvBCKI")
             //     ->table('purc_rtn_dtl')
             //     ->insert($request->all());
-            // DB::connection('sqlSrvFPI')
+            // DB::connection('sqlSrvBCKI')
             // ->table('purc_rtn_hdr')
             // ->updateOrInsert(['purc_rtn_id' => $purc_rtn_id],
             //     [
@@ -561,7 +561,7 @@ class PurchaseReturController extends Controller
 
             $oldRtnDtl = [];
             if ($isEditing) {
-                $oldRtnDtl = DB::connection('sqlSrvFPI')
+                $oldRtnDtl = DB::connection('sqlSrvBCKI')
                                 ->table('purc_rtn_dtl')
                                 ->where('purc_rtn_id', $purc_rtn_id)
                                 ->get()
@@ -576,13 +576,13 @@ class PurchaseReturController extends Controller
                 $toDelete = array_diff($oldSeqNums, $newSeqNums);
 
                 if (!empty($toDelete)) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('purc_rtn_dtl')
                         ->where('purc_rtn_id', $purc_rtn_id)
                         ->whereIn('seq_num', $toDelete)
                         ->delete();
                 }
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('inv_trans_dtl')
                 ->where('tr_id', $purc_rtn_id)
                 ->where('tr_type', 'PR')
@@ -623,7 +623,7 @@ class PurchaseReturController extends Controller
                 }
 
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('purc_rtn_dtl')
                     ->updateOrInsert(['purc_rtn_id' => $purc_rtn_id,
                                       'seq_num'     => $item['seq_num']],
@@ -702,7 +702,7 @@ class PurchaseReturController extends Controller
                 $this->ServiceAccounting->JrnlPurcRetur($office_id, $purc_rtn_id, $tahun4digit, $user_id);
 
                 if (isset($check->status) && $check->status === false) {
-                    // DB::connection('sqlSrvFPI')->rollBack();
+                    // DB::connection('sqlSrvBCKI')->rollBack();
                     return response()->json([
                         'success' => false,
                         'message' => $check->message ?? 'Gagal menyimpan Transaksi Detail',
@@ -721,7 +721,7 @@ class PurchaseReturController extends Controller
     public function DeleteReturn(Request $request)
     {
         // try {
-        //     $datas = DB::connection("sqlSrvFPI")
+        //     $datas = DB::connection("sqlSrvBCKI")
         //         ->table('purc_rtn_dtl')
         //         ->where('purc_rtn_id', $request->purc_rtn_id)
         //         ->delete();
@@ -730,14 +730,14 @@ class PurchaseReturController extends Controller
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }
 
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
             $office_id = $request->office_id;
             $purc_rtn_id = $request->purc_rtn_id;
             $seq_num = $request->seq_num;
 
-            $rtnDtl = DB::connection('sqlSrvFPI')->table('purc_rtn_dtl')
+            $rtnDtl = DB::connection('sqlSrvBCKI')->table('purc_rtn_dtl')
                 ->where('office_id', $office_id)
                 ->where('purc_rtn_id', $purc_rtn_id)
                 ->where('seq_num', $seq_num)
@@ -787,30 +787,30 @@ class PurchaseReturController extends Controller
             }
 
             // Hapus purc_rtn_dtl (baris detail yang sedang dihapus)
-            $deleted = DB::connection('sqlSrvFPI')->table('purc_rtn_dtl')
+            $deleted = DB::connection('sqlSrvBCKI')->table('purc_rtn_dtl')
                 ->where('office_id', $office_id)
                 ->where('purc_rtn_id', $purc_rtn_id)
                 ->where('seq_num', $seq_num)
                 ->delete();
 
             if (!$deleted) {
-                // DB::connection('sqlSrvFPI')->rollBack();
+                // DB::connection('sqlSrvBCKI')->rollBack();
                 return response()->json(['error' => 'Gagal menghapus purc_rtn_dtl'], 500);
             }
 
              // Update / hapus purc_rtn_hdr
-            $cekDtl = DB::connection('sqlSrvFPI')->table('purc_rtn_dtl')
+            $cekDtl = DB::connection('sqlSrvBCKI')->table('purc_rtn_dtl')
                 ->where('office_id', $office_id)
                 ->where('purc_rtn_id', $purc_rtn_id)
                 ->count();
 
             if ($cekDtl == 0) {
-                DB::connection('sqlSrvFPI')->table('purc_rtn_hdr')
+                DB::connection('sqlSrvBCKI')->table('purc_rtn_hdr')
                     ->where('office_id', $office_id)
                     ->where('purc_rtn_id', $purc_rtn_id)
                     ->delete();
 
-                $jvnumpurchrtn= DB::connection('sqlSrvFPI')->table('journal_voucher')
+                $jvnumpurchrtn= DB::connection('sqlSrvBCKI')->table('journal_voucher')
                 ->distinct()
                 ->where('source_num', $purc_rtn_id)
                 ->pluck('jv_num');
@@ -823,7 +823,7 @@ class PurchaseReturController extends Controller
                 }
 
             } else {
-                DB::connection('sqlSrvFPI')->table('purc_rtn_hdr')
+                DB::connection('sqlSrvBCKI')->table('purc_rtn_hdr')
                     ->where('office_id', $office_id)
                     ->where('purc_rtn_id', $purc_rtn_id)
                     ->decrementEach([
@@ -835,7 +835,7 @@ class PurchaseReturController extends Controller
             return $this->sendResponse('success' , 'Successfully Delete data');
 
         } catch (\Exception $e) {
-            // DB::connection('sqlSrvFPI')->rollBack();
+            // DB::connection('sqlSrvBCKI')->rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -844,7 +844,7 @@ class PurchaseReturController extends Controller
         $purc_rtn_id = $request->purc_rtn_id;
 
         try {
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('purc_rtn_hdr')
                 ->where('purc_rtn_id', $purc_rtn_id)
                 ->update([
@@ -853,7 +853,7 @@ class PurchaseReturController extends Controller
                     // 'user_id' => getAuth($request)->user_id2
                 ]);
 
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('purc_rtn_hdr')
                 ->where('purc_rtn_id', $purc_rtn_id)
                 ->first();
@@ -863,7 +863,7 @@ class PurchaseReturController extends Controller
             // $doc_id = $this->genDocIdCreditNote(date('Ym'));
             // dd($doc_id);
 
-                // DB::connection('sqlSrvFPI')
+                // DB::connection('sqlSrvBCKI')
                 // ->table('credit_note')
                 // ->insert([
                 //     'office_id' => $data->office_id,
@@ -883,7 +883,7 @@ class PurchaseReturController extends Controller
                 //     'dt_modified' => now('Asia/Jakarta')
                 // ]);
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('bank_note')
                 ->insert([
                     'office_id' => $data->office_id,
@@ -927,7 +927,7 @@ class PurchaseReturController extends Controller
 
     private function genDocIdCreditNote($tanggal){
         $prefix = $tanggal; // Format: 'yyyyMM'
-        $getlastDocId = DB::connection('sqlSrvFPI')
+        $getlastDocId = DB::connection('sqlSrvBCKI')
             ->table('credit_note')
             ->selectRaw('MAX(doc_id) AS max_doc_id')
             ->where('doc_id', 'like', $prefix . '%')
@@ -950,7 +950,7 @@ class PurchaseReturController extends Controller
         // dd($tr_date, $date, $ym);
         $prefix = 'PR' . $ym . (int) $office_id; // Hasil: PI25075
 
-        $getLastTrID = DB::connection('sqlSrvFPI')
+        $getLastTrID = DB::connection('sqlSrvBCKI')
             ->table('purc_rtn_hdr')
             ->where('office_id', $office_id)
             ->where(DB::raw("LTRIM(RTRIM(purc_rtn_id))"), 'like', $prefix . '%')
@@ -967,7 +967,7 @@ class PurchaseReturController extends Controller
     private function updateTransHdrWithWH($tr_id, $office_id, $tr_type, $wh_id, $bin_id)
     {   
         // dd($tr_id, $office_id, $tr_type, $wh_id, $bin_id);
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             ->table('inv_trans_hdr')
             ->where('tr_id', $tr_id)
             ->where('office_id', $office_id)
@@ -988,7 +988,7 @@ class PurchaseReturController extends Controller
         try {
             // $yesterday_date = Carbon::parse($arrayParams->tr_date)->subDays(1)->format('Y-m-d');
 
-            $current =  DB::connection("sqlSrvFPI")
+            $current =  DB::connection("sqlSrvBCKI")
                             ->table('period')
                             ->where('dept_id', 'PRODWH')
                             ->where('office_id', $arrayParams->office_id)
@@ -1000,7 +1000,7 @@ class PurchaseReturController extends Controller
                 $period = $arrayParams->period;
                 if ($current->curr_period == $period) {
 
-                //     $yesterday_daily =  DB::connection("sqlSrvFPI")
+                //     $yesterday_daily =  DB::connection("sqlSrvBCKI")
                 //                         ->table('period_daily')
                 //                         ->where('dept_id', 'PRODWH')
                 //                         ->where('office_id', $arrayParams->office_id)
@@ -1009,7 +1009,7 @@ class PurchaseReturController extends Controller
 
                     // if ($yesterday_daily) {
 
-                            // $data = DB::connection('sqlSrvFPI')
+                            // $data = DB::connection('sqlSrvBCKI')
                             //             ->table('inv_trans_hdr')
                             //             ->where('office_id', $arrayParams->office_id)
                             //             ->where('tr_type', $arrayParams->tr_type)
@@ -1023,7 +1023,7 @@ class PurchaseReturController extends Controller
                             // } else {
                             //     $transId = $arrayParams->tr_id;
 
-                            //     $header = DB::connection('sqlSrvFPI')
+                            //     $header = DB::connection('sqlSrvBCKI')
                             //                 ->table('inv_trans_hdr')
                             //                 ->insert([
                             //                     'office_id' => $arrayParams->office_id,
@@ -1041,7 +1041,7 @@ class PurchaseReturController extends Controller
                             // }
                             $transId = $arrayParams->tr_id;
 
-                            DB::connection('sqlSrvFPI')
+                            DB::connection('sqlSrvBCKI')
                             ->table('inv_trans_hdr')
                             ->updateOrInsert(
                                 [
@@ -1110,7 +1110,7 @@ class PurchaseReturController extends Controller
     {
         // $yesterday_date = Carbon::parse($arrayParams->tr_date)->subDays(1)->format('Y-m-d');
 
-        $current =  DB::connection("sqlSrvFPI")
+        $current =  DB::connection("sqlSrvBCKI")
                         ->table('period')
                         ->where('dept_id', 'PRODWH')
                         ->where('office_id', $arrayParams->office_id)
@@ -1120,7 +1120,7 @@ class PurchaseReturController extends Controller
             $period = $arrayParams->period;
             if ($current->curr_period == $period) {
 
-                // $yesterday_daily =  DB::connection("sqlSrvFPI")
+                // $yesterday_daily =  DB::connection("sqlSrvBCKI")
                 //                     ->table('period_daily')
                 //                     ->where('dept_id', 'PRODWH')
                 //                     ->where('office_id', $arrayParams->office_id)
@@ -1145,7 +1145,7 @@ class PurchaseReturController extends Controller
                             ];
                         }
 
-                        $cek_stock = DB::connection("sqlSrvFPI")
+                        $cek_stock = DB::connection("sqlSrvBCKI")
                                     ->table('inv_bal')
                                     ->where('office_id', $arrayParams->office_id)
                                     ->where('article_id',$arrayParams->article_id)
@@ -1181,7 +1181,7 @@ class PurchaseReturController extends Controller
                             }                      
                         }
 
-                        $seq_id = DB::connection("sqlSrvFPI")
+                        $seq_id = DB::connection("sqlSrvBCKI")
                                     ->table('inv_trans_dtl')
                                     ->select('seq_id')
                                     ->where('office_id', $arrayParams->office_id)
@@ -1189,7 +1189,7 @@ class PurchaseReturController extends Controller
                                     ->where('tr_id', $arrayParams->tr_id)
                                     ->max('seq_id');
 
-                        // $insertItem = DB::connection('sqlSrvFPI')
+                        // $insertItem = DB::connection('sqlSrvBCKI')
                         //             ->table('inv_trans_dtl')
                         //             ->insert([
                         //                 'office_id' => $arrayParams->office_id,
@@ -1220,7 +1220,7 @@ class PurchaseReturController extends Controller
                         //                 'wgt_unit' => $arrayParams->berat ? (float)$arrayParams->berat : 0
                         //             ]);
 
-                        $insertItem = DB::connection('sqlSrvFPI')
+                        $insertItem = DB::connection('sqlSrvBCKI')
                             ->table('inv_trans_dtl')
                             ->updateOrInsert(
                                 [
@@ -1290,7 +1290,7 @@ class PurchaseReturController extends Controller
         // dd('masuk');
         // $yesterday_date = Carbon::parse($arrayParams->tr_date)->subDays(1)->format('Y-m-d');
         // dd($arrayParams);
-        $current =  DB::connection("sqlSrvFPI")
+        $current =  DB::connection("sqlSrvBCKI")
                         ->table('period')
                         ->where('dept_id', 'PRODWH')
                         ->where('office_id', $arrayParams->office_id)
@@ -1300,7 +1300,7 @@ class PurchaseReturController extends Controller
             $period = $arrayParams->period;
             if ($current->curr_period == $period) {
 
-                // $yesterday_daily =  DB::connection("sqlSrvFPI")
+                // $yesterday_daily =  DB::connection("sqlSrvBCKI")
                 //                     ->table('period_daily')
                 //                     ->where('dept_id', 'PRODWH')
                 //                     ->where('office_id', $arrayParams->office_id)
@@ -1325,7 +1325,7 @@ class PurchaseReturController extends Controller
                             ];
                         }
                         
-                        $data = DB::connection("sqlSrvFPI")
+                        $data = DB::connection("sqlSrvBCKI")
                                 ->table('inv_trans_dtl')
                                 ->where('office_id', $arrayParams->office_id)
                                 ->where('tr_type', $arrayParams->tr_type)
@@ -1334,7 +1334,7 @@ class PurchaseReturController extends Controller
                                 ->first();
                         // dd($data);
                         if ($data){
-                            $cek_stock = DB::connection("sqlSrvFPI")
+                            $cek_stock = DB::connection("sqlSrvBCKI")
                                         ->table('inv_bal')
                                         ->where('office_id', $arrayParams->office_id)
                                         ->where('article_id',$arrayParams->article_id)
@@ -1370,7 +1370,7 @@ class PurchaseReturController extends Controller
                                 } 
                             }
 
-                            $delete = DB::connection("sqlSrvFPI")
+                            $delete = DB::connection("sqlSrvBCKI")
                                     ->table('inv_trans_dtl')
                                     ->where('office_id', $arrayParams->office_id)
                                     ->where('tr_type', $arrayParams->tr_type)
@@ -1378,7 +1378,7 @@ class PurchaseReturController extends Controller
                                     ->where('seq_id', $arrayParams->seq_id)
                                     ->delete();
 
-                            $data_hdr_wh_transfer = DB::connection("sqlSrvFPI")
+                            $data_hdr_wh_transfer = DB::connection("sqlSrvBCKI")
                                                     ->table('inv_trans_dtl')
                                                     ->where('office_id', $arrayParams->office_id)
                                                     ->where('tr_type', $arrayParams->tr_type)
@@ -1386,7 +1386,7 @@ class PurchaseReturController extends Controller
                                                     ->count();
 
                             if ((int) $data_hdr_wh_transfer == 0) {
-                                $delete_wh_hdr_transfer = DB::connection("sqlSrvFPI")
+                                $delete_wh_hdr_transfer = DB::connection("sqlSrvBCKI")
                                                             ->table('inv_trans_hdr')
                                                             ->where('office_id', $arrayParams->office_id)
                                                             ->where('tr_type', $arrayParams->tr_type)
@@ -1446,7 +1446,7 @@ class PurchaseReturController extends Controller
 
     private function GetQtyTransInvDetil($arrayParams, $tr_type, $tr_types)
     {
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
                     ->table('inv_trans_dtl')
                     ->selectRaw('sum(qty) as qty, sum(wgt) as wgt')
                     ->where('office_id', $arrayParams->office_id)
@@ -1469,7 +1469,7 @@ class PurchaseReturController extends Controller
 
     public function updateQtyInvBal($QtyTrans, $WgtTrans, $arrayParams, $tr_type, $tr_types)
     {
-        $data = DB::connection("sqlSrvFPI")
+        $data = DB::connection("sqlSrvBCKI")
                 ->table('inv_bal')
                 ->where('office_id', $arrayParams->office_id)
                 ->where('article_id',$arrayParams->article_id)
@@ -1489,7 +1489,7 @@ class PurchaseReturController extends Controller
                 $hitung_qty_oh = (float) $data->qty_awal + (float) $QtyTrans - (float) $data->qty_iss + (float) $data->qty_ia - (float) $data->qty_waste;
                 $hitung_wgt_oh = (double) $data->wgt_awal + (double) $WgtTrans - (double) $data->wgt_iss + (double) $data->wgt_ia - (double) $data->wgt_waste;
 
-                $update = DB::connection("sqlSrvFPI")
+                $update = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->where('office_id', $arrayParams->office_id)
                         ->where('article_id',$arrayParams->article_id)
@@ -1515,7 +1515,7 @@ class PurchaseReturController extends Controller
                 $hitung_qty_oh = (float) $data->qty_awal + (float) $data->qty_rcv - (float) $QtyTrans + (float) $data->qty_ia - (float) $data->qty_waste;
                 $hitung_wgt_oh = (double) $data->wgt_awal + (double) $data->wgt_rcv - (double) $WgtTrans + (double) $data->wgt_ia - (double) $data->wgt_waste;
 
-                $update = DB::connection("sqlSrvFPI")
+                $update = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->where('office_id', $arrayParams->office_id)
                         ->where('article_id',$arrayParams->article_id)
@@ -1542,7 +1542,7 @@ class PurchaseReturController extends Controller
                 $hitung_wgt_oh = (double) $data->wgt_awal + (double) $data->wgt_rcv - (double) $data->wgt_iss + (double) $WgtTrans - (double) $data->wgt_waste;
 
 
-                $update = DB::connection("sqlSrvFPI")
+                $update = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->where('office_id', $arrayParams->office_id)
                         ->where('article_id',$arrayParams->article_id)
@@ -1570,7 +1570,7 @@ class PurchaseReturController extends Controller
             }
         } else {
             if ($tr_type == 'R') {
-                $insert = DB::connection("sqlSrvFPI")
+                $insert = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->insert([
                             'office_id' => $arrayParams->office_id,
@@ -1603,7 +1603,7 @@ class PurchaseReturController extends Controller
                         ]);
 
             } elseif ($tr_type == 'A') {
-                $insert = DB::connection("sqlSrvFPI")
+                $insert = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->insert([
                             'office_id' => $arrayParams->office_id,
@@ -1636,7 +1636,7 @@ class PurchaseReturController extends Controller
                         ]);
 
             } elseif ($tr_type == 'I') {
-                $insert = DB::connection("sqlSrvFPI")
+                $insert = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->insert([
                             'office_id' => $arrayParams->office_id,

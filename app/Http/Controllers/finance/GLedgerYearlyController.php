@@ -55,7 +55,7 @@ class GLedgerYearlyController extends Controller
         }
         
         // Eksekusi Query 1
-        $coaData = DB::connection('sqlSrvFPI')
+        $coaData = DB::connection('sqlSrvBCKI')
             ->select("
                 SELECT
                     a.ac_num, a.drcr, a.ac_name, a.curr_id, b.*
@@ -85,7 +85,7 @@ class GLedgerYearlyController extends Controller
 
             // Tambahkan transaksi harian dari awal bulan hingga startDate-1
             if (strtotime($startDate) != strtotime(date('Y-m-01', strtotime($startDate)))) {
-                $prevMonthTrans = DB::connection('sqlSrvFPI')
+                $prevMonthTrans = DB::connection('sqlSrvBCKI')
                 ->select("
                     SELECT
                         SUM(ISNULL(amt_dr, 0)) as amt_dr, SUM(ISNULL(amt_cr, 0)) as amt_cr
@@ -180,7 +180,7 @@ class GLedgerYearlyController extends Controller
 
             
             // Ambil detail transaksi dengan saldo berjalan
-            $transactionDetails = DB::connection('sqlSrvFPI')->select($detailQuery, $bindings);
+            $transactionDetails = DB::connection('sqlSrvBCKI')->select($detailQuery, $bindings);
 
             // --- Pembentukan Hasil Akhir ---
 
@@ -366,7 +366,7 @@ class GLedgerYearlyController extends Controller
             ORDER BY b.ac_num ASC
         ";
 
-        return DB::connection('sqlSrvFPI')->select(DB::raw($sql));
+        return DB::connection('sqlSrvBCKI')->select(DB::raw($sql));
     }
 
     /**
@@ -408,7 +408,7 @@ class GLedgerYearlyController extends Controller
             ORDER BY a.ac_num, a.year_id ASC
         ";
 
-        return DB::connection('sqlSrvFPI')->select(DB::raw($sql));
+        return DB::connection('sqlSrvBCKI')->select(DB::raw($sql));
     }
 
     /**
@@ -456,7 +456,7 @@ class GLedgerYearlyController extends Controller
      */
     private function getJournalSummary(int $office_id, string $from, string $to): array
     {
-        $rows = DB::connection('sqlSrvFPI')
+        $rows = DB::connection('sqlSrvBCKI')
             ->table('journal_voucher')
             ->selectRaw('LTRIM(RTRIM(ac_num)) as ac_num, rate, SUM(amt_dr) as amt_dr, SUM(amt_cr) as amt_cr')
             ->where('office_id', $office_id)

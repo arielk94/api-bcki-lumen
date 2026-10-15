@@ -14,7 +14,7 @@ use Carbon\Carbon;
 class KasBontoDebitNoteController extends Controller
 {
     public function getData(){
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             ->table('v_kasbon_list')
             ->where('tipe', 'EX_MONEY')
             ->get();
@@ -30,7 +30,7 @@ class KasBontoDebitNoteController extends Controller
         $userId = getAuth($request)->user_id2;
 
         // 1. Update dt_confirm di kb_hdr
-        DB::connection('sqlSrvFPI')
+        DB::connection('sqlSrvBCKI')
         ->table('kb_hdr')
         ->where('tr_id', $tr_id)        
         ->update([
@@ -41,7 +41,7 @@ class KasBontoDebitNoteController extends Controller
         $bk_id = $this->genID($tgl);
         // dd($bk_id);
         // 3. Ambil data dari kb_hdr + kb_dtl + vendor
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             ->table('kb_hdr as a')
             ->join('kb_dtl as b', 'a.tr_id', '=', 'b.tr_id')
             ->join('vendor as c', 'a.vendor_id', '=', 'c.vendor_id')
@@ -62,7 +62,7 @@ class KasBontoDebitNoteController extends Controller
             $periode = Carbon::parse($data->dt_kb)->format('Ym');
 
             // 4. Insert ke bank_note
-            DB::connection('sqlSrvFPI')->table('bank_note')->insert([
+            DB::connection('sqlSrvBCKI')->table('bank_note')->insert([
                 'tr_type'     => 'D',
                 'bank_acc'    => 'DEBIT NOTE',
                 'tr_id'       => $bk_id,
@@ -81,13 +81,13 @@ class KasBontoDebitNoteController extends Controller
             ]);
 
             // 5. Hapus credit_note lama jika ada
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('credit_note')
                 ->where('tr_id', $tr_id)
                 ->delete();
 
             // 6. Insert ke credit_note
-            DB::connection('sqlSrvFPI')->table('credit_note')->insert([
+            DB::connection('sqlSrvBCKI')->table('credit_note')->insert([
                 'office_id'   => $data->office_id,
                 'tr_id'       => $tr_id,
                 'tr_type'     => 'D',
@@ -117,14 +117,14 @@ class KasBontoDebitNoteController extends Controller
         $kodeAwal = $prefix . $datePart . $fixed;
 
         // Ambil semua kode hari ini yang sudah ada
-        $existingIds = DB::connection('sqlSrvFPI')
+        $existingIds = DB::connection('sqlSrvBCKI')
             ->table('bank_note')
             ->whereRaw("LEFT(tr_id, 9) = ?", [$kodeAwal])
             ->pluck('tr_id')
             ->toArray();
         
         // // Ambil tr_id terakhir yang dimulai dengan $kodeAwal
-        // $lastTrId = DB::connection('sqlSrvFPI') // sesuaikan jika perlu
+        // $lastTrId = DB::connection('sqlSrvBCKI') // sesuaikan jika perlu
         //     ->table('credit_note') // Ganti dengan nama tabel yang menyimpan tr_id
         //     ->whereRaw("LEFT(bk, 9) = ?", [$kodeAwal])
         //     ->orderByDesc('bk')

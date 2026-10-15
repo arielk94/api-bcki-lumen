@@ -27,19 +27,19 @@ class ProjectRegisterController extends Controller
         $office = $this->queryGetOffices($userGroup);
         $sales = $this->queryGetSales($userGroup);
 
-        $mill = DB::connection('sqlSrvFPI')
+        $mill = DB::connection('sqlSrvBCKI')
                     ->table('vendor as a')
                     ->selectRaw("trim(a.vendor_id) as mill_id, trim(a.vendor_name) as mill_name")
                     ->where('a.active_flag', '=', 'Y')
                     ->get();
 
-        $category = DB::connection('sqlSrvFPI')
+        $category = DB::connection('sqlSrvBCKI')
                     ->table('appl_constant')
                     ->selectRaw('trim(str1) as str1, trim(str2) as str2')
                     ->where('key_code', '=', 'PRJCAT')
                     ->get();
 
-        $stage = DB::connection('sqlSrvFPI')
+        $stage = DB::connection('sqlSrvBCKI')
                     ->table('appl_constant')
                     ->selectRaw('trim(str1) as str1, trim(str2) as str2')
                     ->where('key_code', '=', 'PRJSTAT')
@@ -52,7 +52,7 @@ class ProjectRegisterController extends Controller
                     ->orderBy('province', 'ASC')
 					->get();
 
-        $customer = DB::connection('sqlSrvFPI')
+        $customer = DB::connection('sqlSrvBCKI')
                     ->table('customer')
                     ->selectRaw('CustomerId, trim(NamaCustomer) as customer_name')
                     ->where('active_flag', '=', 'Y')
@@ -76,7 +76,7 @@ class ProjectRegisterController extends Controller
         $dateTo = $request->dateTo;
         $sqlWhere = "1=1 ";
         $category = $request->category;
-        $entity_id = 'FDPI';
+        $entity_id = 'bcki';
         $office = $request->office;
 
         if( $dateFrom && $dateTo){$sqlWhere .= "and a.dt_modified between '$dateFrom 00:00:00' and '$dateTo 23:59:59' ";}
@@ -97,9 +97,9 @@ class ProjectRegisterController extends Controller
     public function submitData(Request $request){
         
         $id = $request->id;
-        $entity_id = 'FDPI';
+        $entity_id = 'bcki';
         $region = $request->region;
-        $office = $request->office ?? 'FDPI';
+        $office = $request->office ?? 'bcki';
         $sales = $request->sales ?? '';
         $type = $request->type ?? '';
         $projName = $request->projName ?? '';

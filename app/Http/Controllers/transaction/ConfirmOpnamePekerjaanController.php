@@ -28,7 +28,7 @@ class ConfirmOpnamePekerjaanController extends Controller
         $tr_id = trim($request->tr_id);
         $spk_id = trim($request->spk_id);
         $qc_trans_id = trim($request->qc_trans_id);
-        $qc_opname = DB::connection('sqlSrvFPI')->selectOne("
+        $qc_opname = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT qc_opname.*, 
             TRIM(site.site_name) as site_name,
             TRIM(site_cluster.cluster_name) as cluster_name,
@@ -54,7 +54,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                 return $this->sendError('Opname Pekerjaan ini sudah di confirm', 'Error', 500);
             }
 
-            // $ppn = DB::connection('sqlSrvFPI')
+            // $ppn = DB::connection('sqlSrvBCKI')
             //     ->table('appl_constant')
             //     ->where('key_code', 'PPN')
             //     ->first();
@@ -70,7 +70,7 @@ class ConfirmOpnamePekerjaanController extends Controller
 
             // $CurrYear = Carbon::now()->format('Y');
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
                 // $transId = $this->generateTransID($request);
@@ -80,7 +80,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                 // $trSeq = substr($transId, -3);
                 // $invSeq = substr($invId, -3);
 
-                // DB::connection('sqlSrvFPI')
+                // DB::connection('sqlSrvBCKI')
                 // ->table('purc_inv_mast')
                 // ->insert([
                 //     'office_id' => 1,
@@ -110,7 +110,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                 //     'dt_due' => Carbon::now()->addDays(7)
                 // ]);
 
-                // $qc_opname_dtls = DB::connection('sqlSrvFPI')->select(DB::raw("
+                // $qc_opname_dtls = DB::connection('sqlSrvBCKI')->select(DB::raw("
                 //         SELECT
                 //             qc_opname_dtl.*,
                 //             commodity.com_desc
@@ -130,7 +130,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                 //     } else {
                 //         $price = $value->amt_final;
                 //     }
-                //     DB::connection('sqlSrvFPI')
+                //     DB::connection('sqlSrvBCKI')
                 //     ->table('purc_inv_item')
                 //     ->insert([
                 //         'office_id' => 1,
@@ -157,12 +157,12 @@ class ConfirmOpnamePekerjaanController extends Controller
                 // }
                 // // ADJUSTMENT CLOSING SHEET
                 // if ($qc_opname->amt_adj > 0) {
-                //     $seq_num = DB::connection('sqlSrvFPI')->table('purc_inv_item')
+                //     $seq_num = DB::connection('sqlSrvBCKI')->table('purc_inv_item')
                 //         ->select('seq_num')
                 //         ->where('tr_id', $transId)
                 //         ->max('seq_num');
                 //     $item_num = $seq_num + 1;
-                //     DB::connection('sqlSrvFPI')
+                //     DB::connection('sqlSrvBCKI')
                 //     ->table('purc_inv_item')
                 //     ->insert([
                 //         'office_id' => 1,
@@ -197,13 +197,13 @@ class ConfirmOpnamePekerjaanController extends Controller
                 // $this->updateKasbonMaterial(trim($request->tr_id), trim($request->spk_id), trim($request->qc_trans_id));
                 // $this->updateKasbonOther(trim($request->tr_id), trim($request->spk_id), trim($request->qc_trans_id));
 
-                DB::connection('sqlSrvFPI')->update("
+                DB::connection('sqlSrvBCKI')->update("
                     UPDATE qc_opname
                     SET dt_confirmed = ?, confirmed_by = ?
                     WHERE tr_id = ? AND spk_id = ? AND qc_trans_id = ?
                 ", [now(), $request->user_id2 ? $request->user_id2 : ' ', trim($request->tr_id), trim($request->spk_id), trim($request->qc_trans_id)]);
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 $this->updateKasbonCash(trim($request->tr_id), trim($request->spk_id), trim($request->qc_trans_id));
                 $this->updateKasbonMaterial(trim($request->tr_id), trim($request->spk_id), trim($request->qc_trans_id));
@@ -212,7 +212,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                 return $this->sendResponse('', 'Successfully confirmed');
             }
             catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
         } else {
@@ -227,7 +227,7 @@ class ConfirmOpnamePekerjaanController extends Controller
         $tr_id = trim($request->tr_id);
         $spk_id = trim($request->spk_id);
         $qc_trans_id = trim($request->qc_trans_id);
-        $qc_opname = DB::connection('sqlSrvFPI')->selectOne("
+        $qc_opname = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT qc_opname.*, 
             TRIM(site.site_name) as site_name,
             TRIM(site_cluster.cluster_name) as cluster_name,
@@ -260,17 +260,17 @@ class ConfirmOpnamePekerjaanController extends Controller
                 return $this->sendResponse(null, 'This periode already closed, cannot be modified');
             }
 
-            $ppn = DB::connection('sqlSrvFPI')
+            $ppn = DB::connection('sqlSrvBCKI')
                 ->table('appl_constant')
                 ->where('key_code', 'PPN')
                 ->first();
 
-            $pct21 = DB::connection('sqlSrvFPI')
+            $pct21 = DB::connection('sqlSrvBCKI')
                 ->table('appl_constant')
                 ->where('key_code', 'PPH21')
                 ->first();
 
-            $pct23 = DB::connection('sqlSrvFPI')
+            $pct23 = DB::connection('sqlSrvBCKI')
                 ->table('appl_constant')
                 ->where('key_code', 'PPH23')
                 ->first();
@@ -290,7 +290,7 @@ class ConfirmOpnamePekerjaanController extends Controller
 
             $CurrYear = Carbon::now()->format('Y');
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
                 $transId = $this->generateTransID($request);
@@ -300,7 +300,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                 $trSeq = substr($transId, -3);
                 $invSeq = substr($invId, -3);
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('purc_inv_mast')
                 ->insert([
                     'office_id' => 1,
@@ -336,7 +336,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                     'dt_due' => Carbon::now()->addDays(7)
                 ]);
 
-                $qc_opname_dtls = DB::connection('sqlSrvFPI')->select(DB::raw("
+                $qc_opname_dtls = DB::connection('sqlSrvBCKI')->select(DB::raw("
                         SELECT
                             qc_opname_dtl.*,
                             commodity.com_desc
@@ -357,7 +357,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                     //     [trim($qc_opname->tax1), trim($qc_opname->tax2), trim($qc_opname->tax4), ''],
                     //     0
                     // );
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                     ->table('purc_inv_item')
                     ->insert([
                         'office_id' => 1,
@@ -384,12 +384,12 @@ class ConfirmOpnamePekerjaanController extends Controller
                 }
                 // ADJUSTMENT CLOSING SHEET
                 if ($qc_opname->amt_adj > 0) {
-                    $seq_num = DB::connection('sqlSrvFPI')->table('purc_inv_item')
+                    $seq_num = DB::connection('sqlSrvBCKI')->table('purc_inv_item')
                         ->select('seq_num')
                         ->where('tr_id', $transId)
                         ->max('seq_num');
                     $item_num = $seq_num + 1;
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                     ->table('purc_inv_item')
                     ->insert([
                         'office_id' => 1,
@@ -415,13 +415,13 @@ class ConfirmOpnamePekerjaanController extends Controller
                     ]);
                 }
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 $this->updateInvMaster(trim($request->tr_id), trim($request->spk_id), trim($request->qc_trans_id), $transId, 'E', 0.11, 0.025, 0.02, $invId, $qc_opname);
 
                 $this->serviceAcc->JrnlPurcInvNonPO(1, $transId, $CurrYear, $request->user_id2 ? $request->user_id2 : ' ');
 
-                DB::connection('sqlSrvFPI')->update("
+                DB::connection('sqlSrvBCKI')->update("
                     UPDATE qc_opname
                     SET dt_apprv = ?, apprv_by = ?
                     WHERE tr_id = ? AND spk_id = ? AND qc_trans_id = ?
@@ -430,7 +430,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                 return $this->sendResponse('', 'Successfully confirmed');
             }
             catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
         } else {
@@ -446,7 +446,7 @@ class ConfirmOpnamePekerjaanController extends Controller
         $padLength = 4;
 
         // Ambil ID terakhir yang sesuai prefix
-        $lastId = DB::connection('sqlSrvFPI')
+        $lastId = DB::connection('sqlSrvBCKI')
                     ->table('purc_inv_mast')
                     ->where('tr_id', 'like', "{$prefix}%")
                     ->orderBy('tr_id', 'desc')
@@ -463,7 +463,7 @@ class ConfirmOpnamePekerjaanController extends Controller
 
         // Validasi unik terakhir kali
         while (
-            DB::connection('sqlSrvFPI')->table('purc_inv_mast')->where('tr_id', $newId)->exists()
+            DB::connection('sqlSrvBCKI')->table('purc_inv_mast')->where('tr_id', $newId)->exists()
         ) {
             $nextSequence++;
             $newId = $prefix . str_pad($nextSequence, $padLength, '0', STR_PAD_LEFT);
@@ -480,7 +480,7 @@ class ConfirmOpnamePekerjaanController extends Controller
         $padLength = 4;
 
         // Ambil ID terakhir yang sesuai prefix
-        $lastId = DB::connection('sqlSrvFPI')
+        $lastId = DB::connection('sqlSrvBCKI')
                     ->table('purc_inv_mast')
                     ->where('inv_id', 'like', "{$prefix}%")
                     ->orderBy('inv_id', 'desc')
@@ -497,7 +497,7 @@ class ConfirmOpnamePekerjaanController extends Controller
 
         // Validasi unik terakhir kali
         while (
-            DB::connection('sqlSrvFPI')->table('purc_inv_mast')->where('inv_id', $newId)->exists()
+            DB::connection('sqlSrvBCKI')->table('purc_inv_mast')->where('inv_id', $newId)->exists()
         ) {
             $nextSequence++;
             $newId = $prefix . str_pad($nextSequence, $padLength, '0', STR_PAD_LEFT);
@@ -507,7 +507,7 @@ class ConfirmOpnamePekerjaanController extends Controller
     }
 
     private function updateKasbonCash($tr_id, $spk_id, $qc_trans_id){
-        $kasbons = DB::connection('sqlSrvFPI')->select("
+        $kasbons = DB::connection('sqlSrvBCKI')->select("
                         SELECT DISTINCT hdr.tr_id
                         FROM kb_dtl as dtl 
                         JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'EX'
@@ -516,7 +516,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                     ", [trim($spk_id)]);
 
         foreach ($kasbons as $key => $kasbon) {
-            DB::connection('sqlSrvFPI')->update(
+            DB::connection('sqlSrvBCKI')->update(
                 "UPDATE kb_hdr
                 SET qc_opname_id = ?
                 WHERE tr_id = ?", 
@@ -526,7 +526,7 @@ class ConfirmOpnamePekerjaanController extends Controller
     }
 
     private function updateKasbonMaterial($tr_id, $spk_id, $qc_trans_id){
-        $kasbons = DB::connection('sqlSrvFPI')->select("
+        $kasbons = DB::connection('sqlSrvBCKI')->select("
                         SELECT DISTINCT hdr.tr_id
                         FROM kb_dtl as dtl 
                         JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'EX'
@@ -535,7 +535,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                     ", [trim($spk_id)]);
 
         foreach ($kasbons as $key => $kasbon) {
-            DB::connection('sqlSrvFPI')->update(
+            DB::connection('sqlSrvBCKI')->update(
                 "UPDATE kb_hdr
                 SET qc_opname_id = ?
                 WHERE tr_id = ?", 
@@ -545,7 +545,7 @@ class ConfirmOpnamePekerjaanController extends Controller
     }
 
     private function updateKasbonOther($tr_id, $spk_id, $qc_trans_id){
-        $kasbons = DB::connection('sqlSrvFPI')->select("
+        $kasbons = DB::connection('sqlSrvBCKI')->select("
                         SELECT DISTINCT hdr.tr_id
                         FROM kb_dtl as dtl 
                         JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'OT'
@@ -554,7 +554,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                     ", [trim($spk_id)]);
 
         foreach ($kasbons as $key => $kasbon) {
-            DB::connection('sqlSrvFPI')->update(
+            DB::connection('sqlSrvBCKI')->update(
                 "UPDATE kb_hdr
                 SET qc_opname_id = ?
                 WHERE tr_id = ?", 
@@ -566,7 +566,7 @@ class ConfirmOpnamePekerjaanController extends Controller
 
     private function updateInvMaster($tr_id_opname, $spk_id, $qc_trans_id, $transId, $type_ppn, $amt_ppn, $amt_pph21, $amt_pph23, $invId, $qc_opname){  
 
-        $sum_amt = DB::connection('sqlSrvFPI')->selectOne("
+        $sum_amt = DB::connection('sqlSrvBCKI')->selectOne("
                         SELECT 
                             SUM(amt_item) as amt
                         FROM purc_inv_item WITH (NOLOCK)
@@ -592,7 +592,7 @@ class ConfirmOpnamePekerjaanController extends Controller
 
         $terbilang = terbilang($total);
 
-        DB::connection('sqlSrvFPI')->update(
+        DB::connection('sqlSrvBCKI')->update(
             "UPDATE purc_inv_mast
              SET amt_subtotal = ?, inv_said = ? , amt_ppn = ? , amt_pph = ? , amt_pph21 = ?, amt_total = ?
              WHERE office_id = 1  AND tr_id = ?", 
@@ -603,7 +603,7 @@ class ConfirmOpnamePekerjaanController extends Controller
 
     public function reJournal(Request $request)
     {
-        $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
                     SELECT
                         a.tr_id,
                         a.office_id,
@@ -634,7 +634,7 @@ class ConfirmOpnamePekerjaanController extends Controller
         $officeId = 1;
         $userId = getAuth($request)->user_id2;
 
-        $inv = DB::connection('sqlSrvFPI')->selectOne("
+        $inv = DB::connection('sqlSrvBCKI')->selectOne("
                 SELECT qc_opname.*, 
                 vendor.tax1,
                 vendor.tax2,
@@ -656,20 +656,20 @@ class ConfirmOpnamePekerjaanController extends Controller
             ", [trim($TrID)]);
 
         if ($inv) {
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
-                // $ppn = DB::connection('sqlSrvFPI')
+                // $ppn = DB::connection('sqlSrvBCKI')
                 //     ->table('appl_constant')
                 //     ->where('key_code', 'PPN')
                 //     ->first();
 
-                // $pct21 = DB::connection('sqlSrvFPI')
+                // $pct21 = DB::connection('sqlSrvBCKI')
                 //     ->table('appl_constant')
                 //     ->where('key_code', 'PPH21')
                 //     ->first();
 
-                // $pct23 = DB::connection('sqlSrvFPI')
+                // $pct23 = DB::connection('sqlSrvBCKI')
                 //     ->table('appl_constant')
                 //     ->where('key_code', 'PPH23')
                 //     ->first();
@@ -685,7 +685,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                 // $amt_pph21 = $percent_ppn_21 / 100;
                 // $amt_pph23 = $percent_ppn_23 / 100;
 
-                DB::connection('sqlSrvFPI')->table('purc_inv_mast')->where('tr_id', $TrID)->update([
+                DB::connection('sqlSrvBCKI')->table('purc_inv_mast')->where('tr_id', $TrID)->update([
                     // 'tax1' => trim($inv->tax1), // type PPN
                     // 'tax2' => trim($inv->tax2), // PPH 23 type
                     // 'pct_pph' => $percent_ppn_23, // PCT PPH 23
@@ -700,9 +700,9 @@ class ConfirmOpnamePekerjaanController extends Controller
                     'pct_pph' => 2,
 
                 ]);
-                DB::connection('sqlSrvFPI')->table('purc_inv_item')->where('tr_id', $TrID)->delete();
+                DB::connection('sqlSrvBCKI')->table('purc_inv_item')->where('tr_id', $TrID)->delete();
 
-                $qc_opname_dtls = DB::connection('sqlSrvFPI')->select("
+                $qc_opname_dtls = DB::connection('sqlSrvBCKI')->select("
                     SELECT
                         qc_opname_dtl.*,
                         commodity.com_desc
@@ -722,7 +722,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                     //     ['E', 'E', 'E', 'N'],
                     //     0
                     // );
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('purc_inv_item')
                         ->insert([
                             'office_id' => 1,
@@ -749,7 +749,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                 }
 
                 if ($inv->amt_adj != 0) {
-                    $seq_num = DB::connection('sqlSrvFPI')->table('purc_inv_item')
+                    $seq_num = DB::connection('sqlSrvBCKI')->table('purc_inv_item')
                         ->select('seq_num')
                         ->where('tr_id', $TrID)
                         ->max('seq_num');
@@ -764,7 +764,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                     //     0
                     // );
                     
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                     ->table('purc_inv_item')
                     ->insert([
                         'office_id' => 1,
@@ -790,7 +790,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                     ]);
                 }
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 $this->updateInvMasterRe($TrID, $inv->inv_id, 0.11, 0.025, 0.02, $inv);
 
@@ -803,7 +803,7 @@ class ConfirmOpnamePekerjaanController extends Controller
                 return $this->sendResponse('', 'Successfully update');
 
             } catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
         }
@@ -812,7 +812,7 @@ class ConfirmOpnamePekerjaanController extends Controller
 
     private function updateInvMasterRe($TrID, $invId, $amt_ppn, $amt_pph21, $amt_pph23, $inv)
     {
-        $sum_amt = DB::connection('sqlSrvFPI')->selectOne("
+        $sum_amt = DB::connection('sqlSrvBCKI')->selectOne("
                         SELECT 
                             SUM(amt_item) as amt
                         FROM purc_inv_item WITH (NOLOCK)
@@ -838,7 +838,7 @@ class ConfirmOpnamePekerjaanController extends Controller
 
         $terbilang = terbilang($total);
 
-        DB::connection('sqlSrvFPI')->update(
+        DB::connection('sqlSrvBCKI')->update(
             "UPDATE purc_inv_mast
              SET amt_subtotal = ?, inv_said = ? , amt_ppn = ? , amt_pph = ? , amt_pph21 = ?, amt_total = ?
              WHERE office_id = 1  AND tr_id = ?",

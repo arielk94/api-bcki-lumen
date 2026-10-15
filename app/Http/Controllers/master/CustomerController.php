@@ -15,7 +15,7 @@ class CustomerController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/fpi/customer/showcust",
+     *     path="/api/bcki/customer/showcust",
      *     tags={"Master Customer"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -61,7 +61,7 @@ class CustomerController extends Controller
             $sqlWhere .= " and Customer.coffice_id = '$coffice_id'";
         }
 
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
             ->table('Customer')
             ->selectraw("
                         TRIM(Customer.CustomerId) as CustomerId, 
@@ -120,7 +120,7 @@ class CustomerController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/customer/CustGroup",
+     *     path="/api/bcki/customer/CustGroup",
      *     tags={"Master Customer"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -151,7 +151,7 @@ class CustomerController extends Controller
             $sqlWhere .= " and Customer.NamaCustomer like '%$NamaCustomer%'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('Customer')
             ->selectRaw('DISTINCT CustomerId,NamaCustomer,Alamat')
             ->whereRaw($sqlWhere)
@@ -165,7 +165,7 @@ class CustomerController extends Controller
         $active_flag = $request->active_flag;
         $customer_id = $request->customer_id;
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('Customer')
             ->where('CustomerId', '=', $customer_id)
             ->update([
@@ -194,7 +194,7 @@ class CustomerController extends Controller
     {
         $gen_cust_id = '';
 
-        $getLastCustID =  DB::connection('sqlSrvFPI')
+        $getLastCustID =  DB::connection('sqlSrvBCKI')
             ->table('Customer')
             ->select(DB::raw('max(cast(Customerid as int))'))
             ->value('max(cast(Customerid as int))');
@@ -227,7 +227,7 @@ class CustomerController extends Controller
         try {
             if ($request->CustomerId != '') {
                 $cust_type = $this->insCustType($request->cust_type);
-                $update = DB::connection('sqlSrvFPI')
+                $update = DB::connection('sqlSrvBCKI')
                     ->table('Customer')
                     ->where('CustomerId', $request->CustomerId)
                     ->update([
@@ -334,7 +334,7 @@ class CustomerController extends Controller
             } else {
                 $CustID = $this->genCustID($request->CustomerId);
                 $cust_type = $this->insCustType($request->cust_type);
-                $insert = DB::connection('sqlSrvFPI')
+                $insert = DB::connection('sqlSrvBCKI')
                     ->table('Customer')
                     ->insert([
                         'CustomerId' => $CustID,
@@ -440,14 +440,14 @@ class CustomerController extends Controller
                 return $this->sendResponse('Success Insert', 'Successfully insert Customer Data');
             }
         } catch (\Exception $e) {
-            // DB::connection('sqlSrvFPI')->rollBack();
+            // DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/customer/office",
+     *     path="/api/bcki/customer/office",
      *     tags={"Master Customer"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -495,7 +495,7 @@ class CustomerController extends Controller
             $where = $where . "and region = " . "'" . $region . "'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('branch_office')
             ->selectRaw('office_id, 
                 TRIM(office) as office, 
@@ -515,7 +515,7 @@ class CustomerController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/customer/getDocument",
+     *     path="/api/bcki/customer/getDocument",
      *     tags={"Master Customer"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -542,7 +542,7 @@ class CustomerController extends Controller
         $custId = $request->cust_id;
 
         try {
-            $result = DB::connection('sqlSrvFPI')
+            $result = DB::connection('sqlSrvBCKI')
                 ->table('Customer_doc')
                 ->selectRaw('
                     doc_id,
@@ -578,7 +578,7 @@ class CustomerController extends Controller
         // -- save file
         $file->storeAs($path, $fileName, 'public');
 
-        $db = DB::connection('sqlSrvFPI')
+        $db = DB::connection('sqlSrvBCKI')
             ->table('Customer_doc');
 
         try {
@@ -628,7 +628,7 @@ class CustomerController extends Controller
         $activeFlag = $request->active_flag;
 
         try {
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('Customer')
                 ->where('CustomerId', $custId)
                 ->update([
@@ -645,7 +645,7 @@ class CustomerController extends Controller
     public function getProvince(Request $request)
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('province_list')
                 ->selectRaw("
                     province_list.province_code as id_province, 
@@ -669,7 +669,7 @@ class CustomerController extends Controller
 
             $sqlWhere = $sqlWhere . "and city_list.province_code = " . "'" . $id_province . "'";
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('city_list')
                 ->selectRaw("
                     city_list.city_code as id_city,
@@ -700,7 +700,7 @@ class CustomerController extends Controller
             $sqlWhere = $sqlWhere . "and city_code = " . "'" . $city_code . "'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('district_list')
             ->selectRaw("TRIM(district_code) as district_code, district, city_code, province_code")
             ->whereRaw($sqlWhere)
@@ -730,7 +730,7 @@ class CustomerController extends Controller
             $sqlWhere = $sqlWhere . "and district_code = " . "'" . $district_code . "'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('village_list')
             ->selectRaw("TRIM(village_code) as village_code, village, district_code, city_code, province_code")
             ->whereRaw($sqlWhere)
@@ -747,7 +747,7 @@ class CustomerController extends Controller
 
             if (!$customer_id) return $this->sendError('Customer id not found', 'Error', 500);
 
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                 ->table('customer_nik_npwp as a')
                 ->select(
                     'a.nik_npwp',
@@ -802,7 +802,7 @@ class CustomerController extends Controller
             $village = $request->village;
 
 
-            $cekUpdate = DB::connection('sqlSrvFPI')
+            $cekUpdate = DB::connection('sqlSrvBCKI')
                 ->table('customer_nik_npwp')
                 ->where('customerid', $customer_id)
                 ->where('nik_npwp', $nik_npwp_old)
@@ -811,14 +811,14 @@ class CustomerController extends Controller
             if ($cekUpdate) {
 
                 if ($nik_npwp_old != $nik_npwp) {
-                    $resDelt = DB::connection('sqlSrvFPI')
+                    $resDelt = DB::connection('sqlSrvBCKI')
                         ->table('customer_nik_npwp')
                         ->where('nik_npwp', $nik_npwp_old)
                         ->where('customerid', $customer_id)
                         ->delete();
 
                     if ($resDelt) {
-                        $response = DB::connection('sqlSrvFPI')
+                        $response = DB::connection('sqlSrvBCKI')
                             ->table('customer_nik_npwp')
                             ->insert([
                                 'customerid' => $customer_id,
@@ -840,7 +840,7 @@ class CustomerController extends Controller
                         return $this->sendError('Failed update', 'Error', 500);
                     }
                 } else {
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('customer_nik_npwp')
                         ->where('nik_npwp', $nik_npwp)
                         ->where('customerid', $customer_id)
@@ -864,7 +864,7 @@ class CustomerController extends Controller
 
                 return $this->sendResponse($response, 'Successfully Update npwp');
             } else {
-                $response = DB::connection('sqlSrvFPI')
+                $response = DB::connection('sqlSrvBCKI')
                     ->table('customer_nik_npwp')
                     ->insert([
                         'customerid' => $customer_id,
@@ -884,7 +884,7 @@ class CustomerController extends Controller
                     ]);
 
                 if ($response) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('customer_npwp')
                         ->insert([
                             'customer_nik_npwp' => $nik_npwp,
@@ -907,7 +907,7 @@ class CustomerController extends Controller
 
             if (!$npwp) return $this->sendError('npwp not found', 'Error', 500);
 
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                 ->table('customer_nitku')
                 ->where('npwp', '=', $npwp)
                 ->where('active_flag', '=', 'Y')
@@ -927,7 +927,7 @@ class CustomerController extends Controller
             $descr = $request->descr;
 
 
-            $cekUpdate = DB::connection('sqlSrvFPI')
+            $cekUpdate = DB::connection('sqlSrvBCKI')
                 ->table('customer_nitku')
                 ->where('npwp', $npwp)
                 ->where('nitku', $nitku_old)
@@ -936,14 +936,14 @@ class CustomerController extends Controller
             if ($cekUpdate) {
 
                 if ($nitku_old != $nitku) {
-                    $resDelt = DB::connection('sqlSrvFPI')
+                    $resDelt = DB::connection('sqlSrvBCKI')
                         ->table('customer_nitku')
                         ->where('nitku', $nitku_old)
                         ->where('npwp', $npwp)
                         ->delete();
 
                     if ($resDelt) {
-                        $response = DB::connection('sqlSrvFPI')
+                        $response = DB::connection('sqlSrvBCKI')
                             ->table('customer_nitku')
                             ->insert([
                                 'npwp' => $npwp,
@@ -957,7 +957,7 @@ class CustomerController extends Controller
                         return $this->sendError('Failed update', 'Error', 500);
                     }
                 } else {
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('customer_nitku')
                         ->where('nitku', $nitku)
                         ->where('npwp', $npwp)
@@ -973,7 +973,7 @@ class CustomerController extends Controller
 
                 return $this->sendResponse($response, 'Successfully Update NITKU');
             } else {
-                $response = DB::connection('sqlSrvFPI')
+                $response = DB::connection('sqlSrvBCKI')
                     ->table('customer_nitku')
                     ->insert([
                         'npwp' => $npwp,
@@ -997,7 +997,7 @@ class CustomerController extends Controller
             $nitku = $request->nitku;
             $active_flag = $request->active_flag;
 
-            $response = DB::connection('sqlSrvFPI')
+            $response = DB::connection('sqlSrvBCKI')
                 ->table('customer_nitku')
                 ->where('nitku', $nitku)
                 ->update([
@@ -1015,7 +1015,7 @@ class CustomerController extends Controller
     {
         $yearPrefix = date('y');
 
-        $latestDocId = DB::connection('sqlSrvFPI')
+        $latestDocId = DB::connection('sqlSrvBCKI')
             ->table('Customer_doc')
             ->whereRaw("LEFT(CAST(doc_id AS VARCHAR), 2) = ?", [$yearPrefix])
             ->orderByDesc('doc_id')

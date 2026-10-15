@@ -115,7 +115,7 @@ class WorksheetController extends Controller
     //             END";
 
     //             // Ambil semua data histori (year_id <= $year) agar nilai aset/hutang/modal selalu terbawa dari awal
-    //             $periodData = DB::connection('sqlSrvFPI')
+    //             $periodData = DB::connection('sqlSrvBCKI')
     //                 ->table('v_g_ledger_year')
     //                 ->select([
     //                     DB::raw("CASE WHEN UPPER(RTRIM(ac_type)) = 'IN' THEN 'IC' ELSE ac_type END AS ac_type"),
@@ -286,7 +286,7 @@ class WorksheetController extends Controller
                     ELSE 0
                 END";
 
-                $periodData = DB::connection('sqlSrvFPI')
+                $periodData = DB::connection('sqlSrvBCKI')
                     ->table('v_g_ledger_year')
                     ->select([
                         DB::raw("CASE WHEN UPPER(RTRIM(ac_type)) = 'IN' THEN 'IC' ELSE ac_type END AS ac_type"),

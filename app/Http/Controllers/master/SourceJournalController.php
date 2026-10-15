@@ -15,7 +15,7 @@ class SourceJournalController extends Controller
     {
         try {
 
-            $data = DB::connection('sqlSrvFPI')->select(DB::raw("
+            $data = DB::connection('sqlSrvBCKI')->select(DB::raw("
                         SELECT DISTINCT TRIM(jv.source) AS source
                         FROM journal_voucher jv
                         INNER JOIN g_ledger as g_ledger ON jv.ac_num = g_ledger.ac_num

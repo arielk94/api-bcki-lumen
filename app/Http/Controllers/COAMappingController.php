@@ -11,7 +11,7 @@ class COAMappingController extends Controller
     public function getDistinctRep(Request $request)
     {
         try {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger_map')
                 ->selectRaw("DISTINCT LTRIM(RTRIM(rep_id)) as rep_id")
                 ->whereNotNull('rep_id')
@@ -95,7 +95,7 @@ class COAMappingController extends Controller
                 ORDER BY gm.cat_seq ASC, gm.sub_cat ASC
             ";
 
-            $data = DB::connection('sqlSrvFPI')->select($sql, [$rep_id, $year_id]);
+            $data = DB::connection('sqlSrvBCKI')->select($sql, [$rep_id, $year_id]);
 
             return $this->sendResponse($data, 'Successfully generated COA mapping report');
         } catch (\Exception $e) {

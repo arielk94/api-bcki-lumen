@@ -13,7 +13,7 @@ class ConsigneeController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/fpi/customer/ShowConsignee",
+     *     path="/api/bcki/customer/ShowConsignee",
      *     tags={"Master Consignee"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -48,7 +48,7 @@ class ConsigneeController extends Controller
             $sqlWhere .= " and cons_id = '$cons_id'";
         }
 
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
             ->table('consignee')
             ->selectraw("
                         TRIM(customerid) as customer_id,
@@ -76,7 +76,7 @@ class ConsigneeController extends Controller
             $sqlWhere = "1=1";
             $isDefault = $request->isDefault;
 
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('consignee')
                 ->where('customerid', $request->customerid)
                 ->where('cons_id', $request->cons_id)
@@ -90,7 +90,7 @@ class ConsigneeController extends Controller
                 }
                 if ($isDefault) {
                     if ($isDefault == 'Y') {
-                        $update = DB::connection('sqlSrvFPI')
+                        $update = DB::connection('sqlSrvBCKI')
                             ->table('consignee')
                             ->where('customerid', $request->customerid)
                             ->where('cons_id', $request->cons_id)
@@ -107,7 +107,7 @@ class ConsigneeController extends Controller
                                 'userID' => getAuth($request)->user_id2
                             ]);
 
-                        $update = DB::connection('sqlSrvFPI')
+                        $update = DB::connection('sqlSrvBCKI')
                             ->table('consignee')
                             ->where('customerid', $request->customerid)
                             ->whereRaw($sqlWhere)
@@ -117,7 +117,7 @@ class ConsigneeController extends Controller
                                 'userID' => getAuth($request)->user_id2
                             ]);
                     } else {
-                        $update = DB::connection('sqlSrvFPI')
+                        $update = DB::connection('sqlSrvBCKI')
                             ->table('consignee')
                             ->where('customerid', $request->customerid)
                             ->where('cons_id', $request->cons_id)
@@ -144,7 +144,7 @@ class ConsigneeController extends Controller
                 }
                 if ($isDefault) {
                     if ($isDefault == 'Y') {
-                        $insert = DB::connection('sqlSrvFPI')
+                        $insert = DB::connection('sqlSrvBCKI')
                             ->table('consignee')
                             ->insert([
                                 'customerid' => $request->customerid ? $request->customerid : ' ',
@@ -161,7 +161,7 @@ class ConsigneeController extends Controller
                                 'userID' => getAuth($request)->user_id2
                             ]);
 
-                        $update = DB::connection('sqlSrvFPI')
+                        $update = DB::connection('sqlSrvBCKI')
                             ->table('consignee')
                             ->where('customerid', $request->customerid)
                             ->whereRaw($sqlWhere)
@@ -171,7 +171,7 @@ class ConsigneeController extends Controller
                                 'userID' => getAuth($request)->user_id2
                             ]);
                     } else {
-                        $insert = DB::connection('sqlSrvFPI')
+                        $insert = DB::connection('sqlSrvBCKI')
                             ->table('consignee')
                             ->insert([
                                 'customerid' => $request->customerid ? $request->customerid : ' ',
@@ -192,7 +192,7 @@ class ConsigneeController extends Controller
                 return $this->sendResponse('Success Insert', 'Successfully insert Customer Consignee');
             }
         } catch (\Exception $e) {
-            // DB::connection('sqlSrvFPI')->rollBack();
+            // DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
@@ -201,7 +201,7 @@ class ConsigneeController extends Controller
     {
         $gen_cons_id = '';
 
-        $getLastConsId = DB::connection('sqlSrvFPI')
+        $getLastConsId = DB::connection('sqlSrvBCKI')
             ->table('consignee')
             ->select('customerid', DB::raw('MAX(CAST(SUBSTRING(cons_id, CHARINDEX(\'-\', cons_id) + 1, LEN(cons_id)) AS INT)) as cons_id'))
             ->where('customerid', $customerid)

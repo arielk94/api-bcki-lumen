@@ -54,7 +54,7 @@ class ApprovalSPRController extends Controller
                 $sqlWhere = $sqlWhere . "and v_list_penjualan.dt_aprv1 = '1900-01-01 00:00:00.000'";
             }
             
-            $response = DB::connection('sqlSrvFPI')
+            $response = DB::connection('sqlSrvBCKI')
                 ->table('v_list_penjualan')
                 ->selectRaw("
                     v_list_penjualan.order_id as id_spr,
@@ -133,7 +133,7 @@ class ApprovalSPRController extends Controller
             }
 
             if($type_aprv == 'approve1'){
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                                 ->table('customerOrder')
                                 ->where('order_id', $id_spr)
                                 ->selectRaw("FORMAT(dt_aprv1, 'yyyy-MM-dd') as dt_aprv1")
@@ -142,7 +142,7 @@ class ApprovalSPRController extends Controller
                 if ($cekAprv !== '1900-01-01') {
                     return $this->sendError("Sudah di approve 1", 'Error', 500);
                 }else{
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('customerOrder')
                         ->where('order_id', '=', $id_spr)
                         ->update([
@@ -151,7 +151,7 @@ class ApprovalSPRController extends Controller
                         ]);
                     
                     // if($response){
-                    //     $user = DB::connection('sqlSrvFPI')
+                    //     $user = DB::connection('sqlSrvBCKI')
                     //     ->table('spk_aprv_env')
                     //     ->selectRaw('aprv_2, no_hp_2, nama_employee_2')
                     //     ->where('doc_type', '=', 'SPR')
@@ -195,7 +195,7 @@ class ApprovalSPRController extends Controller
 
             }
             // else if($type_aprv == 'approve2'){
-            //     $cekAprv2 = DB::connection("sqlSrvFPI")
+            //     $cekAprv2 = DB::connection("sqlSrvBCKI")
             //                     ->table('spb_hdr')
             //                     ->where('id_spb', $id_spb)
             //                     ->selectRaw("FORMAT(dt_aprv2, 'yyyy-MM-dd') as dt_aprv2")
@@ -204,7 +204,7 @@ class ApprovalSPRController extends Controller
             //     if ($cekAprv2 !== '1900-01-01') {
             //         return $this->sendError("Sudah di approve 2", 'Error', 500);
             //     }else{
-            //         $response = DB::connection('sqlSrvFPI')
+            //         $response = DB::connection('sqlSrvBCKI')
             //             ->table('spb_hdr')
             //             ->where('id_spb', '=', $id_spb)
             //             ->update([
@@ -228,7 +228,7 @@ class ApprovalSPRController extends Controller
             $type_aprv = $request->type_aprv;
 
             if($type_aprv == 'approve1'){
-                $cekAprv = DB::connection("sqlSrvFPI")
+                $cekAprv = DB::connection("sqlSrvBCKI")
                                 ->table('customerOrder')
                                 ->where('order_id', $id_spr)
                                 ->selectRaw("FORMAT(dt_reject, 'yyyy-MM-dd') as dt_reject")
@@ -237,7 +237,7 @@ class ApprovalSPRController extends Controller
                 if ($cekAprv !== '1900-01-01') {
                     return $this->sendError('Sudah di tolak, kok masih berharap (-_-")', 'Error', 500);
                 }else{
-                    $response = DB::connection('sqlSrvFPI')
+                    $response = DB::connection('sqlSrvBCKI')
                         ->table('customerOrder')
                         ->where('order_id', '=', $id_spr)
                         ->update([
@@ -249,7 +249,7 @@ class ApprovalSPRController extends Controller
 
             }
             // else if($type_aprv == 'approve2'){
-            //     $cekAprv2 = DB::connection("sqlSrvFPI")
+            //     $cekAprv2 = DB::connection("sqlSrvBCKI")
             //                     ->table('spb_hdr')
             //                     ->where('id_spb', $id_spb)
             //                     ->selectRaw("FORMAT(dt_reject2, 'yyyy-MM-dd') as dt_reject2")
@@ -258,7 +258,7 @@ class ApprovalSPRController extends Controller
             //     if ($cekAprv2 !== '1900-01-01') {
             //         return $this->sendError('Sudah di tolak 2, kok masih berharap (-_-")', 'Error', 500);
             //     }else{
-            //         $response = DB::connection('sqlSrvFPI')
+            //         $response = DB::connection('sqlSrvBCKI')
             //             ->table('spb_hdr')
             //             ->where('id_spb', '=', $id_spb)
             //             ->update([
@@ -278,7 +278,7 @@ class ApprovalSPRController extends Controller
     // // private function sendNotifSPBApproval($spkId, $getEmp, $getPhone)
     // // {
     // //     try {
-    // //         $getLink = "FDPI" . now()->format('ymdH') . rand(10000, 99999);
+    // //         $getLink = "bcki" . now()->format('ymdH') . rand(10000, 99999);
 
     // //         DB::connection('sqlsrv')
     // //         ->table('sec_reset_password')
@@ -377,7 +377,7 @@ class ApprovalSPRController extends Controller
                 
     //         }
             
-    //         $response = DB::connection('sqlSrvFPI')
+    //         $response = DB::connection('sqlSrvBCKI')
     //             ->table('spb_hdr')
     //             ->select([
     //                 'spb_hdr.*',
@@ -418,7 +418,7 @@ class ApprovalSPRController extends Controller
     //             ->get();
                 
     //         foreach ($response as $item) {
-    //             $resArticle = DB::connection('sqlSrvFPI')
+    //             $resArticle = DB::connection('sqlSrvBCKI')
     //                 ->table('spk_article')
     //                 ->select([
     //                     'spk_article.*',
@@ -431,7 +431,7 @@ class ApprovalSPRController extends Controller
 
     //             $item->article = $resArticle;
 
-    //             $resArticleIn = DB::connection('sqlSrvFPI')
+    //             $resArticleIn = DB::connection('sqlSrvBCKI')
     //                 ->table('spk_article')
     //                 ->select([
     //                     'spk_article.*',
@@ -453,7 +453,7 @@ class ApprovalSPRController extends Controller
     //             // Tambahkan ke properti item dengan titik di akhir
     //             $item->article_in_desc = 'Pekerjaan sudah termasuk ' . $stringArticleIn . '.';
 
-    //             $resArticleEx = DB::connection('sqlSrvFPI')
+    //             $resArticleEx = DB::connection('sqlSrvBCKI')
     //                 ->table('spk_article')
     //                 ->select([
     //                     'spk_article.*',
@@ -472,7 +472,7 @@ class ApprovalSPRController extends Controller
 
     //             $item->article_ex_desc = 'Pekerjaan tidak termasuk ' . $stringArticleEx . '.';
 
-    //             $resRemarkQC = DB::connection('sqlSrvFPI')
+    //             $resRemarkQC = DB::connection('sqlSrvBCKI')
     //                 ->table('appl_remark')
     //                 ->select([
     //                     'appl_remark.remarks'
@@ -485,7 +485,7 @@ class ApprovalSPRController extends Controller
     //                 $item->remark_qc = $resRemarkQC->remarks;
     //             }
 
-    //             $resRemarkLain = DB::connection('sqlSrvFPI')
+    //             $resRemarkLain = DB::connection('sqlSrvBCKI')
     //                 ->table('appl_remark')
     //                 ->select([
     //                     'appl_remark.remarks'

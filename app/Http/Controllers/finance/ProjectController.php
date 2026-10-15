@@ -34,7 +34,7 @@ class ProjectController extends Controller
             $sqlWhere .= " AND vhh.CustomerId = '$id_customer'";
         }
 
-        $data = db::connection('sqlSrvFPI')
+        $data = db::connection('sqlSrvBCKI')
         ->table('view_house_hist as vhh')
         ->select([
             'vhh.id_site',
@@ -82,7 +82,7 @@ class ProjectController extends Controller
         $id_cluster = $request->id_cluster;
         $id_house = $request->id_house;
 
-        $dtlSPK = db::connection('sqlSrvFPI')
+        $dtlSPK = db::connection('sqlSrvBCKI')
             ->table('spk_hdr as sh')
             ->where('sh.id_site', $id_site)
             ->where('sh.id_cluster', $id_cluster)
@@ -106,7 +106,7 @@ class ProjectController extends Controller
             ])
             ->get();
 
-        $dtlSPR = db::connection('sqlSrvFPI')
+        $dtlSPR = db::connection('sqlSrvBCKI')
             ->table('CustomerOrderDetil')
             ->where('CustomerOrder.id_site', $id_site)
             ->where('CustomerOrderDetil.id_cluster', $id_cluster)
@@ -122,7 +122,7 @@ class ProjectController extends Controller
                 ])
             ->get();
 
-        $dtlExpense = db::connection('sqlSrvFPI')
+        $dtlExpense = db::connection('sqlSrvBCKI')
             ->table('cash_tran_hdr')
             ->where('cash_tran_hdr.id_site', $id_site)
             ->where('cash_tran_hdr.id_cluster', $id_cluster)
@@ -133,7 +133,7 @@ class ProjectController extends Controller
             ->get();
             
         
-        $dtlIncome = db::connection('sqlSrvFPI')
+        $dtlIncome = db::connection('sqlSrvBCKI')
             ->table('Penjualan as pj')
             ->where('co.id_site', $id_site)
             ->where('cod.id_cluster', $id_cluster)
@@ -144,7 +144,7 @@ class ProjectController extends Controller
             ->leftJoin('customerorderdetil as cod', 'co.order_id', '=', 'cod.order_id')
             ->get();
         
-        $dtlLiability = db::connection('sqlSrvFPI')
+        $dtlLiability = db::connection('sqlSrvBCKI')
             ->table('purc_inv_item')
             ->join('purc_inv_mast', 'purc_inv_item.tr_id', '=', 'purc_inv_mast.tr_id')
             ->select('purc_inv_item.*', 'purc_inv_mast.dt_inv')

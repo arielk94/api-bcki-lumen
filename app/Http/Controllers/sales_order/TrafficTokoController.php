@@ -18,7 +18,7 @@ class TrafficTokoController extends Controller
         $usertype = DB::connection('sqlsrv')
                     ->table('sec_env_conf')
                     ->where('user_id2', getAuth($request)->user_id2)
-                    ->where('entity_id', 'FDPI')
+                    ->where('entity_id', 'bcki')
                     ->where('appl_id','SALES')
                     ->where('var_id','ACCESS_ALL')
                     ->first();
@@ -75,7 +75,7 @@ class TrafficTokoController extends Controller
             }
         }
 
-        $datas = DB::connection('sqlSrvFPI') 
+        $datas = DB::connection('sqlSrvBCKI') 
                     ->table('customer_visit as customer_visit')
                     ->fromRaw("customer_visit as customer_visit OUTER APPLY (
                         SELECT TOP 1 
@@ -151,7 +151,7 @@ class TrafficTokoController extends Controller
                     ->get(); 
 
                     $datas->map(function ($data) {
-                        $data->customerhistory = DB::connection('sqlSrvFPI') 
+                        $data->customerhistory = DB::connection('sqlSrvBCKI') 
                         ->table('customer_visit_hist as customer_visit_hist')
                         ->selectRaw("
                             customer_visit_hist.id,
@@ -180,11 +180,11 @@ class TrafficTokoController extends Controller
     public function store(Request $request)
     {
 
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
             
-            $visitId = DB::connection('sqlSrvFPI')
+            $visitId = DB::connection('sqlSrvBCKI')
             ->table('customer_visit')
             ->insertGetId([
                 'office_id' => $request->office_id ? $request->office_id : '1',
@@ -204,7 +204,7 @@ class TrafficTokoController extends Controller
                 'userid' => getAuth($request)->user_id2
             ]);
 
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('customer_visit_hist')
             ->insert([
                 'reff_id'     => $visitId,
@@ -217,30 +217,30 @@ class TrafficTokoController extends Controller
                 'userid'      => getAuth($request)->user_id2
             ]);
 
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
 
             return $this->sendResponse('Success', 'Successfully saved');                            
 
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function update(Request $request)
     {
-        $detail = DB::connection('sqlSrvFPI')
+        $detail = DB::connection('sqlSrvBCKI')
                     ->table('customer_visit')
                     ->where('id', $request->id)
                     ->first();
 
         if ($detail) {
 
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
             try {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('customer_visit')
                 ->where('id', $request->id)
                 ->update([
@@ -260,13 +260,13 @@ class TrafficTokoController extends Controller
                     'userid' => getAuth($request)->user_id2
                 ]);
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success', 'Successfully saved');   
                 
             }
             catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
 
@@ -278,24 +278,24 @@ class TrafficTokoController extends Controller
 
     public function destroy(Request $request)
     {
-        $detail = DB::connection('sqlSrvFPI')
+        $detail = DB::connection('sqlSrvBCKI')
                     ->table('customer_visit')
                     ->where('id', $request->id)
                     ->first();
 
         if ($detail) {
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
             try {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('customer_visit')
                 ->where('id', $request->id)
                 ->delete();
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
                 return $this->sendResponse('Success', 'Successfully deleted');                
             }
             catch (\Exception $e) {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return $this->sendError($e->getMessage(), 'Error', 500);
             }
 
@@ -314,7 +314,7 @@ class TrafficTokoController extends Controller
         }
         $datas = DB::connection('sqlsrvHrd') 
                     ->table('V_project_hdr')
-                    ->where('entity_id', 'FDPI')
+                    ->where('entity_id', 'bcki')
                     // ->where('stat', $stat)
                     // ->selectRaw("project_id, project_name")
                     ->whereRaw($sqlWhere)
@@ -328,7 +328,7 @@ class TrafficTokoController extends Controller
     {
         $visitId = $request->id;
 
-        DB::connection('sqlSrvFPI')
+        DB::connection('sqlSrvBCKI')
         ->table('customer_visit_hist')
         ->insert([
             'reff_id'     => $visitId,

@@ -50,7 +50,7 @@ class ReportGenLedgerDetail extends Controller
             $sqlWhere .= " AND office_id = '$office_id'";
         }
         // dd($sqlWhere);
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
             ->table('v_general_ledger_detail')
             ->whereRaw($sqlWhere)
             // ->orderBy('tr_date', 'asc')
@@ -109,7 +109,7 @@ class ReportGenLedgerDetail extends Controller
         }
         
         // Eksekusi Query 1
-        $coaData = DB::connection('sqlSrvFPI')
+        $coaData = DB::connection('sqlSrvBCKI')
             ->select("
                 SELECT
                     a.ac_num, a.drcr, a.ac_name, a.curr_id, b.*
@@ -139,7 +139,7 @@ class ReportGenLedgerDetail extends Controller
 
             // Tambahkan transaksi harian dari awal bulan hingga startDate-1
             if (strtotime($startDate) != strtotime(date('Y-m-01', strtotime($startDate)))) {
-                $prevMonthTrans = DB::connection('sqlSrvFPI')
+                $prevMonthTrans = DB::connection('sqlSrvBCKI')
                 ->select("
                     SELECT
                         SUM(ISNULL(amt_dr, 0)) as amt_dr, SUM(ISNULL(amt_cr, 0)) as amt_cr
@@ -253,7 +253,7 @@ class ReportGenLedgerDetail extends Controller
 
             
             // Ambil detail transaksi dengan saldo berjalan
-            $transactionDetails = DB::connection('sqlSrvFPI')->select($detailQuery, $bindings);
+            $transactionDetails = DB::connection('sqlSrvBCKI')->select($detailQuery, $bindings);
 
             // --- Pembentukan Hasil Akhir ---
 

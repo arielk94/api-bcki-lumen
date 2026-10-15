@@ -17,7 +17,7 @@ class AccountingService
     // public function ShowJurnal($source_num)
     // {
     //     try {
-    //         $connection = DB::connection("sqlSrvFPI");
+    //         $connection = DB::connection("sqlSrvBCKI");
     //         $result = $connection->table('journal_voucher as a')
     //             ->select('a.tr_date', 'a.source_num', 'a.source', 'a.ac_num', 'b.ac_name as description', 'a.amt_dr', 'a.amt_cr', 'a.remark')
     //             ->join('g_ledger as b', 'a.ac_num', '=', 'b.ac_num')
@@ -46,7 +46,7 @@ class AccountingService
         $userID,
         $acNumSourceInfo = 'ac_num'
     ) {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $year = Carbon::parse($DtTrx)->year;
         //dd($JvNum);
         // cari record
@@ -60,7 +60,7 @@ class AccountingService
         if (!$journal) {
             // Insert new journal
 
-            DB::connection("sqlSrvFPI")->table('journal_voucher')->insert([
+            DB::connection("sqlSrvBCKI")->table('journal_voucher')->insert([
                 'office_id'   => $sMill,
                 'jv_num'      => $JvNum,
                 'ac_num'      => $AcNum,
@@ -141,7 +141,7 @@ class AccountingService
     function getJvNum(int $MillID, string $Src, string $SrcNum, string $CurrYear)
     {
         //try {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $result = $connection->table('journal_voucher')
             ->select('jv_num')
             ->where('office_id', $MillID)
@@ -163,17 +163,17 @@ class AccountingService
         $keyId = 'journal_voucher_' . trim($CurrYear);
         //$nextNum = 0;
 
-        DB::connection("sqlSrvFPI")->beginTransaction();
+        DB::connection("sqlSrvBCKI")->beginTransaction();
 
 
-        $record = DB::connection("sqlSrvFPI")->table('serial_num')
+        $record = DB::connection("sqlSrvBCKI")->table('serial_num')
             ->where('office_id', $MillID)
             ->where('key_id', $keyId)
             ->first();
         //dd($record);
         if (!$record) {
             // Insert record baru jika belum ada
-            DB::connection("sqlSrvFPI")->table('serial_num')->insert([
+            DB::connection("sqlSrvBCKI")->table('serial_num')->insert([
                 'office_id' => $MillID,
                 'key_id' => $keyId,
                 'serial_max' => 9999999,
@@ -186,7 +186,7 @@ class AccountingService
 
             $nextNum = $record->serial_last + 1;
             //dd($nextNum);
-            DB::connection("sqlSrvFPI")->table('serial_num')
+            DB::connection("sqlSrvBCKI")->table('serial_num')
                 ->where('office_id', $MillID)
                 ->where('key_id', $keyId)
                 ->update([
@@ -195,19 +195,19 @@ class AccountingService
             //dd($nextNum);
             //return $nextNum;
         }
-        DB::connection("sqlSrvFPI")->commit();
+        DB::connection("sqlSrvBCKI")->commit();
 
-        // DB::connection("sqlSrvFPI")->transaction(function () use ($MillID, $keyId, $nextNum) {
+        // DB::connection("sqlSrvBCKI")->transaction(function () use ($MillID, $keyId, $nextNum) {
         // });
         //dd($nextNum);
         return $nextNum;
     }
     public function DeleteJournalByJvNum(int $MillID, float $JvNum, string $CurrYear)
     {
-        //DB::connection("sqlSrvFPI")->beginTransaction();
+        //DB::connection("sqlSrvBCKI")->beginTransaction();
         //try {
 
-        DB::connection('sqlSrvFPI')->table('journal_voucher')
+        DB::connection('sqlSrvBCKI')->table('journal_voucher')
             ->where('office_id', $MillID)
             ->where('jv_num',  $JvNum)
             ->where('year_id', $CurrYear)
@@ -215,7 +215,7 @@ class AccountingService
                 'amt_dr' => 0,
                 'amt_cr' => 0
             ]);
-        $getJv = DB::connection('sqlSrvFPI')->table('journal_voucher')
+        $getJv = DB::connection('sqlSrvBCKI')->table('journal_voucher')
             ->select('ac_num', 'tr_date')
             ->where('office_id', $MillID)
             ->where('jv_num',  $JvNum)
@@ -226,14 +226,14 @@ class AccountingService
             $bulan2digit = date('m', strtotime($detail->tr_date));
             $this->updateGL($MillID, $detail->ac_num, $CurrYear, $bulan2digit);
         }
-        DB::connection('sqlSrvFPI')->table('journal_voucher')
+        DB::connection('sqlSrvBCKI')->table('journal_voucher')
             ->where('office_id', $MillID)
             ->where('jv_num', $JvNum)
             ->where('year_id', $CurrYear)
             ->delete();
-        //   DB::connection("sqlSrvFPI")->commit();
+        //   DB::connection("sqlSrvBCKI")->commit();
         //} catch (\Throwable $e) {
-        //    DB::connection("sqlSrvFPI")->rollBack();
+        //    DB::connection("sqlSrvBCKI")->rollBack();
         //    return false;
         // }
     }
@@ -242,7 +242,7 @@ class AccountingService
         //try {
 
         // Step 1: get total debit dan credit untuk coa di tahun dan bulan
-        $journal = DB::connection("sqlSrvFPI")->table('journal_voucher as a')
+        $journal = DB::connection("sqlSrvBCKI")->table('journal_voucher as a')
             ->select(DB::raw('SUM(amt_dr) as amt_dr'), DB::raw('SUM(amt_cr) as amt_cr'), 'b.drcr')
             ->join('g_ledger as b', 'b.ac_num', '=', 'a.ac_num')
             ->where('a.office_id', $sMill)
@@ -259,14 +259,14 @@ class AccountingService
         }
 
         // Step 2: Insert or update g_ledger_year
-        $DataExist = DB::connection("sqlSrvFPI")->table('g_ledger_year')
+        $DataExist = DB::connection("sqlSrvBCKI")->table('g_ledger_year')
             ->where('office_id', $sMill)
             ->where('year_id', $tahun)
             ->where('ac_num', $acNo)
             ->first();
 
         if (!$DataExist) {
-            DB::connection("sqlSrvFPI")->table('g_ledger_year')->insert([
+            DB::connection("sqlSrvBCKI")->table('g_ledger_year')->insert([
                 'office_id' => $sMill,
                 'year_id' => $tahun,
                 'ac_num' => $acNo,
@@ -276,7 +276,7 @@ class AccountingService
                 //'user_id' => ''
             ]);
         } else {
-            DB::connection("sqlSrvFPI")->table('g_ledger_year')
+            DB::connection("sqlSrvBCKI")->table('g_ledger_year')
                 ->where('office_id', $sMill)
                 ->where('year_id', $tahun)
                 ->where('ac_num', $acNo)
@@ -289,7 +289,7 @@ class AccountingService
 
         // Step 3: Update dr cr di bulan itu pada g ledger year
         $bulanFormatted = str_pad($bulan, 2, '0', STR_PAD_LEFT);
-        DB::connection("sqlSrvFPI")->table('g_ledger_year')
+        DB::connection("sqlSrvBCKI")->table('g_ledger_year')
             ->where('office_id', $sMill)
             ->where('year_id', $tahun)
             ->where('ac_num', $acNo)
@@ -307,7 +307,7 @@ class AccountingService
             return "COALESCE(cr_" . str_pad($i, 2, '0', STR_PAD_LEFT) . ", 0)";
         })->implode(' + ');
 
-        DB::connection("sqlSrvFPI")->update("
+        DB::connection("sqlSrvBCKI")->update("
             UPDATE g_ledger_year 
             SET dr_bal = COALESCE(amt_begin_dr, 0) + $fieldsDr,
                 cr_bal = COALESCE(amt_begin_cr, 0) + $fieldsCr
@@ -331,7 +331,7 @@ class AccountingService
         float $AmtFrg = 0.0,
         string $UserId
     ) {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         //dd("ok");
         // Cek apakah account ada di g_ledger
         $GlExist = $connection->table('g_ledger')
@@ -370,7 +370,7 @@ class AccountingService
         //     ->where('year_id', $Tahun)
         //     ->where('ac_num', $AcNo)
         //     ->first();
-        $glYear = DB::connection("sqlSrvFPI")->table('journal_voucher as a')
+        $glYear = DB::connection("sqlSrvBCKI")->table('journal_voucher as a')
             ->select(DB::raw('SUM(amt_dr) as amt_dr'), DB::raw('SUM(amt_cr) as amt_cr'), 'b.drcr')
             ->join('g_ledger as b', 'b.ac_num', '=', 'a.ac_num')
             ->where('a.office_id', $sMill)
@@ -379,7 +379,7 @@ class AccountingService
             ->whereMonth('a.tr_date', $PrdID)
             ->groupBy('b.drcr')
             ->first();
-        $glYearDrBal = DB::connection("sqlSrvFPI")->table('g_ledger_year as a')
+        $glYearDrBal = DB::connection("sqlSrvBCKI")->table('g_ledger_year as a')
             ->selectRaw("amt_begin_dr+dr_01 +  dr_02 +  dr_03 +  dr_04 +  dr_05 +  dr_06 + dr_07+dr_08 + dr_09 + dr_10 + dr_11 + dr_12 as amt_dr, 
             amt_begin_cr+cr_01 +  cr_02 +  cr_03 +  cr_04 +  cr_05 +  cr_06 + cr_07+cr_08 + cr_09 + cr_10 + cr_11 + cr_12  as amt_cr")
             ->join('g_ledger as b', 'b.ac_num', '=', 'a.ac_num')
@@ -426,7 +426,7 @@ class AccountingService
     function GetStdAccountCode($AccountName, $CurrID, $Import, $Office, $DivID)
     {
 
-        $query = DB::connection("sqlSrvFPI")->table('g_ledger_std')
+        $query = DB::connection("sqlSrvBCKI")->table('g_ledger_std')
             ->where('ac_name', trim($AccountName));
 
         if (!empty($CurrID)) {
@@ -453,7 +453,7 @@ class AccountingService
     {
         //     echo "sini";
         //     die;
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         //$connection->beginTransaction();
         //try {
         $JvNum = $this->GetJvNum($Mill, "Other Deposit", $TrID, $CurrYear);
@@ -566,7 +566,7 @@ class AccountingService
     {
         //     echo "sini";
         //     die;
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         //$connection->beginTransaction();
         //try {
         $JvNum = $this->GetJvNum($Mill, "Other Payment", $TrID, $CurrYear);
@@ -677,7 +677,7 @@ class AccountingService
 
     public function JrnlkasBonInternal($Mill, $TrID, $CurrYear, $userId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         //GetStdAccountCode($AccountName, $CurrID, $Import, $Office, $DivID)
         $acNumDr = $this->GetStdAccountCode("BON SEMENTARA", "IDR", "N", 1, "");
         $JvNum = $this->GetJvNum($Mill, "Kas Bon Internal", $TrID, $CurrYear);
@@ -741,7 +741,7 @@ class AccountingService
     }
     public function JrnlPurcInvNonPO($Mill, $TrID, $CurrYear, $userId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $AcNumPPN = $this->GetStdAccountCode("PPN MASUKAN", "IDR", "N", $Mill, "");
         $AcNumPPH = $this->GetStdAccountCode("PPH23", "IDR", "N", $Mill, "");
         $AcNumPPH21 = $this->GetStdAccountCode("PPH21", "IDR", "N", $Mill, "L");
@@ -970,7 +970,7 @@ class AccountingService
 
     public function JrnlOtherJournal($Mill, $TrID, $CurrYear, $userId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $JvNum = $this->GetJvNum($Mill, "Other Journal Voucher", $TrID, $CurrYear);
         $this->DeleteJournalByJvNum($Mill, $JvNum, $CurrYear);
 
@@ -1029,7 +1029,7 @@ class AccountingService
 
     public function JrnlCustomerDeposit($Mill, $TrID, $CurrYear, $userId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $result = $connection->table('dp_sales as a')
             ->selectRaw("a.*")
             ->where('a.dp_id', $TrID)
@@ -1133,7 +1133,7 @@ class AccountingService
 
     public function JrnlPurcDP($Mill, $TrID, $CurrYear, $userId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
 
         $JvNum = $this->GetJvNum($Mill, "Purchase Down Payment", $TrID, $CurrYear);
         $this->DeleteJournalByJvNum($Mill, $JvNum, $CurrYear);
@@ -1195,7 +1195,7 @@ class AccountingService
 
     public function JrnlPurcPayment($Mill, $TrID, $CurrYear, $userId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $AcNumDisc = $this->GetStdAccountCode("DISKON PURC PAYMENT", "IDR", "N", 1, "");
         $JvNum = $this->GetJvNum($Mill, "Purchase Payment", $TrID, $CurrYear);
         $this->DeleteJournalByJvNum($Mill, $JvNum, $CurrYear);
@@ -1346,7 +1346,7 @@ class AccountingService
 
     public function JrnlPurcReceive($Mill, $TrID, $CurrYear, $userId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
 
         $JvNum = $this->GetJvNum($Mill, "Purchase Receipt", $TrID, $CurrYear);
         // dd($JvNum);
@@ -1423,7 +1423,7 @@ class AccountingService
 
     public function JrnlPurcInv($Mill, $TrID, $CurrYear, $userId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
 
         $AcNumHut = '';
         $AcNumPPN = $this->GetStdAccountCode("PPN MASUKAN", "IDR", "N", 1, "");
@@ -1736,7 +1736,7 @@ class AccountingService
         $dt_pay = "";
         $remark = "";
         $customer_id = "";
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $SPPN = $this->GetStdAccountCode("PPN KELUARAN", "IDR", "N", 1, "");
         $sUangMuka = $this->GetStdAccountCode("UANG MUKA PENJUALAN", "IDR", "N", 1, "");
         $DanaDitahan = $this->GetStdAccountCode("DANA DITAHAN", "IDR", "N", 1, "");
@@ -1804,7 +1804,7 @@ class AccountingService
             }
         }
 
-        $result =  DB::connection('sqlSrvFPI')->table('payment_dtl as a')
+        $result =  DB::connection('sqlSrvBCKI')->table('payment_dtl as a')
             ->join('penjualan as b', 'a.penjualanno', '=', 'b.penjualanno')
             ->selectRaw('SUM(a.pay_amt - a.disc_amt) AS total_pay, b.inv_type')
             ->where('a.pay_id', $TrID)
@@ -1839,7 +1839,7 @@ class AccountingService
             $this->updateGeneralLedger($Mill, $crAcc,  "cr", $bulan2digit, $sBayar, $CurrYear, 0, $userId);
         }
 
-        $sumPay = DB::connection('sqlSrvFPI')->table('payment_dtl as a')
+        $sumPay = DB::connection('sqlSrvBCKI')->table('payment_dtl as a')
             ->join('penjualan as b', 'a.penjualanno', '=', 'b.penjualanno')
             ->where('a.pay_id', $TrID)
             ->sum(DB::raw('a.pay_amt - a.disc_amt')) ?? 0;
@@ -1926,7 +1926,7 @@ class AccountingService
             );
             $this->updateGeneralLedger($Mill, "130-010-003",  "dr", $bulan2digit, $AmtJrnl, $CurrYear, 0, $userId);
         }
-        $sumPay = DB::connection('sqlSrvFPI')->table('payment_dtl as a')
+        $sumPay = DB::connection('sqlSrvBCKI')->table('payment_dtl as a')
             ->where('a.pay_id', $TrID)
             ->sum('a.disc_amt') ?? 0;
         if ((float)$sumPay > 0) {
@@ -1953,7 +1953,7 @@ class AccountingService
     }
     public function JournalRevise($OfficeId, $CurrYear, $JvNum, $AcNumOld, $AcNumNew, $UserId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $result = $connection->table('journal_voucher as a')
             ->selectRaw("a.*")
             ->where('a.office_id', $OfficeId)
@@ -1977,7 +1977,7 @@ class AccountingService
             ->first();
         // dd($checkDuplicate,$oldValues);
         if ($checkDuplicate) {
-            DB::connection('sqlSrvFPI')->table('journal_voucher')
+            DB::connection('sqlSrvBCKI')->table('journal_voucher')
                 ->where('office_id', $OfficeId)
                 ->where('year_id',  $CurrYear)
                 ->where('jv_num', $JvNum)
@@ -1997,7 +1997,7 @@ class AccountingService
                     'amt_cr' => $checkDuplicate->amt_cr + $oldValues['amt_cr']
                 ]);
         } else {
-            DB::connection('sqlSrvFPI')->table('journal_voucher')
+            DB::connection('sqlSrvBCKI')->table('journal_voucher')
                 ->where('office_id', $OfficeId)
                 ->where('year_id',  $CurrYear)
                 ->where('jv_num', $JvNum)
@@ -2009,7 +2009,7 @@ class AccountingService
 
             $this->updateGeneralLedger($OfficeId, $AcNumOld, $oldValues['drcr'], $bulan2digit, 0, $CurrYear, 0, $UserId);
 
-            DB::connection('sqlSrvFPI')->table('journal_voucher')
+            DB::connection('sqlSrvBCKI')->table('journal_voucher')
                 ->where('office_id', $OfficeId)
                 ->where('year_id',  $CurrYear)
                 ->where('jv_num', $JvNum)
@@ -2023,7 +2023,7 @@ class AccountingService
         //update coa
         switch (trim(strtoupper($oldValues['source']))) {
             case 'OTHER PAYMENT':
-                DB::connection('sqlSrvFPI')->table('cash_tran_dtl')
+                DB::connection('sqlSrvBCKI')->table('cash_tran_dtl')
                     ->where('office_id', $OfficeId)
                     ->where('tr_type',  'OP')
                     ->where('tr_id', $oldValues['source_num'])
@@ -2033,7 +2033,7 @@ class AccountingService
                     ]);
                 break;
             case 'OTHER DEPOSIT':
-                DB::connection('sqlSrvFPI')->table('cash_tran_dtl')
+                DB::connection('sqlSrvBCKI')->table('cash_tran_dtl')
                     ->where('office_id', $OfficeId)
                     ->where('tr_type',  'OD')
                     ->where('tr_id',  $oldValues['source_num'])
@@ -2043,7 +2043,7 @@ class AccountingService
                     ]);
                 break;
             case 'OTHER JOURNAL VOUCHER':
-                DB::connection('sqlSrvFPI')->table('jv_trans_dtl')
+                DB::connection('sqlSrvBCKI')->table('jv_trans_dtl')
                     ->where('office_id', $OfficeId)
                     ->where('tr_id', $oldValues['source_num'])
                     ->where('ac_num',  $AcNumOld)
@@ -2066,7 +2066,7 @@ class AccountingService
 
     public function JrnlkasBonExternal($Mill, $TrID, $CurrYear, $userId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         //GetStdAccountCode($AccountName, $CurrID, $Import, $Office, $DivID)
         $acNumDr = $this->GetStdAccountCode("UANG MUKA PEMBELIAN", "IDR", "N", 1, "");
         $JvNum = $this->GetJvNum($Mill, "Kas Bon External", $TrID, $CurrYear);
@@ -2131,7 +2131,7 @@ class AccountingService
     }
     public function JrnlPurcRetur($Mill, $TrID, $CurrYear, $userId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         //GetStdAccountCode($AccountName, $CurrID, $Import, $Office, $DivID)
         $acNumCr = $this->GetStdAccountCode("RETUR PEMBELIAN ", "IDR", "N", 1, "");
         $JvNum = $this->GetJvNum($Mill, "Purchase Retur", $TrID, $CurrYear);
@@ -2198,9 +2198,9 @@ class AccountingService
         $userId = getAuth($request)->user_id2 ?? null;
         $tanggal = Carbon::parse($tr_date);
         $formatTgl = $tanggal->format('Ym');
-        $cekUserFinal = DB::table('sec_env_conf')->where('entity_id', 'FDPI')->where('appl_id', 'FINANCE')->where('var_id', 'FINAL_CLOSING')->where('user_id2', $userId)->first();
+        $cekUserFinal = DB::table('sec_env_conf')->where('entity_id', 'bcki')->where('appl_id', 'FINANCE')->where('var_id', 'FINAL_CLOSING')->where('user_id2', $userId)->first();
         if ($cekUserFinal) {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('acct_close_period')
                 ->selectRaw("final_close_period")
                 ->where('final_close_period', '>=', $formatTgl)
@@ -2211,7 +2211,7 @@ class AccountingService
                 return false;
             }
         } else {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('acct_close_period')
                 ->selectRaw("close_period")
                 ->where('close_period', '>=', $formatTgl)
@@ -2225,7 +2225,7 @@ class AccountingService
     }
     public function JrnlCustomerInvoice($Mill, $TrID, $CurrYear, $userId)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $SrcName = "Customer Invoice";
         $JvNum = $this->GetJvNum($Mill, $SrcName, $TrID, $CurrYear);
         $this->DeleteJournalByJvNum($Mill, $JvNum, $CurrYear);

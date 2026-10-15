@@ -15,7 +15,7 @@ class CortexController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/fpi/cortex/getListFakturCortex",
+     *     path="/api/bcki/cortex/getListFakturCortex",
      *     tags={"Faktur Cortex"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -71,7 +71,7 @@ class CortexController extends Controller
                 $sqlWhere .= "and pay_amt <= 0  ";
             }
 
-            $getListFakturCortex = DB::connection("sqlSrvFPI")
+            $getListFakturCortex = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select distinct ROW_NUMBER() OVER (ORDER BY referensi)  AS Baris, * from 
                                 (select distinct tanggal_faktur 'Tanggal Faktur', jenis_faktur 'Jenis Faktur',kode_transaksi 'Kode Transaksi' 
                                 ,keterangan_tambahan 'Keterangan Tambahan',dokumen_pendukung 'Dokumen Pendukung',Period_Dok_Pendukung 'Period Dok Pendukung'
@@ -95,7 +95,7 @@ class CortexController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/fpi/cortex/getListFakturCortexDtl",
+     *     path="/api/bcki/cortex/getListFakturCortexDtl",
      *     tags={"Faktur Cortex"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -125,26 +125,26 @@ class CortexController extends Controller
             
         try {            
             // insert into temp_coretax
-            $cekDoc = DB::connection("sqlSrvFPI")
+            $cekDoc = DB::connection("sqlSrvBCKI")
                 ->table('temp_coretax')
                 ->where('global_id', getAuth($request)->user_id2)
                 ->first();
 
             // Jika ada dokumen sebelumnya, hapus dulu
             if ($cekDoc) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('temp_coretax')
                     ->where('global_id', getAuth($request)->user_id2)
                     ->delete();
             }
             foreach ($data['faktur'] as $key => $faktur) {
-                DB::connection('sqlSrvFPI')->table('temp_coretax')->insert([
+                DB::connection('sqlSrvBCKI')->table('temp_coretax')->insert([
                         'global_id' => getAuth($request)->user_id2,
                         'baris' =>  $faktur['baris'],
                         'penjualanno' => $faktur['penjualanno'],
                 ]);   
 
-                $cektaxslot = DB::connection("sqlSrvFPI")
+                $cektaxslot = DB::connection("sqlSrvBCKI")
                     ->table('tax_slot_number')
                     ->where('tax_no',  $faktur['penjualanno'])
                     ->first();
@@ -158,19 +158,19 @@ class CortexController extends Controller
                     'dt_csv' => now()
                 ];
                 if ($cektaxslot) {                    
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('tax_slot_number')
                         ->where('tax_no',  $faktur['penjualanno'])
                         ->update($datataxslot);
                 }else {
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('tax_slot_number')
                         ->insert($datataxslot);
                 }
             }
 
             // Get List Faktur detail
-            $getListFakturCortexDtl = DB::connection("sqlSrvFPI")
+            $getListFakturCortexDtl = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select baris Baris,b.barang_jasa 'Barang/Jasa',b.kode_barang_jasa 'Kode Barang Jasa', b.nama_barang_jasa 'Nama Barang/Jasa'
                                     ,b.nama_satuan_ukur 'Nama Satuan Ukur', b.harga_satuan 'Harga Satuan', b.jumlah_barang_jasa 'Jumlah Barang Jasa'
                                     ,b.total_diskon 'Total Diskon' ,b.dpp DPP,b.dpp_nilai_lain 'DPP Nilai Lain'
@@ -179,7 +179,7 @@ class CortexController extends Controller
                                     from [temp_coretax] a inner join v_coretax b on a.penjualanno =b.no_faktur
                                     where global_id = '" . getAuth($request)->user_id2 . "' 
                                     order by baris "));  
-            // $getListFakturCortexDtl = DB::connection("sqlSrvFPI")
+            // $getListFakturCortexDtl = DB::connection("sqlSrvBCKI")
             //     ->select(DB::raw("select baris Baris,b.barang_jasa 'Barang/Jasa',b.kode_barang_jasa 'Kode Barang Jasa', b.nama_barang_jasa 'Nama Barang/Jasa'
             //                         ,b.nama_satuan_ukur 'Nama Satuan Ukur', b.harga_satuan 'Harga Satuan', b.jumlah_barang_jasa 'Jumlah Barang Jasa'
             //                         ,b.total_diskon 'Total Diskon' ,b.dpp DPP,b.dpp_nilai_lain 'DPP Nilai Lain'

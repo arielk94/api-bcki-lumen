@@ -31,7 +31,7 @@ class ReprocessController extends Controller
             $where = $where . "and active_flag = ". "'Y'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
                 ->table('region')
                 ->selectRaw('region_id, TRIM(descr) as descr')
                 ->whereRaw($where)
@@ -63,7 +63,7 @@ class ReprocessController extends Controller
             $where = $where . "and active_flag = ". "'Y'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
                 ->table('subregion')
                 ->selectRaw('subregion_id, TRIM(descr) as descr, TRIM(region) as region')
                 ->whereRaw($where)
@@ -100,7 +100,7 @@ class ReprocessController extends Controller
             $where = $where . "and active_flag = ". "'Y'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
                 ->table('branch_office')
                 ->selectRaw('office_id, TRIM(office) as office, TRIM(address) as address, TRIM(city) as city, TRIM(region) as region')
                 ->whereRaw($where)
@@ -156,7 +156,7 @@ class ReprocessController extends Controller
             }
         }
 
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('inv_trans_dtl')
                 ->selectRaw("
                 inv_trans_dtl.office_id, 
@@ -208,7 +208,7 @@ class ReprocessController extends Controller
 
     public function show(Request $request)
     {
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('inv_trans_dtl')
                 ->selectRaw("
                 inv_trans_dtl.office_id, 
@@ -252,7 +252,7 @@ class ReprocessController extends Controller
     public function store(Request $request){
         try {
             
-            $current =  DB::connection("sqlSrvFPI")
+            $current =  DB::connection("sqlSrvBCKI")
                             ->table('period')
                             ->where('dept_id', 'PRODWH')
                             ->where('office_id', $request->office_id)
@@ -266,7 +266,7 @@ class ReprocessController extends Controller
                         $transId = $request->tr_id;
                     } else {
                         $transId = $this->genTrIdTrans($request->office_id, 'MP');
-                        $header = DB::connection('sqlSrvFPI')
+                        $header = DB::connection('sqlSrvBCKI')
                                 ->table('inv_trans_hdr')
                                 ->insert([
                                     'office_id' => $request->office_id,
@@ -342,7 +342,7 @@ class ReprocessController extends Controller
         $dateDay = date("d");
         $gen_tr_id = '';
 
-        $getLastTrID =  DB::connection('sqlSrvFPI')
+        $getLastTrID =  DB::connection('sqlSrvBCKI')
                         ->table('inv_trans_hdr')
                         ->where('office_id', '=', trim($office_id))
                         ->where('tr_id', 'like', "%".$tr_type.$dateYear.$dateMonth.$dateDay."%")
@@ -361,7 +361,7 @@ class ReprocessController extends Controller
     }
 
     public function show2(Request $request){
-        $inv_bal = DB::connection("sqlSrvFPI")
+        $inv_bal = DB::connection("sqlSrvBCKI")
                     ->table('inv_bal')
                     ->selectRaw("
                     inv_bal.office_id, 

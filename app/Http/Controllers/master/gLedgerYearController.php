@@ -32,7 +32,7 @@ class gLedgerYearController extends Controller
         if ($ac_num) {
             $sqlWhere .= " AND b.ac_num = '$ac_num' ";
         }
-        $datas = DB::connection("sqlSrvFPI")->select(DB::raw("
+        $datas = DB::connection("sqlSrvBCKI")->select(DB::raw("
             SELECT trim(year_id) year_id,trim(a.ac_num) ac_num,trim(b.ac_name) ac_name,trim(b.drcr) drcr,amt_type,amt_begin_dr,amt_begin_cr,dr_bal,cr_bal,case when b.drcr='dr' then amt_begin_dr-amt_begin_cr+dr_bal-cr_bal
             else amt_begin_cr-amt_begin_dr+cr_bal-dr_bal end as amt_balance,frg_amt_begin_dr,frg_amt_begin_cr,dr_bal_frg,cr_bal_frg
             ,case when b.drcr='dr' then frg_amt_begin_dr-frg_amt_begin_cr+dr_bal_frg-cr_bal_frg
@@ -55,7 +55,7 @@ class gLedgerYearController extends Controller
         if ($ac_num) {
             $sqlWhere .= " AND b.ac_num = '$ac_num' ";
         }
-        $datas = DB::connection("sqlSrvFPI")->select(DB::raw("
+        $datas = DB::connection("sqlSrvBCKI")->select(DB::raw("
             SELECT trim(year_id) year_id,trim(a.ac_num) ac_num,trim(b.ac_name) ac_name,trim(b.ac_type) ac_type,trim(b.curr_id) curr_id,trim(b.drcr) drcr
             ,amt_begin_dr,amt_begin_cr,dr_01,cr_01,dr_02
             ,cr_02,dr_03,cr_03,dr_04,cr_04,dr_05,cr_05,dr_06,cr_06,dr_07,cr_07
@@ -94,7 +94,7 @@ class gLedgerYearController extends Controller
         if ($end_date) {
             $sqlWhere .= " AND a.tr_date <=  CONVERT(datetime, '$end_date 23:59:59.001') ";
         }
-        $datas = DB::connection("sqlSrvFPI")->select(DB::raw("
+        $datas = DB::connection("sqlSrvBCKI")->select(DB::raw("
             SELECT a.jv_num,trim(a.ac_num) ac_num, trim(c.ac_name) ac_name,trim(a.source) source,trim(a.source_num) source_num,
             a.tr_date,a.amt_dr,a.amt_cr,trim(a.remark) remark,isnull(d.namacustomer,'') nama,
             isnull((select  STUFF((SELECT  ','+cast(ltrim(rtrim(inv_id)) AS VARCHAR ) FROM  payment_dtl where pay_id=a.source_num  FOR XML PATH('')),1,1,'') 
@@ -177,7 +177,7 @@ class gLedgerYearController extends Controller
             'dt_created' => now(),
         ];
         try {
-            DB::connection("sqlSrvFPI")->table('g_ledger_year')->upsert(
+            DB::connection("sqlSrvBCKI")->table('g_ledger_year')->upsert(
                 [$data],
                 ['office_id', 'year_id', 'ac_num'],
                 [
@@ -257,7 +257,7 @@ class gLedgerYearController extends Controller
         if ($ac_type) {
             $sqlWhere .= " AND  ac_type = '$ac_type' ";
         }
-        $datas = DB::connection("sqlSrvFPI")->select(DB::raw("
+        $datas = DB::connection("sqlSrvBCKI")->select(DB::raw("
             SELECT trim(ac_num) ac_num,trim(ac_name) ac_name 
             from g_ledger
             WHERE $sqlWhere

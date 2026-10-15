@@ -22,7 +22,7 @@ class NoUrutNotaController extends Controller
         //     $sqlWhere .= " and id = '$id'";
         // }
         // 1. Sub-query untuk purc_pay_mast
-        $query1 = DB::connection("sqlSrvFPI")->table('purc_pay_mast as a')
+        $query1 = DB::connection("sqlSrvBCKI")->table('purc_pay_mast as a')
             ->select('a.pay_id as id', 'a.no_urut_dokumen', 'e.id_site')
             ->leftJoin('purc_pay_item as c', 'a.pay_id', '=', 'c.pay_id')
             ->leftJoin('purc_inv_mast as d', 'd.inv_id', '=', 'c.inv_id')
@@ -30,12 +30,12 @@ class NoUrutNotaController extends Controller
             ->leftJoin('site as s', 's.id_site', '=', 'e.id_site');
 
         // 2. Sub-query untuk cash_tran_hdr
-        $query2 = DB::connection("sqlSrvFPI")->table('cash_tran_hdr as a')
+        $query2 = DB::connection("sqlSrvBCKI")->table('cash_tran_hdr as a')
             ->select('a.tr_id as id', 'a.no_urut_dokumen', 'a.id_site')
             ->where('a.tr_type', $type);
 
         // 3. Sub-query untuk payment_hdr
-        $query3 = DB::connection("sqlSrvFPI")->table('payment_hdr as a')
+        $query3 = DB::connection("sqlSrvBCKI")->table('payment_hdr as a')
             ->select('a.pay_id as id', 'a.no_urut_dokumen', 'e.id_site')
             ->leftJoin('payment_dtl as c', 'c.pay_id', '=', 'a.pay_id')
             ->leftJoin('penjualan as d', 'c.penjualanno', '=', 'd.penjualanno')
@@ -43,7 +43,7 @@ class NoUrutNotaController extends Controller
             ->leftJoin('site as s', 's.id_site', '=', 'e.id_site');
 
         // 4. Sub-query untuk dp_sales
-        $query4 = DB::connection("sqlSrvFPI")->table('dp_sales as a')
+        $query4 = DB::connection("sqlSrvBCKI")->table('dp_sales as a')
             ->select('a.dp_id as id', 'a.no_urut_dokumen', 'e.id_site')
             ->leftJoin('payment_hdr as b', 'a.dp_id', '=', 'b.bukti')
             ->leftJoin('payment_dtl as c', 'c.pay_id', '=', 'b.pay_id')
@@ -91,7 +91,7 @@ class NoUrutNotaController extends Controller
         // ) AS gabungan_data";
 
         // --- LANGKAH 1: Cari berdasarkan ID ---
-        // $currentDoc = DB::connection("sqlSrvFPI")
+        // $currentDoc = DB::connection("sqlSrvBCKI")
         //     ->table(DB::raw($subQuerySql))
         //     ->where('id', $id)
         //     ->first();
@@ -163,19 +163,19 @@ class NoUrutNotaController extends Controller
         $no_urut = $request->no_urut;
 
         // --- 1. DEFINISI BASE QUERY (Gunakan alias 'a' secara konsisten) ---
-    $query1 = DB::connection("sqlSrvFPI")->table('purc_pay_mast as a')
+    $query1 = DB::connection("sqlSrvBCKI")->table('purc_pay_mast as a')
         ->leftJoin('purc_pay_item as c', 'a.pay_id', '=', 'c.pay_id')
         ->leftJoin('purc_inv_mast as d', 'd.inv_id', '=', 'c.inv_id')
         ->leftJoin('purc_inv_item as e', 'd.inv_id', '=', 'e.inv_id');
 
-    $query2 = DB::connection("sqlSrvFPI")->table('cash_tran_hdr as a');
+    $query2 = DB::connection("sqlSrvBCKI")->table('cash_tran_hdr as a');
 
-    $query3 = DB::connection("sqlSrvFPI")->table('payment_hdr as a')
+    $query3 = DB::connection("sqlSrvBCKI")->table('payment_hdr as a')
         ->leftJoin('payment_dtl as c', 'c.pay_id', '=', 'a.pay_id')
         ->leftJoin('penjualan as d', 'c.penjualanno', '=', 'd.penjualanno')
         ->leftJoin('customerorder as e', 'd.customerorderno', '=', 'e.order_id');
 
-    $query4 = DB::connection("sqlSrvFPI")->table('dp_sales as a')
+    $query4 = DB::connection("sqlSrvBCKI")->table('dp_sales as a')
         ->leftJoin('payment_hdr as b', 'a.dp_id', '=', 'b.bukti')
         ->leftJoin('payment_dtl as c', 'c.pay_id', '=', 'b.pay_id')
         ->leftJoin('penjualan as d', 'c.penjualanno', '=', 'd.penjualanno')
@@ -249,7 +249,7 @@ class NoUrutNotaController extends Controller
         try{
             if($type == 'PP'){
                 // dd('masuk purchase payment posting - purc_pay_mast');
-                DB::connection('sqlSrvFPI')->table('purc_pay_mast')
+                DB::connection('sqlSrvBCKI')->table('purc_pay_mast')
                 ->where('pay_id', $id)
                 ->update([
                     'no_urut_dokumen' => $no_urut
@@ -257,7 +257,7 @@ class NoUrutNotaController extends Controller
             }
             if($type == 'OP' || $type == 'OD'){
                 // dd('masuk other payment, other deposit - cash_tran_hdr');
-                DB::connection('sqlSrvFPI')->table('cash_tran_hdr')
+                DB::connection('sqlSrvBCKI')->table('cash_tran_hdr')
                 ->where('tr_id', $id)
                 ->where('tr_type', $type)
                 ->update([
@@ -266,7 +266,7 @@ class NoUrutNotaController extends Controller
             }
             if($type == 'CP'){
                 // dd("masuk customer payment posting - payment_hdr");
-                DB::connection('sqlSrvFPI')->table('payment_hdr')
+                DB::connection('sqlSrvBCKI')->table('payment_hdr')
                 ->where('pay_id', $id)
                 ->update([
                     'no_urut_dokumen' => $no_urut
@@ -274,7 +274,7 @@ class NoUrutNotaController extends Controller
             }
             if($type == 'CD'){
                 // dd('masuk customer deposit - dp_sales');
-                DB::connection('sqlSrvFPI')->table('dp_sales')
+                DB::connection('sqlSrvBCKI')->table('dp_sales')
                 ->where('dp_id', $id)
                 ->update([
                     'no_urut_dokumen' => $no_urut

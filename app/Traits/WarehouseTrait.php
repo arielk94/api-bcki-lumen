@@ -30,7 +30,7 @@ trait WarehouseTrait
         try {
             // $yesterday_date = Carbon::parse($arrayParams->tr_date)->subDays(1)->format('Y-m-d');
 
-            $current =  DB::connection("sqlSrvFPI")
+            $current =  DB::connection("sqlSrvBCKI")
                             ->table('period')
                             ->where('dept_id', 'PRODWH')
                             ->where('office_id', $arrayParams->office_id)
@@ -40,7 +40,7 @@ trait WarehouseTrait
                 $period = $arrayParams->period;
                 if ($current->curr_period == $period) {
 
-                    // $yesterday_daily =  DB::connection("sqlSrvFPI")
+                    // $yesterday_daily =  DB::connection("sqlSrvBCKI")
                     //                     ->table('period_daily')
                     //                     ->where('dept_id', 'PRODWH')
                     //                     ->where('office_id', $arrayParams->office_id)
@@ -49,7 +49,7 @@ trait WarehouseTrait
 
                     // if ($yesterday_daily) {
 
-                            $data = DB::connection('sqlSrvFPI')
+                            $data = DB::connection('sqlSrvBCKI')
                                         ->table('inv_trans_hdr')
                                         ->where('office_id', $arrayParams->office_id)
                                         ->where('tr_type', $arrayParams->tr_type)
@@ -66,7 +66,7 @@ trait WarehouseTrait
                             } else {
                                 $transId = $this->genTrIdTrans($arrayParams->office_id, $arrayParams->tr_type);
 
-                                $header = DB::connection('sqlSrvFPI')
+                                $header = DB::connection('sqlSrvBCKI')
                                             ->table('inv_trans_hdr')
                                             ->insert([
                                                 'office_id' => $arrayParams->office_id,
@@ -149,7 +149,7 @@ trait WarehouseTrait
         try {
             // $yesterday_date = Carbon::parse($arrayParams->tr_date)->subDays(1)->format('Y-m-d');
 
-            $current =  DB::connection("sqlSrvFPI")
+            $current =  DB::connection("sqlSrvBCKI")
                             ->table('period')
                             ->where('dept_id', 'PRODWH')
                             ->where('office_id', $arrayParams->office_id)
@@ -159,7 +159,7 @@ trait WarehouseTrait
                 $period = $arrayParams->period;
                 if ($current->curr_period == $period) {
 
-                    // $yesterday_daily =  DB::connection("sqlSrvFPI")
+                    // $yesterday_daily =  DB::connection("sqlSrvBCKI")
                     //                     ->table('period_daily')
                     //                     ->where('dept_id', 'PRODWH')
                     //                     ->where('office_id', $arrayParams->office_id)
@@ -168,7 +168,7 @@ trait WarehouseTrait
 
                     // if ($yesterday_daily) {
 
-                            $data = DB::connection('sqlSrvFPI')
+                            $data = DB::connection('sqlSrvBCKI')
                                         ->table('inv_trans_hdr')
                                         ->where('office_id', $arrayParams->office_id)
                                         ->where('tr_type', $arrayParams->tr_type)
@@ -182,7 +182,7 @@ trait WarehouseTrait
                             } else {
                                 $transId = $this->genTrIdTrans($arrayParams->office_id, $arrayParams->tr_type);
 
-                                $header = DB::connection('sqlSrvFPI')
+                                $header = DB::connection('sqlSrvBCKI')
                                             ->table('inv_trans_hdr')
                                             ->insert([
                                                 'office_id' => $arrayParams->office_id,
@@ -262,7 +262,7 @@ trait WarehouseTrait
         try {
             // $yesterday_date = Carbon::parse($arrayParams->tr_date)->subDays(1)->format('Y-m-d');
 
-            $current =  DB::connection("sqlSrvFPI")
+            $current =  DB::connection("sqlSrvBCKI")
                             ->table('period')
                             ->where('dept_id', 'PRODWH')
                             ->where('office_id', $arrayParams->office_id)
@@ -272,7 +272,7 @@ trait WarehouseTrait
                 $period = $arrayParams->period;
                 if ($current->curr_period == $period) {
 
-                    // $yesterday_daily =  DB::connection("sqlSrvFPI")
+                    // $yesterday_daily =  DB::connection("sqlSrvBCKI")
                     //                     ->table('period_daily')
                     //                     ->where('dept_id', 'PRODWH')
                     //                     ->where('office_id', $arrayParams->office_id)
@@ -283,7 +283,7 @@ trait WarehouseTrait
 
                                 $transId = $this->genTrIdTrans($arrayParams->office_id, $arrayParams->tr_type);
 
-                                $header = DB::connection('sqlSrvFPI')
+                                $header = DB::connection('sqlSrvBCKI')
                                             ->table('inv_trans_hdr')
                                             ->insert([
                                                 'office_id' => $arrayParams->office_id,
@@ -352,7 +352,7 @@ trait WarehouseTrait
     {
         $qty = (float) str_replace(',', '.', $arrayParams->qty_oh);
 
-        $current =  DB::connection("sqlSrvFPI")
+        $current =  DB::connection("sqlSrvBCKI")
                         ->table('period')
                         ->where('dept_id', 'PRODWH')
                         ->where('office_id', $arrayParams->office_id)
@@ -378,7 +378,7 @@ trait WarehouseTrait
                             ];
                         }
 
-                        $cek_stock = DB::connection("sqlSrvFPI")
+                        $cek_stock = DB::connection("sqlSrvBCKI")
                                     ->table('inv_bal')
                                     ->where('office_id', $arrayParams->office_id)
                                     ->where('article_id',$arrayParams->article_id)
@@ -436,7 +436,7 @@ trait WarehouseTrait
                             }    
                         }
 
-                        $seq_id = DB::connection("sqlSrvFPI")
+                        $seq_id = DB::connection("sqlSrvBCKI")
                                     ->table('inv_trans_dtl')
                                     ->select('seq_id')
                                     ->where('office_id', $arrayParams->office_id)
@@ -444,7 +444,7 @@ trait WarehouseTrait
                                     ->where('tr_id', $arrayParams->tr_id)
                                     ->max('seq_id');
 
-                        $insertItem = DB::connection('sqlSrvFPI')
+                        $insertItem = DB::connection('sqlSrvBCKI')
                                     ->table('inv_trans_dtl')
                                     ->insert([
                                         'office_id' => $arrayParams->office_id,
@@ -543,7 +543,7 @@ trait WarehouseTrait
 
         // $yesterday_date = Carbon::parse($arrayParams->tr_date)->subDays(1)->format('Y-m-d');
 
-        $current =  DB::connection("sqlSrvFPI")
+        $current =  DB::connection("sqlSrvBCKI")
                         ->table('period')
                         ->where('dept_id', 'PRODWH')
                         ->where('office_id', $arrayParams->office_id)
@@ -553,7 +553,7 @@ trait WarehouseTrait
             $period = $arrayParams->period;
             if ($current->curr_period == $period) {
 
-                // $yesterday_daily =  DB::connection("sqlSrvFPI")
+                // $yesterday_daily =  DB::connection("sqlSrvBCKI")
                 //                     ->table('period_daily')
                 //                     ->where('dept_id', 'PRODWH')
                 //                     ->where('office_id', $arrayParams->office_id)
@@ -578,7 +578,7 @@ trait WarehouseTrait
                             ];
                         }
 
-                        $data = DB::connection("sqlSrvFPI")
+                        $data = DB::connection("sqlSrvBCKI")
                                 ->table('inv_trans_dtl')
                                 ->where('office_id', $arrayParams->office_id)
                                 ->where('tr_type', $arrayParams->tr_type)
@@ -587,7 +587,7 @@ trait WarehouseTrait
                                 ->first();
 
                         if ($data){
-                            $cek_stock = DB::connection("sqlSrvFPI")
+                            $cek_stock = DB::connection("sqlSrvBCKI")
                                         ->table('inv_bal')
                                         ->where('office_id', $arrayParams->office_id)
                                         ->where('article_id',$arrayParams->article_id)
@@ -622,7 +622,7 @@ trait WarehouseTrait
                                 } 
                             }
 
-                            $delete = DB::connection("sqlSrvFPI")
+                            $delete = DB::connection("sqlSrvBCKI")
                                     ->table('inv_trans_dtl')
                                     ->where('office_id', $arrayParams->office_id)
                                     ->where('tr_type', $arrayParams->tr_type)
@@ -630,7 +630,7 @@ trait WarehouseTrait
                                     ->where('seq_id', $arrayParams->seq_id)
                                     ->delete();
 
-                            $data_hdr_wh_transfer = DB::connection("sqlSrvFPI")
+                            $data_hdr_wh_transfer = DB::connection("sqlSrvBCKI")
                                                     ->table('inv_trans_dtl')
                                                     ->where('office_id', $arrayParams->office_id)
                                                     ->where('tr_type', $arrayParams->tr_type)
@@ -638,7 +638,7 @@ trait WarehouseTrait
                                                     ->count();
 
                             if ((int) $data_hdr_wh_transfer == 0) {
-                                $delete_wh_hdr_transfer = DB::connection("sqlSrvFPI")
+                                $delete_wh_hdr_transfer = DB::connection("sqlSrvBCKI")
                                                             ->table('inv_trans_hdr')
                                                             ->where('office_id', $arrayParams->office_id)
                                                             ->where('tr_type', $arrayParams->tr_type)
@@ -701,7 +701,7 @@ trait WarehouseTrait
         $dateDay = date("d");
         $gen_tr_id = '';
 
-        $getLastTrID =  DB::connection('sqlSrvFPI')
+        $getLastTrID =  DB::connection('sqlSrvBCKI')
                         ->table('inv_trans_hdr')
                         ->where('office_id', '=', trim($office_id))
                         ->where('tr_id', 'like', "%".$tr_type.$dateYear.$dateMonth.$dateDay."%")
@@ -721,7 +721,7 @@ trait WarehouseTrait
 
     private function GetQtyTransInvDetil($arrayParams, $tr_type, $tr_types)
     {
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
                     ->table('inv_trans_dtl')
                     ->selectRaw('sum(qty) as qty, sum(wgt) as wgt')
                     ->where('office_id', $arrayParams->office_id)
@@ -744,7 +744,7 @@ trait WarehouseTrait
 
     public function updateQtyInvBal($QtyTrans, $WgtTrans, $arrayParams, $tr_type, $tr_types, $request)
     {
-        $data = DB::connection("sqlSrvFPI")
+        $data = DB::connection("sqlSrvBCKI")
                 ->table('inv_bal')
                 ->where('office_id', $arrayParams->office_id)
                 ->where('article_id',$arrayParams->article_id)
@@ -764,7 +764,7 @@ trait WarehouseTrait
                 $hitung_qty_oh = (float) $data->qty_awal + (float) $QtyTrans - (float) $data->qty_iss + (float) $data->qty_ia - (float) $data->qty_waste;
                 $hitung_wgt_oh = (double) $data->wgt_awal + (double) $WgtTrans - (double) $data->wgt_iss + (double) $data->wgt_ia - (double) $data->wgt_waste;
 
-                $update = DB::connection("sqlSrvFPI")
+                $update = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->where('office_id', $arrayParams->office_id)
                         ->where('article_id',$arrayParams->article_id)
@@ -790,7 +790,7 @@ trait WarehouseTrait
                 $hitung_qty_oh = (float) $data->qty_awal + (float) $data->qty_rcv - (float) $QtyTrans + (float) $data->qty_ia - (float) $data->qty_waste;
                 $hitung_wgt_oh = (double) $data->wgt_awal + (double) $data->wgt_rcv - (double) $WgtTrans + (double) $data->wgt_ia - (double) $data->wgt_waste;
 
-                $update = DB::connection("sqlSrvFPI")
+                $update = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->where('office_id', $arrayParams->office_id)
                         ->where('article_id',$arrayParams->article_id)
@@ -817,7 +817,7 @@ trait WarehouseTrait
                 $hitung_wgt_oh = (double) $data->wgt_awal + (double) $data->wgt_rcv - (double) $data->wgt_iss + (double) $WgtTrans - (double) $data->wgt_waste;
 
 
-                $update = DB::connection("sqlSrvFPI")
+                $update = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->where('office_id', $arrayParams->office_id)
                         ->where('article_id',$arrayParams->article_id)
@@ -845,7 +845,7 @@ trait WarehouseTrait
             }
         } else {
             if ($tr_type == 'R') {
-                $insert = DB::connection("sqlSrvFPI")
+                $insert = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->insert([
                             'office_id' => $arrayParams->office_id,
@@ -878,7 +878,7 @@ trait WarehouseTrait
                         ]);
 
             } elseif ($tr_type == 'A') {
-                $insert = DB::connection("sqlSrvFPI")
+                $insert = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->insert([
                             'office_id' => $arrayParams->office_id,
@@ -911,7 +911,7 @@ trait WarehouseTrait
                         ]);
 
             } elseif ($tr_type == 'I') {
-                $insert = DB::connection("sqlSrvFPI")
+                $insert = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->insert([
                             'office_id' => $arrayParams->office_id,

@@ -34,7 +34,7 @@ class SPKInformationController extends Controller
             $sqlWhere .= " AND spk_hdr.id_spk = '$id_spk'";
         }
 
-        $data = db::connection('sqlSrvFPI')
+        $data = db::connection('sqlSrvBCKI')
             ->table('spk_hdr')
             ->select('spk_hdr.*', DB::raw("CONCAT(appl_constant.str2, ' - ', spk_hdr.remark) as str2"), 'site.site_name', 'site_cluster.cluster_name', 'house_unit.house_name', 'vendor.vendor_name', 'qc_trans_hdr.id_qc_form')
             ->leftJoin('appl_constant', function ($join) {
@@ -63,7 +63,7 @@ class SPKInformationController extends Controller
             $sqlWhereQCOpname .= " AND a.spk_id = '$id_spk'";
         }
 
-        $dataKasbon = db::connection('sqlSrvFPI')
+        $dataKasbon = db::connection('sqlSrvBCKI')
             ->table('kb_hdr')
             // Menambahkan join ke view v_kasbon_list
             ->join('v_kasbon_list', 'kb_hdr.tr_id', '=', 'v_kasbon_list.tr_id')
@@ -74,7 +74,7 @@ class SPKInformationController extends Controller
             ->select('kb_hdr.*', 'v_kasbon_list.tipe as view_tr_type')
             ->get();
 
-        $dataQCOpname = db::connection('sqlSrvFPI')
+        $dataQCOpname = db::connection('sqlSrvBCKI')
             ->table('qc_opname as a')
             ->select(
                 'a.tr_date',
@@ -104,13 +104,13 @@ class SPKInformationController extends Controller
             ->join('qc_item_commodity as e', 'd.com_id', '=', 'e.com_id')->whereRaw($sqlWhereQCOpname)
             ->get();
 
-        $reff_id = db::connection('sqlSrvFPI')
+        $reff_id = db::connection('sqlSrvBCKI')
             ->table('qc_opname as a')
             ->whereRaw($sqlWhereQCOpname)
             ->pluck('tr_id')->toArray();
 
         // dd($reff_id);
-        $dataPayment = db::connection('sqlSrvFPI')
+        $dataPayment = db::connection('sqlSrvBCKI')
             ->table('purc_inv_mast as a')
             ->leftJoin('purc_pay_item as b', 'a.inv_id', '=', 'b.inv_id')
             ->leftJoin('purc_pay_mast as f', 'b.pay_id', '=', 'f.pay_id')

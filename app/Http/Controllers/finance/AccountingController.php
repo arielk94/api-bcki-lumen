@@ -22,7 +22,7 @@ class AccountingController extends Controller
             return $this->sendError("Empty source number", 'Error', 500);
         }
         try {
-            $connection = DB::connection("sqlSrvFPI");
+            $connection = DB::connection("sqlSrvBCKI");
             $result = $connection->table('journal_voucher as a')
                 ->select('a.tr_date', 'a.source_num', 'a.source', 'a.ac_num', 'b.ac_name as description', 'a.amt_dr', 'a.amt_cr', 'a.remark')
                 ->join('g_ledger as b', 'a.ac_num', '=', 'b.ac_num')
@@ -54,7 +54,7 @@ class AccountingController extends Controller
     //     string $CurrID,
     //     string $userID
     // ) {
-    //     $connection = DB::connection("sqlSrvFPI");
+    //     $connection = DB::connection("sqlSrvBCKI");
     //     $year = Carbon::parse($DtTrx)->year;
     //     // cari record
     //     $journal = $connection->table('journal_voucher')
@@ -126,7 +126,7 @@ class AccountingController extends Controller
     // function getJvNum(int $MillID, string $Src, string $SrcNum, string $CurrYear)
     // {
     //     try {
-    //         $connection = DB::connection("sqlSrvFPI");
+    //         $connection = DB::connection("sqlSrvBCKI");
     //         $result = $connection->table('journal_voucher')
     //             ->select('jv_num')
     //             ->where('office_id', $MillID)
@@ -146,7 +146,7 @@ class AccountingController extends Controller
     // function getNextJvNum(int $MillID,  string $CurrYear)
     // {
     //     try {
-    //         $connection = DB::connection("sqlSrvFPI");
+    //         $connection = DB::connection("sqlSrvBCKI");
     //         $result = $connection->table('journal_voucher')
     //             ->selectRaw("max(jv_num)+1 as lastId")
     //             ->where('office_id', $MillID)
@@ -163,10 +163,10 @@ class AccountingController extends Controller
     // }
     // function DeleteJournalByJvNum(int $MillID, float $JvNum, string $CurrYear)
     // {
-    //     DB::connection("sqlSrvFPI")->beginTransaction();
+    //     DB::connection("sqlSrvBCKI")->beginTransaction();
     //     try {
 
-    //         DB::connection('sqlSrvFPI')->table('journal_voucher')
+    //         DB::connection('sqlSrvBCKI')->table('journal_voucher')
     //             ->where('office_id', $MillID)
     //             ->where('jv_num',  $JvNum)
     //             ->where('year_id', $CurrYear)
@@ -174,7 +174,7 @@ class AccountingController extends Controller
     //                 'amt_dr' => 0,
     //                 'amt_cr' => 0
     //             ]);
-    //         $getJv = DB::connection('sqlSrvFPI')->table('journal_voucher')
+    //         $getJv = DB::connection('sqlSrvBCKI')->table('journal_voucher')
     //             ->select('ac_num', 'tr_date')
     //             ->where('office_id', $MillID)
     //             ->where('jv_num',  $JvNum)
@@ -185,14 +185,14 @@ class AccountingController extends Controller
     //             $bulan2digit = date('m', strtotime($detail['tr_date']));
     //             $this->updateGL($MillID, $detail['ac_num'], $CurrYear, $bulan2digit);
     //         }
-    //         DB::connection('sqlSrvFPI')->table('journal_voucher')
+    //         DB::connection('sqlSrvBCKI')->table('journal_voucher')
     //             ->where('office_id', $MillID)
     //             ->where('jv_num', $JvNum)
     //             ->where('year_id', $CurrYear)
     //             ->delete();
-    //         DB::connection("sqlSrvFPI")->commit();
+    //         DB::connection("sqlSrvBCKI")->commit();
     //     } catch (\Throwable $e) {
-    //         DB::connection("sqlSrvFPI")->rollBack();
+    //         DB::connection("sqlSrvBCKI")->rollBack();
     //         return false;
     //     }
     // }
@@ -201,7 +201,7 @@ class AccountingController extends Controller
     //     try {
 
     //         // Step 1: get total debit dan credit untuk coa di tahun dan bulan
-    //         $journal = DB::connection("sqlSrvFPI")->table('journal_voucher as a')
+    //         $journal = DB::connection("sqlSrvBCKI")->table('journal_voucher as a')
     //             ->select(DB::raw('SUM(amt_dr) as amt_dr'), DB::raw('SUM(amt_cr) as amt_cr'), 'b.drcr')
     //             ->join('g_ledget as b', 'b.ac_num', '=', 'a.ac_num')
     //             ->where('a.office_id', $sMill)
@@ -218,14 +218,14 @@ class AccountingController extends Controller
     //         }
 
     //         // Step 2: Insert or update g_ledger_year
-    //         $DataExist = DB::connection("sqlSrvFPI")->table('g_ledger_year')
+    //         $DataExist = DB::connection("sqlSrvBCKI")->table('g_ledger_year')
     //             ->where('office_id', $sMill)
     //             ->where('year_id', $tahun)
     //             ->where('ac_num', $acNo)
     //             ->first();
 
     //         if (!$DataExist) {
-    //             DB::connection("sqlSrvFPI")->table('g_ledger_year')->insert([
+    //             DB::connection("sqlSrvBCKI")->table('g_ledger_year')->insert([
     //                 'office_id' => $sMill,
     //                 'year_id' => $tahun,
     //                 'ac_num' => $acNo,
@@ -235,7 +235,7 @@ class AccountingController extends Controller
     //                 //'user_id' => ''
     //             ]);
     //         } else {
-    //             DB::connection("sqlSrvFPI")->table('g_ledger_year')
+    //             DB::connection("sqlSrvBCKI")->table('g_ledger_year')
     //                 ->where('office_id', $sMill)
     //                 ->where('year_id', $tahun)
     //                 ->where('ac_num', $acNo)
@@ -248,7 +248,7 @@ class AccountingController extends Controller
 
     //         // Step 3: Update dr cr di bulan itu pada g ledger year
     //         $bulanFormatted = str_pad($bulan, 2, '0', STR_PAD_LEFT);
-    //         DB::connection("sqlSrvFPI")->table('g_ledger_year')
+    //         DB::connection("sqlSrvBCKI")->table('g_ledger_year')
     //             ->where('office_id', $sMill)
     //             ->where('year_id', $tahun)
     //             ->where('ac_num', $acNo)
@@ -266,7 +266,7 @@ class AccountingController extends Controller
     //             return "COALESCE(cr_" . str_pad($i, 2, '0', STR_PAD_LEFT) . ", 0)";
     //         })->implode(' + ');
 
-    //         DB::connection("sqlSrvFPI")->update("
+    //         DB::connection("sqlSrvBCKI")->update("
     //         UPDATE g_ledger_year 
     //         SET dr_bal = COALESCE(amt_begin_dr, 0) + $fieldsDr,
     //             cr_bal = COALESCE(amt_begin_cr, 0) + $fieldsCr
@@ -290,7 +290,7 @@ class AccountingController extends Controller
     //     float $AmtFrg = 0.0,
     //     string $UserId
     // ) {
-    //     $connection = DB::connection("sqlSrvFPI");
+    //     $connection = DB::connection("sqlSrvBCKI");
     //     try {
     //         // Cek apakah account ada di g_ledger
     //         $GlExist = $connection->table('g_ledger')
@@ -369,7 +369,7 @@ class AccountingController extends Controller
     //     if (!$request->CurrYear) {
     //         return $this->sendError("Empty transaction year", 'Error', 500);
     //     }
-    //     $connection = DB::connection("sqlSrvFPI");
+    //     $connection = DB::connection("sqlSrvBCKI");
     //     $connection->beginTransaction();
     //     try {
     //         $userId = getAuth($request)->user_id2 ?? null;
@@ -462,7 +462,7 @@ class AccountingController extends Controller
     //     if (!$request->CurrYear) {
     //         return $this->sendError("Empty transaction year", 'Error', 500);
     //     }
-    //     $connection = DB::connection("sqlSrvFPI");
+    //     $connection = DB::connection("sqlSrvBCKI");
     //     $connection->beginTransaction();
     //     try {
     //         $userId = getAuth($request)->user_id2 ?? null;
@@ -559,7 +559,7 @@ class AccountingController extends Controller
             $sqlWhere .= " AND a.year_id = '$year'";
         }
               
-        $ledgerRows = DB::connection('sqlSrvFPI')
+        $ledgerRows = DB::connection('sqlSrvBCKI')
             ->table('g_ledger_year as a')
             ->select('a.ac_num', 
                     DB::raw("a.dr_$month as dr_amt"), 
@@ -639,15 +639,15 @@ class AccountingController extends Controller
         $userId = getAuth($request)->user_id2;
 
         try {
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
-            $row = DB::connection('sqlSrvFPI')
+            $row = DB::connection('sqlSrvBCKI')
                 ->table('acct_close_period')
                 ->where('office_id', $office_id)
                 ->first();
 
             if ($row) {
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                     ->table('acct_close_period')
                     ->where('office_id', $office_id)
                     ->update([
@@ -656,21 +656,21 @@ class AccountingController extends Controller
                         'dt_close_period'  => now(),
                     ]);
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return response()->json([
                     'status'  => 'success',
                     'message' => 'CLOSING SUCCESS ....'
                 ]);
             } else {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return response()->json([
                     'status'  => 'error',
                     'message' => 'Data office tidak ditemukan.'
                 ], 404);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
 
             return response()->json([
                 'status'  => 'error',
@@ -686,9 +686,9 @@ class AccountingController extends Controller
         $userId = getAuth($request)->user_id2;
 
         try {
-            DB::connection('sqlSrvFPI')->beginTransaction();
+            DB::connection('sqlSrvBCKI')->beginTransaction();
 
-            $row = DB::connection('sqlSrvFPI')
+            $row = DB::connection('sqlSrvBCKI')
                 ->table('acct_close_period')
                 ->where('office_id', $office_id)
                 ->first();
@@ -712,25 +712,25 @@ class AccountingController extends Controller
                     $updateData['dt_close_period'] = now();
                 }
 
-                DB::connection('sqlSrvFPI')
+                DB::connection('sqlSrvBCKI')
                 ->table('acct_close_period')
                 ->where('office_id', $office_id)
                 ->update($updateData);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
 
                 return response()->json([
                     'status'  => 'success',
                     'message' => 'CLOSING SUCCESS ....'
                 ]);
             } else {
-                DB::connection('sqlSrvFPI')->rollBack();
+                DB::connection('sqlSrvBCKI')->rollBack();
                 return response()->json([
                     'status'  => 'error',
                     'message' => 'Data office tidak ditemukan.'
                 ], 404);
             }
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
 
             return response()->json([
                 'status'  => 'error',
@@ -756,7 +756,7 @@ class AccountingController extends Controller
         // Pilih kolom debit/kredit dan apakah pakai rate
         $column = $drCr === 'cr' ? 'amt_cr' : 'amt_dr';
 
-        $query = DB::connection('sqlSrvFPI')
+        $query = DB::connection('sqlSrvBCKI')
             ->table('journal_voucher')
             ->where('office_id', $millId)
             ->where('ac_num', $acNum)
@@ -783,7 +783,7 @@ class AccountingController extends Controller
         $isclose = DB::connection("sqlsrv")
             ->table('sec_env_conf')
             ->where('appl_id','FINANCE')
-            ->where('entity_id','FDPI')
+            ->where('entity_id','bcki')
             ->where('var_id','CLOSING')
             ->where('user_id2', $user_id)
             ->first();
@@ -791,13 +791,13 @@ class AccountingController extends Controller
         $isfinalclose = DB::connection("sqlsrv")
             ->table('sec_env_conf')
             ->where('appl_id','FINANCE')
-            ->where('entity_id','FDPI')
+            ->where('entity_id','bcki')
             ->where('var_id','FINAL_CLOSING')
             ->where('user_id2', $user_id)
             ->first();
         // dd($isclose, $isfinalclose);
         // Ambil periode terakhir yang pernah ditutup
-        $result = DB::connection("sqlSrvFPI")
+        $result = DB::connection("sqlSrvBCKI")
             ->table('acct_close_period')
             ->selectRaw("trim(MAX(close_period)) as close_period, trim(max(final_close_period)) as final_close_period")
             ->first();
@@ -842,7 +842,7 @@ class AccountingController extends Controller
                 $columnToUpdate = $columnPrefix . '_' . $month;
 
 
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table("g_ledger_year")
                 ->where("ac_num", $item['ac_num'])
                 ->update([$columnToUpdate => $item['trans']]);

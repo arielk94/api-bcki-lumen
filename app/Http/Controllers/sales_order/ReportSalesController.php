@@ -19,7 +19,7 @@ class ReportSalesController extends Controller
         $dateDay = date("d");
         $gen_tr_id = '';
 
-        $getLastTrID =  DB::connection('sqlSrvFPI')
+        $getLastTrID =  DB::connection('sqlSrvBCKI')
                         ->table('CustomerOrder')
                         ->where('CustomerOrderNo', 'like', "%".$request->office_id.'INV'.$dateYear.$dateMonth.$dateDay."%")
                         ->max('CustomerOrderNo');
@@ -43,7 +43,7 @@ class ReportSalesController extends Controller
         if (!empty($office_id))
         {
             $where = $where . "and office_id = ". "'" . $office_id . "'";
-            $result = DB::connection('sqlSrvFPI')
+            $result = DB::connection('sqlSrvBCKI')
                 ->table('pay_term')
                 ->selectRaw('office_id, 
                 TRIM(pay_term_id) as pay_term_id, 
@@ -93,7 +93,7 @@ class ReportSalesController extends Controller
             }
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('inv_trans_hdr')
                     ->selectRaw("ROW_NUMBER() OVER (ORDER BY inv_trans_hdr.tr_id) AS No, 
                                  inv_trans_hdr.office_id, 
@@ -182,7 +182,7 @@ class ReportSalesController extends Controller
             $sqlRaw.= " ,'$office_id' as office_id";
         }
 
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('inv_trans_hdr')
                     ->selectRaw($sqlRaw)
                     ->leftJoin('inv_trans_dtl',function($join){
@@ -237,7 +237,7 @@ class ReportSalesController extends Controller
             $sqlRaw.= " ,'$office_id' as office_id";
         }
     
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                 ->table('inv_trans_hdr')
                 ->selectRaw($sqlRaw)
                 ->leftJoin('inv_trans_dtl',function($join){
@@ -268,7 +268,7 @@ class ReportSalesController extends Controller
         }
 
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('inv_trans_dtl')
                     ->selectRaw("ROW_NUMBER() OVER (ORDER BY inv_trans_dtl.article_id) AS No,
                                 inv_trans_dtl.office_id, 
@@ -330,7 +330,7 @@ class ReportSalesController extends Controller
             $sqlWhere.= " and MONTH(inv_trans_hdr.tr_date) = '$Bulan'";
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('inv_trans_dtl')
                     ->selectRaw("ROW_NUMBER() OVER (ORDER BY inv_trans_dtl.tr_id) AS No, 
                                 inv_trans_hdr.tr_date, 
@@ -388,7 +388,7 @@ class ReportSalesController extends Controller
             $sqlWhere.= " and CAST(inv_trans_hdr.tr_date AS DATE) = '$formattedDate'";
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('inv_trans_dtl')
                     ->selectRaw("ROW_NUMBER() OVER (ORDER BY inv_trans_dtl.tr_id) AS No, 
                                 inv_trans_hdr.tr_date, 
@@ -455,7 +455,7 @@ class ReportSalesController extends Controller
             }
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('inv_trans_dtl')
                     ->selectRaw("	ROW_NUMBER() OVER (ORDER BY inv_trans_dtl.tr_id) AS No,
                                     FORMAT(inv_trans_hdr.tr_date, 'dd-MM-yyyy') as Tanggal,
@@ -496,26 +496,26 @@ class ReportSalesController extends Controller
         $tr_id = $request->tr_id;
         $now = now();
 
-        $trans_hdr = DB::connection('sqlSrvFPI')
+        $trans_hdr = DB::connection('sqlSrvBCKI')
                         ->table('inv_trans_hdr')
                         ->where('tr_type', 'SR')
                         ->where('tr_id', $tr_id)
                         ->first();
 
-        $trans_amt = DB::connection('sqlSrvFPI')
+        $trans_amt = DB::connection('sqlSrvBCKI')
                         ->table('inv_trans_dtl')
                         ->selectRaw("sum(amt_item) as amt_item")
                         ->where('tr_id', $tr_id)
                         ->first();
 
-        $checkCreditNote = DB::connection('sqlSrvFPI')
+        $checkCreditNote = DB::connection('sqlSrvBCKI')
                         ->table('credit_note')
                         ->where('ref_no', $trans_hdr->tr_id)
                         ->first();
 
         if(!$checkCreditNote){
 
-            $insertCreditNote = DB::connection("sqlSrvFPI")
+            $insertCreditNote = DB::connection("sqlSrvBCKI")
                             ->table('credit_note')
                             ->insert([
                                 'tr_type' => 'D',
@@ -595,7 +595,7 @@ class ReportSalesController extends Controller
             }
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrder')
                     ->selectRaw("ROW_NUMBER() OVER (ORDER BY CustomerOrder.CustomerOrderNo) AS No, 
                                 CustomerOrder.*, 
@@ -714,7 +714,7 @@ class ReportSalesController extends Controller
                 $sqlRaw.= " ,'$customer_id' as customer_id";
             }
 
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrder AS co')
                     ->selectRaw($sqlRaw) 
                     ->leftjoin('CustomerOrderDetil as cod',function($join){
@@ -798,7 +798,7 @@ class ReportSalesController extends Controller
                 $sqlRaw.= " ,'$customer_id' as customer_id";
             }
 
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrder AS co')
                     ->selectRaw($sqlRaw) 
                     ->leftjoin('CustomerOrderDetil as cod',function($join){
@@ -896,7 +896,7 @@ class ReportSalesController extends Controller
             $sqlRaw.= " ,'$customer_id' as customer_id";
         }
 
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                 ->table('CustomerOrder AS co')
                 ->selectRaw($sqlRaw) 
                 ->leftjoin('CustomerOrderDetil as cod',function($join){
@@ -984,7 +984,7 @@ class ReportSalesController extends Controller
                 $sqlRaw.= " ,'$customer_id' as customer_id";
             }
             
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                         ->table('CustomerOrder AS co')
                         ->selectRaw($sqlRaw)
                         ->leftjoin('CustomerOrderDetil as cod',function($join){
@@ -1054,7 +1054,7 @@ class ReportSalesController extends Controller
                 $sqlRaw.= " ,'$customer_id' as customer_id";
             }
             
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                         ->table('CustomerOrder AS co')
                         ->selectRaw($sqlRaw)
                         ->leftjoin('CustomerOrderDetil as cod',function($join){
@@ -1137,7 +1137,7 @@ class ReportSalesController extends Controller
             $sqlRaw.= " ,'$customer_id' as customer_id";
         }
         
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrder AS co')
                     ->selectRaw($sqlRaw)
                     ->leftjoin('CustomerOrderDetil as cod',function($join){
@@ -1161,7 +1161,7 @@ class ReportSalesController extends Controller
             $sqlWhere.= " and CustomerOrderDetil.CustomerOrderNo = '$CustomerOrderNo'";
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrderDetil')
                     ->selectRaw("   ROW_NUMBER() OVER (ORDER BY CustomerOrderDetil.BarangJadiId) AS No, 
                                     Customer.NamaCustomer, 
@@ -1240,7 +1240,7 @@ class ReportSalesController extends Controller
         }
 
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrderDetil')
                     ->selectRaw("   ROW_NUMBER() OVER (ORDER BY CustomerOrder.CustomerOrderNo) AS No, 
                                     Customer.NamaCustomer, 
@@ -1327,7 +1327,7 @@ class ReportSalesController extends Controller
             $sqlWhere.= " and CustomerOrder.CustomerId = '$customer_id'";
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrderDetil')
                     ->selectRaw("   ROW_NUMBER() OVER (ORDER BY CustomerOrder.CustomerOrderNo) AS No, 
                                     Customer.NamaCustomer, 
@@ -1408,7 +1408,7 @@ class ReportSalesController extends Controller
             }
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrderDetil')
                     ->selectRaw("	ROW_NUMBER() OVER (ORDER BY CustomerOrderDetil.CustomerOrderNo) AS No,
                                     FORMAT(CustomerOrder.TglPesan, 'dd MMMM yyyy') as 'Date Order', 
@@ -1499,7 +1499,7 @@ class ReportSalesController extends Controller
             }
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrder')
                     ->selectRaw("ROW_NUMBER() OVER (ORDER BY CustomerOrder.CustomerOrderNo) AS No, 
                                 FORMAT(CustomerOrder.TglPesan, 'dd MMMM yyyy') as 'Date Order', 
@@ -1570,7 +1570,7 @@ class ReportSalesController extends Controller
             }
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('credit_note')
                     ->selectRaw("   ROW_NUMBER() OVER (ORDER BY credit_note.customerorderno) AS No, 
                                     credit_note.ref_no, 
@@ -1613,7 +1613,7 @@ class ReportSalesController extends Controller
 
             $sqlWhere.= " and CustomerOrder.office_id = '$office_id'";
         }
-            $datas = DB::connection('sqlSrvFPI')
+            $datas = DB::connection('sqlSrvBCKI')
                         ->table('credit_note')
                         ->selectRaw ("
                                         Customer.CustomerId, 
@@ -1648,7 +1648,7 @@ class ReportSalesController extends Controller
             $sqlWhere= "credit_note.ref_no = '$ref_no'";
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('credit_note')
                     ->selectRaw("
                                 ROW_NUMBER() OVER (ORDER BY inv_trans_dtl.article_id) AS No,
@@ -1700,7 +1700,7 @@ class ReportSalesController extends Controller
             }
         }
         // dd($sqlWhere);
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('credit_note')
                     ->selectRaw("	ROW_NUMBER() OVER (ORDER BY credit_note.customerorderno) AS No, 
                                     FORMAT(CustomerOrder.TglPesan, 'dd MMMM yyyy') as 'Date Order', 

@@ -13,7 +13,7 @@ class OfficeController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/fpi/office",
+     *     path="/api/bcki/office",
      *     tags={"Master Office"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -55,7 +55,7 @@ class OfficeController extends Controller
             $sqlWhere.= " and office.status = '$status'";
         }
 
-        $datas = DB::connection('sqlSrvFPI') 
+        $datas = DB::connection('sqlSrvBCKI') 
                     ->table('branch_office as bo')
                     ->selectRaw("bo.office_id, 
                                 bo.office, 
@@ -74,7 +74,7 @@ class OfficeController extends Controller
     
     private function checkOffice(Request $request)
     {
-            return DB::connection('sqlSrvFPI')
+            return DB::connection('sqlSrvBCKI')
                 ->table('office')
                 ->where('office_id', $request->office_id);
     }
@@ -83,12 +83,12 @@ class OfficeController extends Controller
     {
         try
         {
-                $datas = DB::connection('sqlSrvFPI') 
+                $datas = DB::connection('sqlSrvBCKI') 
                     ->table('office')
                     ->selectRaw("MAX(office.office_id)+1 as office_id")
                     ->first(); 
 
-                $insert = DB::connection('sqlSrvFPI')
+                $insert = DB::connection('sqlSrvBCKI')
                     ->table('office')
                     ->insert([
                         'office_id' => $datas->office_id,
@@ -117,7 +117,7 @@ class OfficeController extends Controller
                     
             if($data){
 
-                $insert = DB::connection('sqlSrvFPI')
+                $insert = DB::connection('sqlSrvBCKI')
                 ->table('office')
                 ->where('office_id', $request->office_id)
                 ->update([

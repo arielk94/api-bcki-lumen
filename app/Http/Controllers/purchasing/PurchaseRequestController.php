@@ -102,7 +102,7 @@ class PurchaseRequestController extends Controller
             $sqlWhere .= "and a.office_id = '$request->OfficeId'";
         }
 
-        $PrId = DB::connection("sqlSrvFPI")
+        $PrId = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw(" SELECT a.*, b.dept_name, c.pic_name FROM pr_hdr a JOIN department b
                                     ON a.office_id = b.office_id AND a.dept_id = b.dept_id JOIN pr_req_user c ON a.office_id = c.office_id 
                                     AND a.pic_id = c.pic_id AND a.dept_id = c.dept_id where $sqlWhere"));
@@ -127,7 +127,7 @@ class PurchaseRequestController extends Controller
             $sqlWhere .= "and a.pr_item = '$request->PrItem'";
         }
 
-        $PrItem = DB::connection("sqlSrvFPI")
+        $PrItem = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select a.*, b.description, b.berat, b.vendor_description, site_name,cluster_name,house_name, a.dt_req
                                     FROM pr_item a JOIN article b
                                     ON a.article_id = b.article_id
@@ -153,7 +153,7 @@ class PurchaseRequestController extends Controller
                 $sqlWhere .= "and pr_item = '$request->PrItem'";
             }
 
-            $Po = DB::connection("sqlSrvFPI")
+            $Po = DB::connection("sqlSrvBCKI")
                     ->select(DB::raw("select po_id, po_item, qty FROM po_item where $sqlWhere"));
 
             return response()->json(['Po' => $Po], 200);
@@ -168,7 +168,7 @@ class PurchaseRequestController extends Controller
                 $sqlWhere .= "and pr_item = '$request->PrItem'";
             }
 
-            $Inv = DB::connection("sqlSrvFPI")
+            $Inv = DB::connection("sqlSrvBCKI")
                     ->select(DB::raw("select tr_id, inv_item, qty FROM purc_inv_item where $sqlWhere"));
 
             return response()->json(['Inv' => $Inv], 200);
@@ -184,7 +184,7 @@ class PurchaseRequestController extends Controller
             $sqlWhere .= "and pr_id = '$request->PrId'";
         }
 
-        $PrItem = DB::connection("sqlSrvFPI")
+        $PrItem = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("SELECT isnull(max(pr_item),1) + 1 as pr_item FROM pr_item where $sqlWhere"));
 
         return response()->json(['NumPrItem' => $PrItem], 200);
@@ -194,7 +194,7 @@ class PurchaseRequestController extends Controller
     {
         try {
             $PrId = 'PR' . $request->DtPr ;
-            $GenPrId= DB::connection("sqlSrvFPI")
+            $GenPrId= DB::connection("sqlSrvBCKI")
                     ->select(DB::raw("SELECT concat('$PrId', format(isnull(max(pr_num),1) + 1,'000')) as pr_id, isnull(max(pr_num),1) + 1 as pr_num FROM pr_hdr where pr_id like'$PrId%'"));
 
             return response()->json(['GenPrId' => $GenPrId], 200);          
@@ -217,14 +217,14 @@ class PurchaseRequestController extends Controller
                 $sqlWhere .= "and pr_item = '$request->PrItem'";
             }
 
-            $FindPrItem = DB::connection("sqlSrvFPI")
+            $FindPrItem = DB::connection("sqlSrvBCKI")
                     ->select(DB::raw("SELECT pr_id from pr_item where $sqlWhere"));
 
-            DB::connection("sqlSrvFPI")->beginTransaction();
+            DB::connection("sqlSrvBCKI")->beginTransaction();
 
             if(!$FindPrItem){
 
-                $insertUpdate = DB::connection("sqlSrvFPI")
+                $insertUpdate = DB::connection("sqlSrvBCKI")
                     ->statement(DB::raw("insert into pr_item (office_id, pr_id, pr_item, article_id, qty, wgt, unit_meas, length, 
                                         dt_req, id_site, id_cluster, id_house, remark, unit_price, amount, stat, 
                                         dt_created, dt_modified, user_id) 
@@ -236,7 +236,7 @@ class PurchaseRequestController extends Controller
                 
                 
             } else {
-                $insertUpdate = DB::connection("sqlSrvFPI")
+                $insertUpdate = DB::connection("sqlSrvBCKI")
                     ->statement(DB::raw("update pr_item set office_id = '$request->OfficeId', pr_id = '$request->PrId', 
                                         article_id = '$request->ArticleId', qty = '$request->Qty', wgt = '$request->wgt', 
                                         unit_meas = '$request->Uom', length = '$request->Length',
@@ -253,11 +253,11 @@ class PurchaseRequestController extends Controller
                 $sqlWhere .= "and pr_id = '$request->PrId'";
             }
 
-            $FindPr = DB::connection("sqlSrvFPI")
+            $FindPr = DB::connection("sqlSrvBCKI")
                     ->select(DB::raw("SELECT pr_id from pr_hdr where $sqlWhere"));
                     
             if(!$FindPr){
-                $insertUpdate = DB::connection("sqlSrvFPI")
+                $insertUpdate = DB::connection("sqlSrvBCKI")
                     ->statement(DB::raw("insert into pr_hdr (office_id, dt_pr, pr_id, pr_num, dept_id, pic_id, vendor_id, 
                                         memo_txt, stat, tr_type, type_pr, penerima, project, alamat_kirim, pekerjaan, id_site, dt_created, dt_modified, user_id) 
                                         values ('$request->OfficeId', '$request->DtPr', '$request->PrId', '$request->PrNum', '$request->DeptId', 
@@ -265,7 +265,7 @@ class PurchaseRequestController extends Controller
                                         '$request->PrType', '$request->Penerima', '$request->project', '$request->AlamatKirim', 
                                         '$request->pekerjaan', '$request->IdSite', getdate(), getdate(), '".getAuth($request)->user_id2."')"));
             } else {
-                $insertUpdate = DB::connection("sqlSrvFPI")
+                $insertUpdate = DB::connection("sqlSrvBCKI")
                     ->statement(DB::raw("update pr_hdr set dept_id = '$request->DeptId', memo_txt = '$request->memo_txt', vendor_id = '$request->VendorId',
                                         pic_id = '$request->PicId', dt_pr = '$request->DtPr', id_site = '$request->IdSite', penerima = '$request->Penerima',
                                         project = '$request->project', alamat_kirim = '$request->AlamatKirim', pekerjaan = '$request->pekerjaan', 
@@ -273,12 +273,12 @@ class PurchaseRequestController extends Controller
                                         where pr_id = '$request->PrId'"));
             }   
             
-            $insertUpdate = DB::connection("sqlSrvFPI")
+            $insertUpdate = DB::connection("sqlSrvBCKI")
                 ->statement(DB::raw("update a set a.qty = b.qty, a.wgt = b.wgt from pr_hdr a join 
                                     (select pr_id, sum(qty) as qty, sum(wgt) as wgt from pr_item GROUP BY pr_id) b on a.pr_id = b.pr_id
                                     where a.pr_id = '$request->PrId'"));
           
-            DB::connection("sqlSrvFPI")->commit();
+            DB::connection("sqlSrvBCKI")->commit();
             return response()->json(['result' => 'Sukses'], 200);
             
         } catch (\Exception $e) {
@@ -290,31 +290,31 @@ class PurchaseRequestController extends Controller
     public function deletePr(Request $request)
     {
         try {
-            DB::connection("sqlSrvFPI")->beginTransaction();
+            DB::connection("sqlSrvBCKI")->beginTransaction();
 
-            $po = DB::connection("sqlSrvFPI")
+            $po = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("SELECT po_id from po_item where pr_id = '$request->PrId' and pr_item = '$request->PrItem'"));
             if ($po) {
                 return response()->json(['Error' => 'Sudah Ada PO !!'], 200);
             }
 
-            $delete = DB::connection("sqlSrvFPI")
+            $delete = DB::connection("sqlSrvBCKI")
                 ->statement(DB::raw("delete from pr_item where pr_id = '$request->PrId' and pr_item = '$request->PrItem'"));
             
-            $checkPrItem = DB::connection("sqlSrvFPI")
+            $checkPrItem = DB::connection("sqlSrvBCKI")
                     ->select(DB::raw("SELECT pr_id from pr_item where pr_id = '$request->PrId'"));
 
             if(!$checkPrItem){
-                $delete = DB::connection("sqlSrvFPI")
+                $delete = DB::connection("sqlSrvBCKI")
                     ->statement(DB::raw("delete from pr_hdr where pr_id = '$request->PrId'"));
             }
 
-            DB::connection("sqlSrvFPI")->commit();
+            DB::connection("sqlSrvBCKI")->commit();
         
             return response()->json(['result' => 'success'], 200);
 
         } catch (\Exception $e) {
-            DB::connection("sqlSrvFPI")->rollBack();
+            DB::connection("sqlSrvBCKI")->rollBack();
             return $this->sendError('Validation Error', $e->getMessage());
         }
     }
@@ -323,8 +323,8 @@ class PurchaseRequestController extends Controller
     {
         try {
 
-            DB::connection("sqlSrvFPI")->beginTransaction();
-            $Stat = DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")->beginTransaction();
+            $Stat = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("SELECT stat from pr_item where pr_id = '$request->PrId' and pr_item = '$request->PrItem'"));
             if ($Stat[0]->stat == 'O') {
                 $stat = 'C';  
@@ -332,32 +332,32 @@ class PurchaseRequestController extends Controller
                 $stat = 'O';
             }
 
-            $Update = DB::connection("sqlSrvFPI")
+            $Update = DB::connection("sqlSrvBCKI")
                 ->statement(DB::raw("update pr_item set stat = '$stat' where pr_id = '$request->PrId' and pr_item = '$request->PrItem'"));
             
-            $stat = DB::connection("sqlSrvFPI")
+            $stat = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("SELECT stat from pr_item where pr_id = '$request->PrId' and stat = 'O'"));                   
             if(!$stat){         
-                $Update = DB::connection("sqlSrvFPI")
+                $Update = DB::connection("sqlSrvBCKI")
                     ->statement(DB::raw("update pr_hdr set stat = 'C' where pr_id = '$request->PrId'"));
             } else {
-                $Update = DB::connection("sqlSrvFPI")
+                $Update = DB::connection("sqlSrvBCKI")
                     ->statement(DB::raw("update pr_hdr set stat = 'O' where pr_id = '$request->PrId'"));
             }   
 
-            DB::connection("sqlSrvFPI")->commit();
+            DB::connection("sqlSrvBCKI")->commit();
         
             return response()->json(['result' => 'success'], 200);
             
         } catch (\Exception $e) {
-            DB::connection("sqlSrvFPI")->rollBack();
+            DB::connection("sqlSrvBCKI")->rollBack();
             return $this->sendError('Validation Error', $e->getMessage());
         }
     }
     public function SendWaPr(Request $request)
     {
 
-        $sendWa = DB::connection("sqlSrvFPI")
+        $sendWa = DB::connection("sqlSrvBCKI")
             ->select(DB::raw("SELECT pr1, nik_pr1, left(replace(newid(),'-',''),16) as token 
                             from department where office_id = '$request->OfficeId' and dept_id = '$request->DeptId'"));    
             $nikpr1 = $sendWa[0]->nik_pr1;
@@ -365,13 +365,13 @@ class PurchaseRequestController extends Controller
             $pr1= $sendWa[0]->pr1;
             //return response()->json(['nikpr1' => $nikpr1, 'token' => $token], 200);
         if ($sendWa) {
-            $insert = DB::connection("sqlSrvFPI")
+            $insert = DB::connection("sqlSrvBCKI")
                 ->statement(DB::raw("insert into USER_MANAGEMENT.dbo.sec_reset_password (user_id2, link, created_at, updated_at)
                                     values ('$nikpr1', '$token', getdate(), getdate())"));
         } else {
             return response()->json(['Error' => 'Tidak Ada Data PR'], 200);
         }
-        $message = "Info FDPI : Mohon Untuk Segera Di Approve PR no : " . $request->PrId . "Pada Link Berikut : https://viva.kencana.org/approve/" . $nikpr1 . "/" . $token; 
+        $message = "Info bcki : Mohon Untuk Segera Di Approve PR no : " . $request->PrId . "Pada Link Berikut : https://viva.kencana.org/approve/" . $nikpr1 . "/" . $token; 
         $url = $this->sendWA($pr1, $message);
         if ($url['stat'] == 1) {
             return response()->json(['result' => 'success', 'msg' => $url['msg']], 200);
@@ -384,11 +384,11 @@ class PurchaseRequestController extends Controller
     {
         // $userId2 = '18001347' ; 
         // $xPIC = '';
-        $AllDept = DB::connection("sqlSrvFPI")
+        $AllDept = DB::connection("sqlSrvBCKI")
             ->select(DB::raw("SELECT * FROM sec_env_conf WHERE var_id = 'ALLDEPT' and user_id2 = '$userId2'"));
 
         $AllDeptValue = ($AllDept && isset($AllDept[0]->var_value)) ? $AllDept[0]->var_value : 'N';
-        $PicData = DB::connection("sqlSrvFPI")
+        $PicData = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select a.dept_id, b.dept_name, a.pic_id, a.pic_name FROM pr_req_user a 
                                 join department b on a.office_id = b.office_id and a.dept_id = b.dept_id 
                                 WHERE a.nik = '$userId2'"));
@@ -406,7 +406,7 @@ class PurchaseRequestController extends Controller
                     ]);
                 }
         if ($AllDeptValue == 'N') {
-            // $PicData = DB::connection("sqlSrvFPI")
+            // $PicData = DB::connection("sqlSrvBCKI")
             //     ->select(DB::raw("select a.dept_id, b.dept_name, a.pic_id, a.pic_name FROM pr_req_user a 
             //                     join department b on a.office_id = b.office_id and a.dept_id = b.dept_id 
             //                     WHERE a.nik = '$userId2'"));                          
@@ -423,7 +423,7 @@ class PurchaseRequestController extends Controller
                 
 
                 if (substr($DeptId, 0, 2) == 'EN') {
-                    $DeptList = DB::connection("sqlSrvFPI")
+                    $DeptList = DB::connection("sqlSrvBCKI")
                         ->select(DB::raw("SELECT dept_id, dept_name FROM department WHERE left(dept_id,2) = 'EN'"));
                     return response()->json([
                         // 'AllDept' => 'N',
@@ -435,7 +435,7 @@ class PurchaseRequestController extends Controller
                     ], 200);
                  } else {
 
-                    $DeptList = DB::connection("sqlSrvFPI")
+                    $DeptList = DB::connection("sqlSrvBCKI")
                         ->select(DB::raw("SELECT dept_id, dept_name FROM department WHERE dept_id = '$DeptId'"));
                     return response()->json([
                         // 'AllDept' => 'N',
@@ -462,7 +462,7 @@ class PurchaseRequestController extends Controller
                 $PicName = $PicData[0]->pic_name;
                 $DeptId = $PicData[0]->dept_id;
                 $DeptName = $PicData[0]->dept_name;
-                $DeptList = DB::connection("sqlSrvFPI")
+                $DeptList = DB::connection("sqlSrvBCKI")
                         ->select(DB::raw("SELECT dept_id, dept_name FROM department"));
                     return response()->json([
                         // 'AllDept' => 'Y',
@@ -535,7 +535,7 @@ class PurchaseRequestController extends Controller
         if ($request->OfficeId) {
             $sqlWhere .= "and a.office_id = '$request->OfficeId' ";
         }
-        $GridPr = DB::connection("sqlSrvFPI")
+        $GridPr = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("SELECT a.office_id, a.pr_id, dt_pr, a.vendor_id, isnull(d.vendor_name,' ') as vendor_name, memo_txt,b.pic_name,
                                     a.dept_id,dept_name, dt_aprv,aprv_by,dt_aprv2,aprv2_by,dt_rjc, a.stat,
                                     (select sum(amount) from pr_item where pr_id = a.pr_id) as amount, 
@@ -551,7 +551,7 @@ class PurchaseRequestController extends Controller
                                     left outer join v_vendor_bank w on a.vendor_id = w.vendor_id
                                     WHERE $sqlWhere order by a.dt_pr, a.pr_id desc"));
 
-         $GridDtl = DB::connection("sqlSrvFPI")
+         $GridDtl = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("SELECT a.office_id, a.pr_id, a.dt_pr, e.dept_name, f.pic_name, isnull(a.vendor_id,' ') as vendor_id, 
                                     isnull(d.vendor_name,' ') as vendor_name, b.pr_item, b.article_id, c.description, b.stat, b.remark, b.qty, 
                                     b.unit_meas, b.unit_meas, b.amount, b.qty_po, b.dt_req FROM pr_hdr a JOIN pr_item b ON a.pr_id = b.pr_id 
@@ -614,7 +614,7 @@ class PurchaseRequestController extends Controller
             $sqlWhere .= "and id_house = '$request->IdHouse'";
         }
             
-        $GridPr = DB::connection("sqlSrvFPI")
+        $GridPr = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("SELECT * from v_progress_pr where $sqlWhere"));
 
         return response()->json(['GridPr' => $GridPr], 200);
@@ -635,7 +635,7 @@ class PurchaseRequestController extends Controller
             $sqlWhere .= "and a.pr_id = '$pr_id'";
         }
 
-        $pr_hdr = DB::connection("sqlSrvFPI")
+        $pr_hdr = DB::connection("sqlSrvBCKI")
                     ->table('pr_hdr as a')
                     ->leftJoin('pr_req_user as b', function($join) {
                         $join->on('a.pic_id', '=', 'b.pic_id')
@@ -658,7 +658,7 @@ class PurchaseRequestController extends Controller
                     ->orderBy('a.dt_pr', 'desc')
                     ->first();
 
-        $pr_dtl = DB::connection("sqlSrvFPI")
+        $pr_dtl = DB::connection("sqlSrvBCKI")
                 ->select(DB::raw("select a.*, b.description, b.berat, b.vendor_description, site_name,cluster_name,house_name, a.dt_req
                                     FROM pr_item a JOIN article b
                                     ON a.article_id = b.article_id
@@ -684,7 +684,7 @@ class PurchaseRequestController extends Controller
             $sqlWhere .= "and id_site = '$site'";
         }
 
-        $cluster = DB::connection("sqlSrvFPI")
+        $cluster = DB::connection("sqlSrvBCKI")
                 ->table('site_cluster')
                 ->selectRaw('trim(id_cluster) as id_cluster, trim(cluster_name) as cluster_name')
                 ->whereRaw($sqlWhere)
@@ -705,7 +705,7 @@ class PurchaseRequestController extends Controller
             $sqlWhere .= "and id_cluster = '$cluster'";
         }
 
-        $house = DB::connection("sqlSrvFPI")
+        $house = DB::connection("sqlSrvBCKI")
                 ->table('house_unit')
                 ->selectRaw('trim(id_house) as id_house, trim(house_name) as house_name')
                 ->whereRaw($sqlWhere . "and active_flag = 'Y'")
@@ -723,20 +723,20 @@ class PurchaseRequestController extends Controller
         $user_id = getAuth($request)->user_id2;
 
         try {
-            DB::connection("sqlSrvFPI")->beginTransaction();
+            DB::connection("sqlSrvBCKI")->beginTransaction();
 
-            $update = DB::connection("sqlSrvFPI")
+            $update = DB::connection("sqlSrvBCKI")
                 ->statement(DB::raw("update pr_hdr set stat = 'C', dt_modified = getdate(), user_id = '$user_id' where pr_id = '$request->PrId'"));
 
-            $updateItem = DB::connection("sqlSrvFPI")
+            $updateItem = DB::connection("sqlSrvBCKI")
                 ->statement(DB::raw("update pr_item set stat = 'C', dt_modified = getdate(), user_id = '$user_id' where pr_id = '$request->PrId'"));
 
-            DB::connection("sqlSrvFPI")->commit();
+            DB::connection("sqlSrvBCKI")->commit();
         
             return response()->json(['result' => 'success'], 200);
             
         } catch (\Exception $e) {
-            DB::connection("sqlSrvFPI")->rollBack();
+            DB::connection("sqlSrvBCKI")->rollBack();
             return $this->sendError('Validation Error', $e->getMessage());
         }
 

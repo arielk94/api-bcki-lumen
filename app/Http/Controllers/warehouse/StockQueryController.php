@@ -58,7 +58,7 @@ class StockQueryController extends Controller
 
             // $sqlWhere = $sqlWhere . "and inv_bal.qty_oh > 0";
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('inv_bal')
                                 ->selectRaw("
                                 inv_bal.office_id, 
@@ -115,7 +115,7 @@ class StockQueryController extends Controller
                 $sqlWhere = $sqlWhere . "and category.wh_id = ". "'" . $wh_id . "'";
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('category')
                                 ->selectRaw("
                                 category.*
@@ -142,7 +142,7 @@ class StockQueryController extends Controller
                 $sqlWhere = $sqlWhere . "and commodity.cat_id = ". "'" . $cat_id . "'";
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('commodity')
                                 ->selectRaw("
                                 commodity.*
@@ -175,7 +175,7 @@ class StockQueryController extends Controller
                 $sqlWhere = $sqlWhere . "and article.com_id = ". "'" . $com_id . "'";
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('article')
                                 ->selectRaw("
                                 article.*
@@ -237,7 +237,7 @@ class StockQueryController extends Controller
 
             // $sqlWhere = $sqlWhere . "and inv_bal.qty_oh > 0";
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('inv_bal')
                                 ->selectRaw("
                                 branch_office.office AS 'CABANG', 

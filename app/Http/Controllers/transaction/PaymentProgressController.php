@@ -18,7 +18,7 @@ class PaymentProgressController extends Controller
     public function index()
     {
         // -- get sites
-        $sites = DB::connection("sqlSrvFPI")
+        $sites = DB::connection("sqlSrvBCKI")
             ->table('site as st')
             ->join('city_list as lc', 'st.city', 'lc.city_code')
             ->where('stat', 'Y')
@@ -31,7 +31,7 @@ class PaymentProgressController extends Controller
             ->get();
 
         // -- get province
-        $provinces = DB::connection("sqlSrvFPI")
+        $provinces = DB::connection("sqlSrvBCKI")
             ->table('province_list')
             ->selectRaw("
                 province_code as id_province,
@@ -40,7 +40,7 @@ class PaymentProgressController extends Controller
             ->get();
 
         // -- get appl_contant PUTUSAN_AK
-        $putusan = DB::connection("sqlSrvFPI")
+        $putusan = DB::connection("sqlSrvBCKI")
             ->table('appl_constant')
             ->where('key_code', 'PUTUSAN_AK')
             ->selectRaw("
@@ -50,7 +50,7 @@ class PaymentProgressController extends Controller
             ->get();
 
         // -- get banks
-        $bank = DB::connection("sqlSrvFPI")
+        $bank = DB::connection("sqlSrvBCKI")
             ->table('account')
             ->selectraw('trim(bank_name) as bank_name')
             ->distinct()
@@ -60,7 +60,7 @@ class PaymentProgressController extends Controller
         $aprvPP = $this->getEnvConf('FINANCE', 'APRV_PP');
 
         // -- get appl_constant PAY_PROG
-        $payprog = DB::connection("sqlSrvFPI")
+        $payprog = DB::connection("sqlSrvBCKI")
             ->table('appl_constant')
             ->where('key_code', 'PAY_PROG')
             ->selectRaw("
@@ -69,7 +69,7 @@ class PaymentProgressController extends Controller
             ")
             ->get();
 
-        $check = DB::connection("sqlSrvFPI")
+        $check = DB::connection("sqlSrvBCKI")
             ->table('appl_constant')
             ->where('key_code', 'DOC_REQUIRED')
             ->selectRaw("
@@ -100,7 +100,7 @@ class PaymentProgressController extends Controller
         // return $this->sendResponse([], 'Successfully get Payment Progress');
 
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                 ->table('v_payment_progress as pp')
                 ->selectRaw('
                     pp.*
@@ -211,18 +211,18 @@ class PaymentProgressController extends Controller
 
         try {
             // -- approve data            
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('payment_progress')
                 ->insert($dataSave);
 
             // -- file attachments
             if ($file_attachments) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('payment_progress_doc')
                     ->insert($file_attachments);
             }
 
-            $getDocId = DB::connection("sqlSrvFPI")
+            $getDocId = DB::connection("sqlSrvBCKI")
               ->table('document_required')
               ->orderBy('tr_id', 'desc')
               ->first();
@@ -246,7 +246,7 @@ class PaymentProgressController extends Controller
 
             }
 
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
               ->table('document_required')
               ->insert($data);
 
@@ -272,7 +272,7 @@ class PaymentProgressController extends Controller
         $check = json_decode($request->check) ?? [];
         $file_attachments = [];
 
-        $existingProgress = DB::connection("sqlSrvFPI")
+        $existingProgress = DB::connection("sqlSrvBCKI")
         ->table('payment_progress')
         ->where('order_id', $order_id)
         ->where('job_code', $approve_type)
@@ -283,7 +283,7 @@ class PaymentProgressController extends Controller
 
         $lastSeq = 0;
         if ($existingProgress) {
-            $lastSeq = DB::connection("sqlSrvFPI")
+            $lastSeq = DB::connection("sqlSrvBCKI")
                 ->table('payment_progress_doc')
                 ->where('tr_id', $trId)
                 ->max('seq_num') ?? 0;
@@ -346,25 +346,25 @@ class PaymentProgressController extends Controller
         try {
             // -- approve data            
             if ($existingProgress) {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('payment_progress')
                 ->where('tr_id', $trId)
                 ->update($dataSave);
             } else {
                 $dataSave['tr_id'] = $trId;
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('payment_progress')
                     ->insert($dataSave);
             }
 
             // -- file attachments
             if ($file_attachments) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('payment_progress_doc')
                     ->insert($file_attachments);
             }
 
-            $getDocId = DB::connection("sqlSrvFPI")
+            $getDocId = DB::connection("sqlSrvBCKI")
               ->table('document_required')
               ->orderBy('tr_id', 'desc')
               ->first();
@@ -388,7 +388,7 @@ class PaymentProgressController extends Controller
 
             }
 
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
               ->table('document_required')
               ->insert($data);
 
@@ -405,7 +405,7 @@ class PaymentProgressController extends Controller
         $tr_id = $request->tr_id;
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('payment_progress_doc')
                 ->where('doc_type', $order_id)
                 ->where('aprv_type', $approve_type)
@@ -443,7 +443,7 @@ class PaymentProgressController extends Controller
         $order_id = $request->order_id ?? '';
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('payment_progress as pp')
                 ->join('appl_constant as ack', function ($q) {
                     $q->on('pp.job_code', '=', 'ack.str1')
@@ -481,7 +481,7 @@ class PaymentProgressController extends Controller
         $order_id = $request->order_id ?? '';
 
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('payment_progress as pp')
                 ->join('appl_constant as ack', function ($q) {
                     $q->on('pp.job_code', '=', 'ack.str1')
@@ -521,7 +521,7 @@ class PaymentProgressController extends Controller
     public function getNoSpr()
     {
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('CustomerOrder as co')
                 ->join('Customer as cu', 'co.CustomerId', '=', 'cu.CustomerId')
                 ->join('site as st', 'co.id_site', '=', 'st.id_site')
@@ -541,7 +541,7 @@ class PaymentProgressController extends Controller
     private function genTrId()
     {
         $datePrefix = now('Asia/Jakarta')->format('ymd'); // YYMMDD
-        $lastRecord = DB::connection("sqlSrvFPI")
+        $lastRecord = DB::connection("sqlSrvBCKI")
             ->table('payment_progress')
             ->where('tr_id', 'like', $datePrefix . '%')
             ->orderByDesc('tr_id')
@@ -569,9 +569,9 @@ class PaymentProgressController extends Controller
 
         try {
             // Memulai transaksi database untuk memastikan operasi atomik
-            DB::connection("sqlSrvFPI")->beginTransaction();
+            DB::connection("sqlSrvBCKI")->beginTransaction();
 
-            $query = DB::connection("sqlSrvFPI")
+            $query = DB::connection("sqlSrvBCKI")
                 ->table('payment_progress'); // Fokus langsung pada tabel yang akan dihapus
 
             // Menambahkan kondisi WHERE berdasarkan parameter yang diberikan
@@ -591,7 +591,7 @@ class PaymentProgressController extends Controller
             $deletedRows = $query->delete();
 
             // Update yang ada, hapus gambar yg mau dihapus
-            $listAttch = DB::connection('sqlSrvFPI')
+            $listAttch = DB::connection('sqlSrvBCKI')
                 ->table('payment_progress_doc')
                 ->where('doc_type', $order_id)
                 ->where('tr_id', $tr_id)
@@ -607,7 +607,7 @@ class PaymentProgressController extends Controller
             }
 
             //delete image
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('payment_progress_doc')
                 ->where('doc_type', $order_id)
                 ->where('tr_id', $tr_id)
@@ -616,13 +616,13 @@ class PaymentProgressController extends Controller
 
             // Delete Checklist
 
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('document_required')
                 ->where('order_id', $order_id)
                 ->delete();
 
             // Melakukan commit transaksi jika berhasil
-            DB::connection("sqlSrvFPI")->commit();
+            DB::connection("sqlSrvBCKI")->commit();
 
             if ($deletedRows > 0) {
                 return $this->sendResponse([], 'Data berhasil dihapus. Jumlah baris yang dihapus: ' . $deletedRows);
@@ -632,7 +632,7 @@ class PaymentProgressController extends Controller
 
         } catch (\Exception $e) {
             // Melakukan rollback transaksi jika terjadi kesalahan
-            DB::connection("sqlSrvFPI")->rollBack();
+            DB::connection("sqlSrvBCKI")->rollBack();
             return $this->sendError($e->getMessage(), 'Gagal menghapus data', 500);
         }
     }
@@ -650,10 +650,10 @@ class PaymentProgressController extends Controller
 
         try {
             // Memulai transaksi database untuk memastikan operasi atomik
-            DB::connection("sqlSrvFPI")->beginTransaction();
+            DB::connection("sqlSrvBCKI")->beginTransaction();
 
             // Mendapatkan data attachment yang akan dihapus
-            $attachment = DB::connection("sqlSrvFPI")
+            $attachment = DB::connection("sqlSrvBCKI")
                 ->table('payment_progress_doc')
                 ->where('tr_id', $tr_id)
                 ->where('seq_num', $seq_num)
@@ -672,7 +672,7 @@ class PaymentProgressController extends Controller
             }
 
             // Menghapus record attachment dari database
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('payment_progress_doc')
                 ->where('tr_id', $tr_id)
                 ->where('seq_num', $seq_num)
@@ -681,12 +681,12 @@ class PaymentProgressController extends Controller
                 ->delete();
 
             // Melakukan commit transaksi jika berhasil
-            DB::connection("sqlSrvFPI")->commit();
+            DB::connection("sqlSrvBCKI")->commit();
 
             return $this->sendResponse([], 'Attachment berhasil dihapus.');
         } catch (\Exception $e) {
             // Melakukan rollback transaksi jika terjadi kesalahan
-            DB::connection("sqlSrvFPI")->rollBack();
+            DB::connection("sqlSrvBCKI")->rollBack();
             return $this->sendError($e->getMessage(), 'Gagal menghapus attachment', 500);
         }
     }
@@ -702,14 +702,14 @@ class PaymentProgressController extends Controller
 
       try {
 
-        DB::connection("sqlSrvFPI")->beginTransaction();
+        DB::connection("sqlSrvBCKI")->beginTransaction();
 
-        DB::connection("sqlSrvFPI")
+        DB::connection("sqlSrvBCKI")
           ->table('document_required')
           ->where('order_id', $order_id)
           ->delete();
 
-        $lastId = DB::connection("sqlSrvFPI")
+        $lastId = DB::connection("sqlSrvBCKI")
           ->table('document_required')
           ->max('tr_id') ?? 0;
 
@@ -734,12 +734,12 @@ class PaymentProgressController extends Controller
         }
 
         if (!empty($data)) {
-          DB::connection("sqlSrvFPI")
+          DB::connection("sqlSrvBCKI")
             ->table('document_required')
             ->insert($data);
         }
 
-        DB::connection("sqlSrvFPI")->commit();
+        DB::connection("sqlSrvBCKI")->commit();
 
         return response()->json([
           'success' => true,
@@ -747,7 +747,7 @@ class PaymentProgressController extends Controller
         ]);
       } catch (\Exception $e) {
 
-        DB::connection("sqlSrvFPI")->rollBack();
+        DB::connection("sqlSrvBCKI")->rollBack();
 
         return $this->sendError($e->getMessage(), 'Gagal update checklist', 500);
       }
@@ -758,7 +758,7 @@ class PaymentProgressController extends Controller
       $order_id = $request->order_id ?? '';
     
       try {
-        $result = DB::connection("sqlSrvFPI")
+        $result = DB::connection("sqlSrvBCKI")
           ->table('document_required')
           ->where('order_id', $order_id)
           ->orderBy('tr_id')

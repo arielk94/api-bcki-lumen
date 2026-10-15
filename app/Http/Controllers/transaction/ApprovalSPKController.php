@@ -52,7 +52,7 @@ class ApprovalSPKController extends Controller
                 } 
             }
             
-            $response = DB::connection('sqlSrvFPI')
+            $response = DB::connection('sqlSrvBCKI')
                 ->table('spk_hdr')
                 ->selectRaw("
                                 spk_hdr.*,
@@ -123,7 +123,7 @@ class ApprovalSPKController extends Controller
                 ->get();
                 
             foreach ($response as $item) {
-                $resArticle = DB::connection('sqlSrvFPI')
+                $resArticle = DB::connection('sqlSrvBCKI')
                     ->table('spk_article')
                     ->select([
                         'spk_article.*',
@@ -136,7 +136,7 @@ class ApprovalSPKController extends Controller
 
                 $item->article = $resArticle;
 
-                $resArticleIn = DB::connection('sqlSrvFPI')
+                $resArticleIn = DB::connection('sqlSrvBCKI')
                     ->table('spk_article')
                     ->select([
                         'spk_article.*',
@@ -158,7 +158,7 @@ class ApprovalSPKController extends Controller
                 // Tambahkan ke properti item dengan titik di akhir
                 $item->article_in_desc = 'Pekerjaan sudah termasuk ' . $stringArticleIn . '.';
 
-                $resArticleEx = DB::connection('sqlSrvFPI')
+                $resArticleEx = DB::connection('sqlSrvBCKI')
                     ->table('spk_article')
                     ->select([
                         'spk_article.*',
@@ -177,7 +177,7 @@ class ApprovalSPKController extends Controller
 
                 $item->article_ex_desc = 'Pekerjaan tidak termasuk ' . $stringArticleEx . '.';
 
-                $resRemarkQC = DB::connection('sqlSrvFPI')
+                $resRemarkQC = DB::connection('sqlSrvBCKI')
                     ->table('appl_remark')
                     ->select([
                         'appl_remark.remarks'
@@ -190,7 +190,7 @@ class ApprovalSPKController extends Controller
                     $item->remark_qc = $resRemarkQC->remarks;
                 }
 
-                $resRemarkLain = DB::connection('sqlSrvFPI')
+                $resRemarkLain = DB::connection('sqlSrvBCKI')
                     ->table('appl_remark')
                     ->select([
                         'appl_remark.remarks'
@@ -216,7 +216,7 @@ class ApprovalSPKController extends Controller
             $type_spk = $request->type_spk;
 
             if($type_aprv == 'approve1'){
-                $response = DB::connection('sqlSrvFPI')
+                $response = DB::connection('sqlSrvBCKI')
                     ->table('spk_hdr')
                     ->where('id_spk', '=', $id_spk)
                     ->update([
@@ -224,7 +224,7 @@ class ApprovalSPKController extends Controller
                         'aprv1_by' => getAuth($request)->user_id2
                     ]);
                 if($response){
-                    $user = DB::connection('sqlSrvFPI')
+                    $user = DB::connection('sqlSrvBCKI')
                     ->table('spk_aprv_env')
                     ->selectRaw('aprv_2, no_hp_2, nama_employee_2')
                     ->where('doc_type', '=', 'SPK')
@@ -266,7 +266,7 @@ class ApprovalSPKController extends Controller
                     }
                 }
             }else if($type_aprv == 'approve2'){
-                $response = DB::connection('sqlSrvFPI')
+                $response = DB::connection('sqlSrvBCKI')
                     ->table('spk_hdr')
                     ->where('id_spk', '=', $id_spk)
                     ->update([
@@ -288,7 +288,7 @@ class ApprovalSPKController extends Controller
             $type_aprv = $request->type_aprv;
 
             if($type_aprv == 'approve1'){
-                $response = DB::connection('sqlSrvFPI')
+                $response = DB::connection('sqlSrvBCKI')
                     ->table('spk_hdr')
                     ->where('id_spk', '=', $id_spk)
                     ->update([
@@ -297,7 +297,7 @@ class ApprovalSPKController extends Controller
                         'reject_by' => getAuth($request)->user_id2
                     ]);
             }else if($type_aprv == 'approve2'){
-                $response = DB::connection('sqlSrvFPI')
+                $response = DB::connection('sqlSrvBCKI')
                     ->table('spk_hdr')
                     ->where('id_spk', '=', $id_spk)
                     ->update([
@@ -316,7 +316,7 @@ class ApprovalSPKController extends Controller
     private function sendNotifSPKApproval($spkId, $getEmp, $getPhone)
     {
         try {
-            $getLink = "FDPI" . now()->format('ymdH') . rand(10000, 99999);
+            $getLink = "bcki" . now()->format('ymdH') . rand(10000, 99999);
 
             DB::connection('sqlsrv')
             ->table('sec_reset_password')
@@ -415,7 +415,7 @@ class ApprovalSPKController extends Controller
                 
             }
             
-            $response = DB::connection('sqlSrvFPI')
+            $response = DB::connection('sqlSrvBCKI')
                 ->table('spk_hdr')
                 ->select([
                     'spk_hdr.*',
@@ -456,7 +456,7 @@ class ApprovalSPKController extends Controller
                 ->get();
                 
             foreach ($response as $item) {
-                $resArticle = DB::connection('sqlSrvFPI')
+                $resArticle = DB::connection('sqlSrvBCKI')
                     ->table('spk_article')
                     ->select([
                         'spk_article.*',
@@ -469,7 +469,7 @@ class ApprovalSPKController extends Controller
 
                 $item->article = $resArticle;
 
-                $resArticleIn = DB::connection('sqlSrvFPI')
+                $resArticleIn = DB::connection('sqlSrvBCKI')
                     ->table('spk_article')
                     ->select([
                         'spk_article.*',
@@ -491,7 +491,7 @@ class ApprovalSPKController extends Controller
                 // Tambahkan ke properti item dengan titik di akhir
                 $item->article_in_desc = 'Pekerjaan sudah termasuk ' . $stringArticleIn . '.';
 
-                $resArticleEx = DB::connection('sqlSrvFPI')
+                $resArticleEx = DB::connection('sqlSrvBCKI')
                     ->table('spk_article')
                     ->select([
                         'spk_article.*',
@@ -510,7 +510,7 @@ class ApprovalSPKController extends Controller
 
                 $item->article_ex_desc = 'Pekerjaan tidak termasuk ' . $stringArticleEx . '.';
 
-                $resRemarkQC = DB::connection('sqlSrvFPI')
+                $resRemarkQC = DB::connection('sqlSrvBCKI')
                     ->table('appl_remark')
                     ->select([
                         'appl_remark.remarks'
@@ -523,7 +523,7 @@ class ApprovalSPKController extends Controller
                     $item->remark_qc = $resRemarkQC->remarks;
                 }
 
-                $resRemarkLain = DB::connection('sqlSrvFPI')
+                $resRemarkLain = DB::connection('sqlSrvBCKI')
                     ->table('appl_remark')
                     ->select([
                         'appl_remark.remarks'
@@ -549,7 +549,7 @@ class ApprovalSPKController extends Controller
                 ->table('sec_env_conf')
                 ->selectRaw("var_value")
                 ->where('user_id2',getAuth($request)->user_id2)
-                ->where('entity_id','FDPI')
+                ->where('entity_id','bcki')
                 ->where('appl_id','MOBILE')
                 ->where('var_id','APPROVALSPK1')
                 ->where('active_flag','Y')
@@ -559,7 +559,7 @@ class ApprovalSPKController extends Controller
                 ->table('sec_env_conf')
                 ->selectRaw("var_value")
                 ->where('user_id2',getAuth($request)->user_id2)
-                ->where('entity_id','FDPI')
+                ->where('entity_id','bcki')
                 ->where('appl_id','MOBILE')
                 ->where('var_id','APPROVALSPK2')
                 ->where('active_flag','Y')
@@ -581,7 +581,7 @@ class ApprovalSPKController extends Controller
             //              (FORMAT(spk_hdr.dt_aprv2, 'yyyy-MM-dd') = '1900-01-01' AND FORMAT(spk_hdr.dt_reject2, 'yyyy-MM-dd') = '1900-01-01')
             //              AND spk_hdr.active_flag = 'Y'";
             
-            $response = DB::connection('sqlSrvFPI')
+            $response = DB::connection('sqlSrvBCKI')
                 ->table('spk_hdr')
                 ->selectRaw("
                                 spk_hdr.*,
@@ -657,7 +657,7 @@ class ApprovalSPKController extends Controller
                 ->get();
                 
             foreach ($response as $item) {
-                $resArticle = DB::connection('sqlSrvFPI')
+                $resArticle = DB::connection('sqlSrvBCKI')
                     ->table('spk_article')
                     ->select([
                         'spk_article.*',
@@ -670,7 +670,7 @@ class ApprovalSPKController extends Controller
 
                 $item->article = $resArticle;
 
-                $resArticleIn = DB::connection('sqlSrvFPI')
+                $resArticleIn = DB::connection('sqlSrvBCKI')
                     ->table('spk_article')
                     ->select([
                         'spk_article.*',
@@ -692,7 +692,7 @@ class ApprovalSPKController extends Controller
                 // Tambahkan ke properti item dengan titik di akhir
                 $item->article_in_desc = 'Pekerjaan sudah termasuk ' . $stringArticleIn . '.';
 
-                $resArticleEx = DB::connection('sqlSrvFPI')
+                $resArticleEx = DB::connection('sqlSrvBCKI')
                     ->table('spk_article')
                     ->select([
                         'spk_article.*',
@@ -711,7 +711,7 @@ class ApprovalSPKController extends Controller
 
                 $item->article_ex_desc = 'Pekerjaan tidak termasuk ' . $stringArticleEx . '.';
 
-                $resRemarkQC = DB::connection('sqlSrvFPI')
+                $resRemarkQC = DB::connection('sqlSrvBCKI')
                     ->table('appl_remark')
                     ->select([
                         'appl_remark.remarks'
@@ -724,7 +724,7 @@ class ApprovalSPKController extends Controller
                     $item->remark_qc = $resRemarkQC->remarks;
                 }
 
-                $resRemarkLain = DB::connection('sqlSrvFPI')
+                $resRemarkLain = DB::connection('sqlSrvBCKI')
                     ->table('appl_remark')
                     ->select([
                         'appl_remark.remarks'
@@ -750,7 +750,7 @@ class ApprovalSPKController extends Controller
             $sqlWhere .= " and spk_hdr.pihak_2 = '$vendor_id'";
         }
 
-        $data = DB::connection('sqlSrvFPI')
+        $data = DB::connection('sqlSrvBCKI')
                 ->table('spk_hdr')
                 ->select([
                     'spk_hdr.id_spk',

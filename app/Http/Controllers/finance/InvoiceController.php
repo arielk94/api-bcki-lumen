@@ -74,7 +74,7 @@ class InvoiceController extends Controller
                 $sqlWhere .= " AND a.tgljtempo BETWEEN CONVERT(datetime, '$due_start_date 00:00:00.001') AND CONVERT(datetime, '$due_end_date 23:59:59.000')";
             }
         }
-        $datas = DB::connection("sqlSrvFPI")->select(DB::raw("
+        $datas = DB::connection("sqlSrvBCKI")->select(DB::raw("
             SELECT b.namacustomer,a.penjualanno,a.tgljual,a.tgljtempo,a.totaljual,c.pay_amt,a.totaljual-c.pay_amt receivables,s.site_name,t.cluster_name,h.house_name,a.inv_type,a.kpr_type 
             FROM  penjualan a 
             inner JOIN customer b ON a.customerid= b.customerid
@@ -103,13 +103,13 @@ class InvoiceController extends Controller
         }
         try {
 
-            DB::connection("sqlSrvFPI")->beginTransaction();
+            DB::connection("sqlSrvBCKI")->beginTransaction();
 
             $this->insertInvoice($inv_id, $request, $userId);
-            DB::connection("sqlSrvFPI")->table('penjualandetil')->insert($detilData);
+            DB::connection("sqlSrvBCKI")->table('penjualandetil')->insert($detilData);
             $this->insertPaymentOutstanding($inv_id, $request->CustomerOrderNo, $request->TotalJual);
 
-            DB::connection("sqlSrvFPI")->commit();
+            DB::connection("sqlSrvBCKI")->commit();
 
             $tanggal = Carbon::parse($request->inv_date);
             $tahun4digit = $tanggal->format('Y');
@@ -119,7 +119,7 @@ class InvoiceController extends Controller
 
             return $this->sendResponse($inv_id, 'Successfully saved');
         } catch (\Exception $e) {
-            DB::connection("sqlSrvFPI")->rollback();
+            DB::connection("sqlSrvBCKI")->rollback();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -135,7 +135,7 @@ class InvoiceController extends Controller
         }
 
         try {
-            $result = DB::connection("sqlSrvFPI")->table('penjualan')
+            $result = DB::connection("sqlSrvBCKI")->table('penjualan')
                 ->selectRaw("isnull(tgljual,'') tr_date")
                 ->where('penjualanno', $inv_id)
                 ->first();
@@ -143,22 +143,22 @@ class InvoiceController extends Controller
             if ($this->serviceAcc->ifAcctClosed($tr_date, $request)) {
                 return $this->sendError("This periode already closed, cannot be modified", 'Error', 500);
             }
-            DB::connection("sqlSrvFPI")->transaction(function () use ($inv_id) {
-                DB::connection("sqlSrvFPI")->table('penjualandetil')
+            DB::connection("sqlSrvBCKI")->transaction(function () use ($inv_id) {
+                DB::connection("sqlSrvBCKI")->table('penjualandetil')
                     ->where('penjualanno', $inv_id)
                     ->delete();
-                DB::connection("sqlSrvFPI")->table('penjualan')
+                DB::connection("sqlSrvBCKI")->table('penjualan')
                     ->where('penjualanno', $inv_id)
                     ->delete();
-                // DB::connection("sqlSrvFPI")->table('SuratJalan')
+                // DB::connection("sqlSrvBCKI")->table('SuratJalan')
                 //     ->where('penjualanno', $inv_id)
                 //     ->delete();
                 //if (!empty($data['tr_id'])) {
-                DB::connection("sqlSrvFPI")->table('payment_outstanding')
+                DB::connection("sqlSrvBCKI")->table('payment_outstanding')
                     ->where('penjualanno', $inv_id)
                     ->delete();
                 //}
-                // DB::connection("sqlSrvFPI")->table('deliv_hdr')
+                // DB::connection("sqlSrvBCKI")->table('deliv_hdr')
                 //     ->where('inv_id', $inv_id)
                 //     ->update([
                 //         'inv_id' => ''
@@ -348,7 +348,7 @@ class InvoiceController extends Controller
     }
     private function hasVoucher($inv_id)
     {
-        $result = DB::connection("sqlSrvFPI")->table('payment_dtl')
+        $result = DB::connection("sqlSrvBCKI")->table('payment_dtl')
             ->selectRaw("voucher")
             ->where('penjualanno', $inv_id)
             ->first();
@@ -382,7 +382,7 @@ class InvoiceController extends Controller
         }
         $prf1 = $prf0 . $prfcv . $office_id . $tahun2digit . $bulan2digit . $hari2digit;
 
-        $getLastTrID =  DB::connection("sqlSrvFPI")->table('penjualan')
+        $getLastTrID =  DB::connection("sqlSrvBCKI")->table('penjualan')
             ->where('penjualanno', 'like', "%" . $prf1 . "%")
             ->max('penjualanno');
 
@@ -397,7 +397,7 @@ class InvoiceController extends Controller
     }
     private function insertInvoice($inv_id,  $request, $user_id)
     {
-        DB::connection("sqlSrvFPI")->table('penjualan')
+        DB::connection("sqlSrvBCKI")->table('penjualan')
             ->insert([
                 'PenjualanNO' => $inv_id,
                 'SalesId' => $this->getSalesfromSpr($request->CustomerOrderNo),
@@ -423,7 +423,7 @@ class InvoiceController extends Controller
     private function insertPaymentOutstanding($inv_id, $order_id, $inv_amt)
     {
 
-        DB::connection("sqlSrvFPI")->table('payment_outstanding')
+        DB::connection("sqlSrvBCKI")->table('payment_outstanding')
             ->insert([
                 'penjualanno' => $inv_id,
                 'customerorderno' => $order_id,
@@ -433,7 +433,7 @@ class InvoiceController extends Controller
     }
     private function insertTabelSuratJalan($inv_id, $order_id, $deliv_id)
     {
-        DB::connection("sqlSrvFPI")->table('SuratJalan')
+        DB::connection("sqlSrvBCKI")->table('SuratJalan')
             ->insert([
                 'PenjualanNO' => $inv_id,
                 'CustomerOrderNo' => $order_id,
@@ -471,7 +471,7 @@ class InvoiceController extends Controller
     }
     private function generateFPajak($invDate)
     {
-        $getLastTrID  = DB::connection("sqlSrvFPI")->table('Penjualan')
+        $getLastTrID  = DB::connection("sqlSrvBCKI")->table('Penjualan')
             ->selectRaw("ISNULL(MAX(RIGHT(RTRIM(f_pajak),3)),0)+1 as fPajak")
             ->where('TglJual', '=', Carbon::parse($invDate)->format('Ymd'))
             ->whereRaw("LEFT(f_pajak,6) = ?", [trim($invDate)])
@@ -481,26 +481,26 @@ class InvoiceController extends Controller
     }
     private function getPayTermDuration($PayTerm)
     {
-        return DB::connection("sqlSrvFPI")->table('pay_term')
+        return DB::connection("sqlSrvBCKI")->table('pay_term')
             ->where('pay_term', $PayTerm)
             ->value('duration') ?? 0;
     }
     private function getSalesfromSpr($sprId)
     {
-        return DB::connection("sqlSrvFPI")->table('customerorder')
+        return DB::connection("sqlSrvBCKI")->table('customerorder')
             ->where('order_id', $sprId)
             ->value('salesid') ?? '';
     }
     private function GetAcNumSa($article_id)
     {
-        return DB::connection("sqlSrvFPI")->table('article')
+        return DB::connection("sqlSrvBCKI")->table('article')
             ->where('article_id', $article_id)
             ->value('ac_num_penj') ?? '';
     }
     private function GenTrID($invDate)
     {
         $HariIni = "JJ" . Carbon::parse($invDate)->format('ymd');
-        $getLastTrID  = DB::connection("sqlSrvFPI")->table('Penjualan')
+        $getLastTrID  = DB::connection("sqlSrvBCKI")->table('Penjualan')
             ->selectRaw("ISNULL(MAX(RIGHT(RTRIM(f_pajak),3)),0)+1 as gen")
             ->where('TglJual', '=', Carbon::parse($invDate)->format('Ymd'))
             ->value('tr_id');
@@ -531,13 +531,13 @@ class InvoiceController extends Controller
     }
     public function countDiscount($order_id)
     {
-        $jumlah = DB::connection("sqlSrvFPI")->table('penjualan')
+        $jumlah = DB::connection("sqlSrvBCKI")->table('penjualan')
             ->where('customerorderno', trim($order_id))
             ->count();
         if ($jumlah > 1) {
             return 0;
         }
-        $tDisc = DB::connection("sqlSrvFPI")->table('customerorderdetil')
+        $tDisc = DB::connection("sqlSrvBCKI")->table('customerorderdetil')
             ->where('customerorderno', trim($order_id))
             ->where('Stat', '<>', 'X')
             ->sum('disc_unit');
@@ -557,7 +557,7 @@ class InvoiceController extends Controller
             $sqlWhere .= " AND th.order_id = '$spr_id' ";
         }
 
-        $datas = DB::connection("sqlSrvFPI")->select(DB::raw("
+        $datas = DB::connection("sqlSrvBCKI")->select(DB::raw("
             select th.order_id,NamaCustomer,sum(unit_price-disc_unit) total,order_date,pay_method,th.salesid ,th.utj,th.dp_amt,th.plafon_naik
             from customerorder th inner join customer p 
             on th.customerid = p.customerid 
@@ -577,7 +577,7 @@ class InvoiceController extends Controller
             $sqlWhere .= " AND customerorderno = '$order_id' ";
         }
 
-        $datas = DB::connection("sqlSrvFPI")->select(DB::raw("
+        $datas = DB::connection("sqlSrvBCKI")->select(DB::raw("
             select inv_type,b.dp_amt,b.utj,b.ord_amt,b.plafon_naik,sum(TotalJual) totaljual from penjualan a 
             inner join customerorder b on a.customerorderno=b.order_id
             where $sqlWhere
@@ -599,7 +599,7 @@ class InvoiceController extends Controller
             $sqlWhere .= " AND inv_type = '$tr_type' ";
         }
 
-        $datas = DB::connection("sqlSrvFPI")->select(DB::raw("
+        $datas = DB::connection("sqlSrvBCKI")->select(DB::raw("
             select penjualanno,tgljual,tgljtempo,SubTotalAmount,amt_ppn,totalJual,inv_type
             from penjualan
             where $sqlWhere
@@ -623,7 +623,7 @@ class InvoiceController extends Controller
         };
         $prefix = sprintf("FAA/%s/%s/", $invType, date('Ym', strtotime($inv_date)));
 
-        $lastId = DB::connection("sqlSrvFPI")->table('penjualan')
+        $lastId = DB::connection("sqlSrvBCKI")->table('penjualan')
             ->where('penjualanno', 'like', "%{$prefix}%")
             ->max('penjualanno');
 
@@ -642,7 +642,7 @@ class InvoiceController extends Controller
             $sqlWhere .= " AND a.penjualanno = '$inv_id' ";
         }
 
-        $datas = DB::connection("sqlSrvFPI")->select(DB::raw("
+        $datas = DB::connection("sqlSrvBCKI")->select(DB::raw("
             select a.penjualanno,a.customerorderno,tgljual,tgljtempo,subtotalamount,amt_ppn,a.totaljual,inv_type,namacustomer,
             b.namabarang,b.lembar as qty,b.hargajual,isnull(c.Alamat_id_card,'') alamat,d.city
             from penjualan a inner join penjualandetil b on a.penjualanno=b.penjualanno

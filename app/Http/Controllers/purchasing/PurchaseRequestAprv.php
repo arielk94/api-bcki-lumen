@@ -96,7 +96,7 @@ class PurchaseRequestAprv extends Controller
                 $sqlWhere = $sqlWhere . "and pr_hdr.stat = 'C'";
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('pr_hdr')
                                 ->selectRaw("
                                 pr_hdr.office_id, 
@@ -146,7 +146,7 @@ class PurchaseRequestAprv extends Controller
             //     $apprvVendor = (int) $item->apprv;
 
             //     if ($apprvVendor === 0) {
-            //         $confValue = DB::connection("sqlSrvFPI")
+            //         $confValue = DB::connection("sqlSrvBCKI")
             //                         ->table('sec_env_conf')
             //                         ->where('var_id', 'APRVPRNUM') // karena ini PR
             //                         ->value('var_value');
@@ -163,7 +163,7 @@ class PurchaseRequestAprv extends Controller
 
     public function getDetailPR(Request $request)
     {
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('pr_item')
                 ->selectRaw("
                 ROW_NUMBER() OVER (ORDER BY pr_item.pr_id) AS no,
@@ -200,7 +200,7 @@ class PurchaseRequestAprv extends Controller
     public function getDepartment(Request $request)
     {
         try {
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('department')
                                 ->selectRaw("
                                 TRIM(dept_id) as dept_id, TRIM(dept_name) as dept_name, office_id
@@ -217,11 +217,11 @@ class PurchaseRequestAprv extends Controller
 
     public function approvePR1(Request $request)
     {
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         // try {
 
-            $order = DB::connection('sqlSrvFPI')
+            $order = DB::connection('sqlSrvBCKI')
                     ->table('pr_hdr')
                     ->selectRaw('pr_hdr.*, ISNULL(vendor.apprv, 0) as apprv')
                     ->where('pr_id', $request->pr_id)
@@ -234,7 +234,7 @@ class PurchaseRequestAprv extends Controller
             if ($order) {
                 if ($order->dt_aprv == '1900-01-01 00:00:00.000') {
                     if($vendor_apprv == 0){
-                        $save = DB::connection('sqlSrvFPI')
+                        $save = DB::connection('sqlSrvBCKI')
                             ->table('pr_hdr')
                             ->where('pr_id', $request->pr_id)
                             ->update([
@@ -245,7 +245,7 @@ class PurchaseRequestAprv extends Controller
                         $whatsapp = $this->sendNotifPurchase('PR',$request->pr_id,$dept_id);
                     }
                     if($vendor_apprv == 1){
-                        $save = DB::connection('sqlSrvFPI')
+                        $save = DB::connection('sqlSrvBCKI')
                             ->table('pr_hdr')
                             ->where('pr_id', $request->pr_id)
                             ->update([
@@ -257,7 +257,7 @@ class PurchaseRequestAprv extends Controller
                             ]);
                     }
                     if($vendor_apprv == 2){
-                        $save = DB::connection('sqlSrvFPI')
+                        $save = DB::connection('sqlSrvBCKI')
                             ->table('pr_hdr')
                             ->where('pr_id', $request->pr_id)
                             ->update([
@@ -270,11 +270,11 @@ class PurchaseRequestAprv extends Controller
 
                                         
                     return $this->sendResponse('Success Approved', 'Successfully saved');
-                    // DB::connection('sqlSrvFPI')->commit();
+                    // DB::connection('sqlSrvBCKI')->commit();
                     
                     
 /* ============================================= get id emp ============================================= */
-                // $getEmp = DB::connection('sqlSrvFPI')
+                // $getEmp = DB::connection('sqlSrvBCKI')
                 // ->table('department')
                 // ->selectRaw('nik_pr2')
                 // ->whereRaw("dept_id = '" . $dept_id . "'")
@@ -352,7 +352,7 @@ class PurchaseRequestAprv extends Controller
             
         // }
         // catch (\Exception $e) {
-        //     DB::connection('sqlSrvFPI')->rollBack();
+        //     DB::connection('sqlSrvBCKI')->rollBack();
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }
         
@@ -360,11 +360,11 @@ class PurchaseRequestAprv extends Controller
 
     public function approvePR2(Request $request)
     {
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         // try {
 
-            $order = DB::connection('sqlSrvFPI')
+            $order = DB::connection('sqlSrvBCKI')
                     ->table('pr_hdr')
                     ->selectRaw('pr_hdr.*, ISNULL(vendor.apprv, 0) as apprv')
                     ->where('pr_id', $request->pr_id)
@@ -376,7 +376,7 @@ class PurchaseRequestAprv extends Controller
 
                 if ($order->dt_aprv2 == '1900-01-01 00:00:00.000') {
                     if($vendor_apprv == 0){
-                        $save = DB::connection('sqlSrvFPI')
+                        $save = DB::connection('sqlSrvBCKI')
                             ->table('pr_hdr')
                             ->where('pr_id', $request->pr_id)
                             ->update([
@@ -386,7 +386,7 @@ class PurchaseRequestAprv extends Controller
                             ]);
                     }
                     if($vendor_apprv == 2){
-                        $save = DB::connection('sqlSrvFPI')
+                        $save = DB::connection('sqlSrvBCKI')
                             ->table('pr_hdr')
                             ->where('pr_id', $request->pr_id)
                             ->update([
@@ -395,7 +395,7 @@ class PurchaseRequestAprv extends Controller
                                 'aprv2_by' => getAuth($request)->user_id2
                             ]);
                     }
-                    // DB::connection('sqlSrvFPI')->commit();
+                    // DB::connection('sqlSrvBCKI')->commit();
 
                     return $this->sendResponse('Success Approved', 'Successfully saved');
 
@@ -410,25 +410,25 @@ class PurchaseRequestAprv extends Controller
             
         // }
         // catch (\Exception $e) {
-        //     DB::connection('sqlSrvFPI')->rollBack();
+        //     DB::connection('sqlSrvBCKI')->rollBack();
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }        
     }
 
     public function unApprovePR1(Request $request)
     {
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         // try {
                         
-            $order = DB::connection('sqlSrvFPI')
+            $order = DB::connection('sqlSrvBCKI')
                     ->table('pr_hdr')
                     ->where('pr_id', $request->pr_id)
                     ->first();
             
             if ($order) {
                 if ($order->dt_rjc == '1900-01-01 00:00:00.000') {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                             ->table('pr_hdr')
                             ->where('pr_id', $request->pr_id)
                             ->update([
@@ -439,7 +439,7 @@ class PurchaseRequestAprv extends Controller
                                 'rjc2_by' => getAuth($request)->user_id2,
                                 'stat' => 'X'
                             ]);
-                    $save2 = DB::connection('sqlSrvFPI')
+                    $save2 = DB::connection('sqlSrvBCKI')
                             ->table('pr_item')
                             ->where('pr_id', $request->pr_id)
                             ->update([
@@ -447,7 +447,7 @@ class PurchaseRequestAprv extends Controller
                                 'stat' => 'X'
                             ]);
 
-                    // DB::connection('sqlSrvFPI')->commit();
+                    // DB::connection('sqlSrvBCKI')->commit();
 
                     return $this->sendResponse('Success UnApproved 1', 'Successfully saved');
 
@@ -460,25 +460,25 @@ class PurchaseRequestAprv extends Controller
             
         // }
         // catch (\Exception $e) {
-        //     DB::connection('sqlSrvFPI')->rollBack();
+        //     DB::connection('sqlSrvBCKI')->rollBack();
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }
     }
 
     public function unApprovePR2(Request $request)
     {
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         // try {
                         
-            $order = DB::connection('sqlSrvFPI')
+            $order = DB::connection('sqlSrvBCKI')
                     ->table('pr_hdr')
                     ->where('pr_id', $request->pr_id)
                     ->first();
             
             if ($order) {
                 if ($order->dt_rjc2 == '1900-01-01 00:00:00.000') {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                             ->table('pr_hdr')
                             ->where('pr_id', $request->pr_id)
                             ->update([
@@ -490,8 +490,8 @@ class PurchaseRequestAprv extends Controller
                                 'stat' => 'X'
                             ]);
 
-                    // DB::connection('sqlSrvFPI')->commit();
-                    $save2 = DB::connection('sqlSrvFPI')
+                    // DB::connection('sqlSrvBCKI')->commit();
+                    $save2 = DB::connection('sqlSrvBCKI')
                             ->table('pr_item')
                             ->where('pr_id', $request->pr_id)
                             ->update([
@@ -510,7 +510,7 @@ class PurchaseRequestAprv extends Controller
             
         // }
         // catch (\Exception $e) {
-        //     DB::connection('sqlSrvFPI')->rollBack();
+        //     DB::connection('sqlSrvBCKI')->rollBack();
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }
     }
@@ -590,7 +590,7 @@ class PurchaseRequestAprv extends Controller
                 $sqlWhere = $sqlWhere . "and po_hdr.stat = 'C'";
             }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('po_hdr')
                                 ->selectRaw("
                                 branch_office.office, 
@@ -639,7 +639,7 @@ class PurchaseRequestAprv extends Controller
 
     public function getDetailPO(Request $request)
     {
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                 ->table('po_item')
                 ->selectRaw("
                 ROW_NUMBER() OVER (ORDER BY po_item.po_id) AS no,
@@ -679,11 +679,11 @@ class PurchaseRequestAprv extends Controller
 
     public function approvePO1(Request $request)
     {
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         // try {
 
-            $order = DB::connection('sqlSrvFPI')
+            $order = DB::connection('sqlSrvBCKI')
                     ->table('po_hdr')
                     ->where('po_id', $request->po_id)
                     ->first();
@@ -693,7 +693,7 @@ class PurchaseRequestAprv extends Controller
             if ($order) {
 
                 if ($order->dt_aprv == '1900-01-01 00:00:00.000') {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                             ->table('po_hdr')
                             ->where('po_id', $request->po_id)
                             ->update([
@@ -703,7 +703,7 @@ class PurchaseRequestAprv extends Controller
                                 // 'dt_aprv2' => now(),
                                 // 'aprv2_by' => getAuth($request)->user_id2
                             ]);
-                    // DB::connection('sqlSrvFPI')->commit();
+                    // DB::connection('sqlSrvBCKI')->commit();
 
                     // $whatsapp = $this->sendNotifPurchase('PO',$request->po_id,$dept_id); //jika po pakai wa blast di uncomment
                     
@@ -784,7 +784,7 @@ class PurchaseRequestAprv extends Controller
             
         // }
         // catch (\Exception $e) {
-        //     DB::connection('sqlSrvFPI')->rollBack();
+        //     DB::connection('sqlSrvBCKI')->rollBack();
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }
         
@@ -792,11 +792,11 @@ class PurchaseRequestAprv extends Controller
 
     public function approvePO2(Request $request)
     {
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         // try {
 
-            $order = DB::connection('sqlSrvFPI')
+            $order = DB::connection('sqlSrvBCKI')
                     ->table('po_hdr')
                     ->where('po_id', $request->po_id)
                     ->first();
@@ -804,7 +804,7 @@ class PurchaseRequestAprv extends Controller
             if ($order) {
 
                 if ($order->dt_aprv2 == '1900-01-01 00:00:00.000') {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                             ->table('po_hdr')
                             ->where('po_id', $request->po_id)
                             ->update([
@@ -813,7 +813,7 @@ class PurchaseRequestAprv extends Controller
                                 'aprv2_by' => getAuth($request)->user_id2
                             ]);
 
-                    // DB::connection('sqlSrvFPI')->commit();
+                    // DB::connection('sqlSrvBCKI')->commit();
 
                     return $this->sendResponse('Success Approved', 'Successfully saved');
 
@@ -828,24 +828,24 @@ class PurchaseRequestAprv extends Controller
             
         // }
         // catch (\Exception $e) {
-        //     DB::connection('sqlSrvFPI')->rollBack();
+        //     DB::connection('sqlSrvBCKI')->rollBack();
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }        
     }
 
     public function unApprovePO1(Request $request)
     {
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         // try {
-            $order = DB::connection('sqlSrvFPI')
+            $order = DB::connection('sqlSrvBCKI')
                     ->table('po_hdr')
                     ->where('po_id', $request->po_id)
                     ->first();
             
             if ($order) {
                 if ($order->dt_rjc == '1900-01-01 00:00:00.000') {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                             ->table('po_hdr')
                             ->where('po_id', $request->po_id)
                             ->update([
@@ -856,7 +856,7 @@ class PurchaseRequestAprv extends Controller
                                 'rjc2_by' => getAuth($request)->user_id2,
                                 'stat' => 'X'
                             ]);
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                             ->table('po_item')
                             ->where('po_id', $request->po_id)
                             ->update([
@@ -865,7 +865,7 @@ class PurchaseRequestAprv extends Controller
                                 'remark2' => $request->remark2 ?? ''
                             ]);
 
-                    // DB::connection('sqlSrvFPI')->commit();
+                    // DB::connection('sqlSrvBCKI')->commit();
 
                     return $this->sendResponse('Success UnApproved 1', 'Successfully saved');
 
@@ -878,24 +878,24 @@ class PurchaseRequestAprv extends Controller
             
         // }
         // catch (\Exception $e) {
-        //     DB::connection('sqlSrvFPI')->rollBack();
+        //     DB::connection('sqlSrvBCKI')->rollBack();
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }
     }
 
     public function unApprovePO2(Request $request)
     {
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         // try {
-            $order = DB::connection('sqlSrvFPI')
+            $order = DB::connection('sqlSrvBCKI')
                     ->table('po_hdr')
                     ->where('po_id', $request->po_id)
                     ->first();
             
             if ($order) {
                 if ($order->dt_rjc2 == '1900-01-01 00:00:00.000') {
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                             ->table('po_hdr')
                             ->where('po_id', $request->po_id)
                             ->update([
@@ -907,7 +907,7 @@ class PurchaseRequestAprv extends Controller
                                 'stat' => 'X'
                             ]);
 
-                    $save = DB::connection('sqlSrvFPI')
+                    $save = DB::connection('sqlSrvBCKI')
                             ->table('po_item')
                             ->where('po_id', $request->po_id)
                             ->update([
@@ -915,7 +915,7 @@ class PurchaseRequestAprv extends Controller
                                 'stat' => 'X',
                                 'remark2' => $request->remark2 ?? ''
                             ]);                    
-                    // DB::connection('sqlSrvFPI')->commit();
+                    // DB::connection('sqlSrvBCKI')->commit();
 
                     return $this->sendResponse('Success UnApproved 1', 'Successfully saved');
 
@@ -928,7 +928,7 @@ class PurchaseRequestAprv extends Controller
             
         // }
         // catch (\Exception $e) {
-        //     DB::connection('sqlSrvFPI')->rollBack();
+        //     DB::connection('sqlSrvBCKI')->rollBack();
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }
     }
@@ -950,7 +950,7 @@ class PurchaseRequestAprv extends Controller
             //         ->get();
             $getEmp = ''; 
             if($type=='PR'){
-                $getEmp = DB::connection('sqlSrvFPI')
+                $getEmp = DB::connection('sqlSrvBCKI')
                     ->table('department')
                     ->selectRaw('nik_pr2')
                     ->whereRaw("dept_id = '" . $dept_id . "'")
@@ -965,7 +965,7 @@ class PurchaseRequestAprv extends Controller
             //         $sqlWhere = "idemployee = '" . $idemployee . "'";
             //     }
             if($type=='PR'){
-                $getPhone = DB::connection('sqlSrvFPI')
+                $getPhone = DB::connection('sqlSrvBCKI')
                             ->table('department')
                             ->selectRaw('pr2')
                             // ->whereRaw($sqlWhere)
@@ -994,7 +994,7 @@ class PurchaseRequestAprv extends Controller
 
                 // $message = '*FASINDO PROPERTI INDONESIA*'.'\n\n'.'Silahkan lakukan Approval 2 untuk '.$type_name.' Nomor : ' . $po_id . '\n' . 'Silahkan login pada https://viva.kencana.org/approve untuk Approval 2. Terima kasih '; 
                 // /https://viva.kencana.org/approve/09210216/VIVA23081509mardian4673958770904091
-                $getLink = "FDPI" . Carbon::now()->format('ymdH') . rand(10000, 99999);
+                $getLink = "bcki" . Carbon::now()->format('ymdH') . rand(10000, 99999);
                 DB::connection('sqlsrv')
                 ->table('sec_reset_password')
                 ->insert([
@@ -1072,7 +1072,7 @@ class PurchaseRequestAprv extends Controller
                     $sqlWhere = " sec_env_conf.var_id = 'BON' ";
                 }
             }
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                                 ->table('sec_env_conf')
                                 ->selectRaw("
                                     sec_env_conf.var_value

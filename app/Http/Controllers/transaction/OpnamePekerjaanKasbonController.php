@@ -17,7 +17,7 @@ class OpnamePekerjaanKasbonController extends Controller
         $tr_id = trim($request->tr_id);
         $spk_id = trim($request->spk_id);
 
-        $datas = DB::connection('sqlSrvFPI')->select(DB::raw("
+        $datas = DB::connection('sqlSrvBCKI')->select(DB::raw("
             SELECT *
             FROM qc_opname_kasbon
             WHERE tr_id = '$tr_id' AND spk_id = '$spk_id'
@@ -34,7 +34,7 @@ class OpnamePekerjaanKasbonController extends Controller
         $tr_id = $request->tr_id;
         $remark = '';
 
-        $qc_opname = DB::connection('sqlSrvFPI')->selectOne("
+        $qc_opname = DB::connection('sqlSrvBCKI')->selectOne("
             SELECT qc_opname.*
             FROM qc_opname as qc_opname WITH (NOLOCK)
             WHERE qc_opname.tr_id = ? AND qc_opname.spk_id = ?
@@ -44,7 +44,7 @@ class OpnamePekerjaanKasbonController extends Controller
             if ($qc_opname->dt_confirmed != '1900-01-01 00:00:00.000'){
                 if ((int) $request->type == 1) {
                     $arrayReusable = [];
-                    $kb_hdrs = DB::connection('sqlSrvFPI')->select("
+                    $kb_hdrs = DB::connection('sqlSrvBCKI')->select("
                                     SELECT hdr.* 
                                     FROM kb_dtl as dtl 
                                     JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'EX'
@@ -57,7 +57,7 @@ class OpnamePekerjaanKasbonController extends Controller
                     $remark = count($arrayReusable) > 0 ? implode(',', $arrayReusable) : ' ';
                 } elseif ((int) $request->type == 2) {
                     $arrayReusable = [];
-                    $kb_hdrs = DB::connection('sqlSrvFPI')->select("
+                    $kb_hdrs = DB::connection('sqlSrvBCKI')->select("
                                     SELECT hdr.* 
                                     FROM kb_dtl as dtl 
                                     JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'EX'
@@ -70,7 +70,7 @@ class OpnamePekerjaanKasbonController extends Controller
                     $remark = count($arrayReusable) > 0 ? implode(',', $arrayReusable) : ' ';
                 } elseif ((int) $request->type == 3) {
                     $arrayReusable = [];
-                    $kb_hdrs = DB::connection('sqlSrvFPI')->select("
+                    $kb_hdrs = DB::connection('sqlSrvBCKI')->select("
                                     SELECT hdr.* 
                                     FROM kb_dtl as dtl 
                                     JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'OT'
@@ -88,7 +88,7 @@ class OpnamePekerjaanKasbonController extends Controller
                 
                 if ((int) $request->type == 1) {
                     $arrayReusable = [];
-                    $kb_hdrs = DB::connection('sqlSrvFPI')->select("
+                    $kb_hdrs = DB::connection('sqlSrvBCKI')->select("
                                     SELECT hdr.* 
                                     FROM kb_dtl as dtl 
                                     JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'EX'
@@ -101,7 +101,7 @@ class OpnamePekerjaanKasbonController extends Controller
                     $remark = count($arrayReusable) > 0 ? implode(',', $arrayReusable) : ' ';
                 } elseif ((int) $request->type == 2) {
                     $arrayReusable = [];
-                    $kb_hdrs = DB::connection('sqlSrvFPI')->select("
+                    $kb_hdrs = DB::connection('sqlSrvBCKI')->select("
                                     SELECT hdr.* 
                                     FROM kb_dtl as dtl 
                                     JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'EX'
@@ -114,7 +114,7 @@ class OpnamePekerjaanKasbonController extends Controller
                     $remark = count($arrayReusable) > 0 ? implode(',', $arrayReusable) : ' ';
                 } elseif ((int) $request->type == 3) {
                     $arrayReusable = [];
-                    $kb_hdrs = DB::connection('sqlSrvFPI')->select("
+                    $kb_hdrs = DB::connection('sqlSrvBCKI')->select("
                                     SELECT hdr.* 
                                     FROM kb_dtl as dtl 
                                     JOIN kb_hdr as hdr ON hdr.office_id = dtl.office_id AND hdr.tr_id = dtl.tr_id AND hdr.tr_type = 'OT'

@@ -17,7 +17,7 @@ class WarehouseIssueController extends Controller
 
         $getOfficeEnvVar = DB::connection('sqlsrv')
             ->table('sec_env_conf')
-            ->where('entity_id', 'FPI')
+            ->where('entity_id', 'bcki')
             ->where('appl_id', 'WAREHOUSE')
             ->where('user_id2', getAuth($request)->user_id2)
             ->where('var_id', 'OFFICEID')
@@ -25,7 +25,7 @@ class WarehouseIssueController extends Controller
 
         if (!$getOfficeEnvVar) {
 
-            $office = DB::connection('sqlSrvFPI')
+            $office = DB::connection('sqlSrvBCKI')
                 ->table('branch_office')
                 ->selectRaw("office_id, trim(office) + '(' + trim(city) + ')' as office")
                 ->where('active_flag', 'Y')
@@ -33,7 +33,7 @@ class WarehouseIssueController extends Controller
                 ->get();
         } else {
 
-            $office = DB::connection('sqlSrvFPI')
+            $office = DB::connection('sqlSrvBCKI')
                 ->table('branch_office')
                 ->selectRaw("office_id, trim(office) + '(' + trim(city) + ')' as office")
                 ->where('active_flag', 'Y')
@@ -42,7 +42,7 @@ class WarehouseIssueController extends Controller
                 ->get();
         }
 
-        $category = DB::connection('sqlSrvFPI')
+        $category = DB::connection('sqlSrvBCKI')
             ->table('category')
             ->selectRaw("cat_id, trim(descr) as descr")
             ->where('active_flag', 'Y')
@@ -76,7 +76,7 @@ class WarehouseIssueController extends Controller
             $sqlWhere .= "and c.cat_id = '$category' ";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('article as a')
             ->selectRaw("a.article_id, trim(a.description) as description, trim(a.uom) as uom, trim(c.descr) as category, format(b.length, 'N2') as length, trim(b.wh_id) as wh_id,
                     b.bin_id, a.add_id, a.tor_id, b.qty_oh, format(b.wgt_oh, 'N2') as wgt_oh")
@@ -167,13 +167,13 @@ class WarehouseIssueController extends Controller
 
                 $storeDtl = $this->storeTransWH($arrayParams2);
 
-                $currentCustOrdDetil = DB::connection('sqlSrvFPI')
+                $currentCustOrdDetil = DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrderDetil')
                     ->where('CustomerOrderNo', $order_id)
                     ->where('item_num', $item_num)
                     ->first();
 
-                $updateCustOrdDetil = DB::connection('sqlSrvFPI')
+                $updateCustOrdDetil = DB::connection('sqlSrvBCKI')
                     ->table('CustomerOrderDetil')
                     ->where('CustomerOrderNo', $order_id)
                     ->where('item_num', $item_num)
@@ -215,13 +215,13 @@ class WarehouseIssueController extends Controller
 
             $storeDtl = $this->storeTransWH($arrayParams2);
 
-            $currentCustOrdDetil = DB::connection('sqlSrvFPI')
+            $currentCustOrdDetil = DB::connection('sqlSrvBCKI')
                 ->table('CustomerOrderDetil')
                 ->where('CustomerOrderNo', $order_id)
                 ->where('item_num', $item_num)
                 ->first();
 
-            $updateCustOrdDetil = DB::connection('sqlSrvFPI')
+            $updateCustOrdDetil = DB::connection('sqlSrvBCKI')
                 ->table('CustomerOrderDetil')
                 ->where('CustomerOrderNo', $order_id)
                 ->where('item_num', $item_num)
@@ -253,7 +253,7 @@ class WarehouseIssueController extends Controller
         $now = now();
         $sqlWhere = "1=1 ";
 
-        $check_daily_closing = DB::connection('sqlSrvFPI')
+        $check_daily_closing = DB::connection('sqlSrvBCKI')
             ->table('period')
             ->where('dept_id', 'PRODWH')
             ->where('office_id', $office_id)
@@ -262,7 +262,7 @@ class WarehouseIssueController extends Controller
 
         if ($check_daily_closing) {
             try {
-                $max_tr_id = DB::connection('sqlSrvFPI')
+                $max_tr_id = DB::connection('sqlSrvBCKI')
                     ->table('inv_trans_hdr')
                     ->select('tr_id')
                     ->where('tr_type', 'IS')
@@ -271,7 +271,7 @@ class WarehouseIssueController extends Controller
                 $tr_id = 'IS' .  $now->format('d') . $now->format('m') . substr($now->format('Y'), -2) . str_pad((int)substr($max_tr_id, 10, 12) + 1, 3, '0', STR_PAD_LEFT);
 
                 // -- insert inv_hdr
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                     ->table('inv_trans_hdr')
                     ->insert([
                         'office_id' => $office_id,
@@ -279,7 +279,7 @@ class WarehouseIssueController extends Controller
                         'tr_id' => $tr_id,
                         'wh_id' => $wh_id,
                         'bin_id' => $bin_id,
-                        'remark' => 'WAREHOUSE ISSUE FDPI',
+                        'remark' => 'WAREHOUSE ISSUE bcki',
                         'tr_date' => now(),
                         'user_id' => getAuth($request)->user_id2,
                         'id_site' => $site_id,
@@ -298,7 +298,7 @@ class WarehouseIssueController extends Controller
                     $tor_id = $item['tor_id'] ?? '';
                     $qty_oh = (int) $item['qty_oh'];
 
-                    $articleDetail = DB::connection('sqlSrvFPI')
+                    $articleDetail = DB::connection('sqlSrvBCKI')
                         ->table('article')
                         ->where('active_flag', 'Y')
                         ->where('article_id', $article_id)
@@ -311,7 +311,7 @@ class WarehouseIssueController extends Controller
 
                     $wgt_iss = (int) $qty_iss * (float) $articleDetail->berat;
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('inv_trans_dtl')
                         ->insert([
                             'office_id' => $office_id,
@@ -336,7 +336,7 @@ class WarehouseIssueController extends Controller
                             'user_id' => getAuth($request)->user_id2
                         ]);
 
-                    $getCurrentInvBal = DB::connection("sqlSrvFPI")
+                    $getCurrentInvBal = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->selectRaw("isnull(qty_awal, 0) as qty_awal, isnull(qty_oh, 0) as qty_oh, qty_rcv, wgt_oh, wgt_rcv, qty_iss, qty_ia, qty_waste, isnull(wgt_awal, 0) as wgt_awal, wgt_iss, wgt_ia, wgt_waste")
                         ->where('office_id', $office_id)
@@ -346,7 +346,7 @@ class WarehouseIssueController extends Controller
                         ->whereRaw($sqlWhere)
                         ->first();
 
-                    $getQtyTransInvDetil = DB::connection('sqlSrvFPI')
+                    $getQtyTransInvDetil = DB::connection('sqlSrvBCKI')
                         ->table('inv_trans_dtl')
                         ->selectRaw('sum(qty) as qty, sum(wgt) as wgt')
                         ->where('office_id', $office_id)
@@ -358,7 +358,7 @@ class WarehouseIssueController extends Controller
                         ->where('length', $length)
                         ->first();
 
-                    $getCurrentInvBal = DB::connection("sqlSrvFPI")
+                    $getCurrentInvBal = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->selectRaw("isnull(qty_awal, 0) as qty_awal, qty_iss, qty_rcv, qty_ia, qty_waste, isnull(wgt_awal, 0) as wgt_awal, wgt_iss, wgt_rcv, wgt_ia, wgt_waste")
                         ->where('office_id', $office_id)
@@ -370,7 +370,7 @@ class WarehouseIssueController extends Controller
                     $hitung_qty_oh = $getCurrentInvBal->qty_awal + $getCurrentInvBal->qty_rcv - (int) $getQtyTransInvDetil->qty + (int) $getCurrentInvBal->qty_ia - (int) $getCurrentInvBal->qty_waste;
                     $hitung_wgt_oh = $getCurrentInvBal->wgt_awal + $getCurrentInvBal->wgt_rcv - (float) $getQtyTransInvDetil->wgt + (float) $getCurrentInvBal->wgt_ia - (float) $getCurrentInvBal->wgt_waste;
 
-                    DB::connection("sqlSrvFPI")
+                    DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->where('office_id', $office_id)
                         ->where('article_id', $article_id)
@@ -415,7 +415,7 @@ class WarehouseIssueController extends Controller
         $sqlWhere = "1=1 ";
         $now = now();
 
-        $checkClosing = DB::connection('sqlSrvFPI')
+        $checkClosing = DB::connection('sqlSrvBCKI')
             ->table('period_daily')
             ->where('office_id', $office_id)
             ->where('dept_id', 'PRODWH')
@@ -424,28 +424,28 @@ class WarehouseIssueController extends Controller
             ->first();
 
         if (!$checkClosing) {
-            $deleteIssue = DB::connection("sqlSrvFPI")
+            $deleteIssue = DB::connection("sqlSrvBCKI")
                 ->table('inv_trans_dtl')
                 ->where('tr_id', $tr_id)
                 ->where('tr_type', 'IS')
                 ->where('seq_id', $seq_id)
                 ->delete();
 
-            $checkCurrentIssue = DB::connection('sqlSrvFPI')
+            $checkCurrentIssue = DB::connection('sqlSrvBCKI')
                 ->table('inv_trans_dtl')
                 ->where('tr_id', $tr_id)
                 ->where('tr_type', 'IS')
                 ->first();
 
             if (!$checkCurrentIssue) {
-                $deleteIssue = DB::connection("sqlSrvFPI")
+                $deleteIssue = DB::connection("sqlSrvBCKI")
                     ->table('inv_trans_hdr')
                     ->where('tr_id', $tr_id)
                     ->where('tr_type', 'IS')
                     ->delete();
             }
 
-            $getQtyTransInvDetil = DB::connection('sqlSrvFPI')
+            $getQtyTransInvDetil = DB::connection('sqlSrvBCKI')
                 ->table('inv_trans_dtl')
                 ->selectRaw('sum(qty) as qty, sum(wgt) as wgt')
                 ->where('office_id', $office_id)
@@ -456,7 +456,7 @@ class WarehouseIssueController extends Controller
                 ->where('period', $now->format('Y') . $now->format('m'))
                 ->first();
 
-            $getCurrentInvBal = DB::connection("sqlSrvFPI")
+            $getCurrentInvBal = DB::connection("sqlSrvBCKI")
                 ->table('inv_bal')
                 ->selectRaw("isnull(qty_awal, 0) as qty_awal, qty_rcv, qty_iss, qty_ia, qty_waste, isnull(wgt_awal, 0) as wgt_awal, wgt_iss, wgt_ia, wgt_waste")
                 ->where('office_id', $office_id)
@@ -468,7 +468,7 @@ class WarehouseIssueController extends Controller
             $hitung_qty_oh = $getCurrentInvBal->qty_awal + $getCurrentInvBal->qty_rcv - (int) $getQtyTransInvDetil->qty + (int) $getCurrentInvBal->qty_ia - (int) $getCurrentInvBal->qty_waste;
             $hitung_wgt_oh = $getCurrentInvBal->wgt_awal + $getCurrentInvBal->qty_rcv - (float) $getQtyTransInvDetil->wgt + (float) $getCurrentInvBal->wgt_ia - (float) $getCurrentInvBal->wgt_waste;
 
-            $update = DB::connection("sqlSrvFPI")
+            $update = DB::connection("sqlSrvBCKI")
                 ->table('inv_bal')
                 ->where('office_id', $office_id)
                 ->where('article_id', $article_id)
@@ -496,7 +496,7 @@ class WarehouseIssueController extends Controller
 
         $tr_id = $request->tr_id;
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('inv_trans_hdr as a')
             ->selectRaw("a.tr_id, a.office_id, b.article_id, b.seq_id, trim(c.description) as description, trim(c.uom) as uom, trim(d.descr) as category, format(c.length, 'N2') as length, trim(b.wh_id) as wh_id,
                     b.bin_id, b.add_id, b.tor_id, format(b.qty, 'N0') as qty, format(b.wgt, 'N2') as wgt")
@@ -514,7 +514,7 @@ class WarehouseIssueController extends Controller
 
         $office_id = $request->office_id;
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('whouse')
             ->selectRaw("trim(wh_id) as wh_id, trim(descr) + '(' + trim(wh_id) + ')' as descr")
             ->where('active_flag', 'Y')
@@ -531,7 +531,7 @@ class WarehouseIssueController extends Controller
         $office_id = $request->office_id;
         $wh_id = $request->wh_id;
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('wh_bin')
             ->selectRaw("bin_id, trim(descr) + '(' + trim(wh_id) + ')' + '(' + trim(bin_id) + ')' as descr")
             ->where('active_flag', 'Y')
@@ -549,7 +549,7 @@ class WarehouseIssueController extends Controller
         $office = $request->office;
         $now = now();
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
             ->table('inv_trans_hdr')
             ->selectRaw("tr_id, wh_id, bin_id, format(tr_date, 'dd/MM/yyyy') as tr_date, user_id")
             ->where('tr_type', 'IS')

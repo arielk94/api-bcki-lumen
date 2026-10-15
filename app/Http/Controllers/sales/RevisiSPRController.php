@@ -59,7 +59,7 @@ class RevisiSPRController extends Controller
       $whereRaw .= " AND cor.tr_type = '$type'";
     }
 
-    $datas = DB::connection('sqlSrvFPI')
+    $datas = DB::connection('sqlSrvBCKI')
               ->table('CustomerOrderRevision as cor')
               ->selectRaw('
                 cor.order_id,
@@ -91,7 +91,7 @@ class RevisiSPRController extends Controller
 
     foreach ($datas as $key => $value) {
 
-      $result = DB::connection('sqlSrvFPI')
+      $result = DB::connection('sqlSrvBCKI')
         ->table('doc_attach')
         ->where('tr_id', '=', $value->tr_id)
         ->get();
@@ -107,7 +107,7 @@ class RevisiSPRController extends Controller
   {
     $customer = $request->search;
     if ($customer != '') {
-      $result = DB::connection('sqlSrvFPI')
+      $result = DB::connection('sqlSrvBCKI')
         ->table('Customer')
         ->selectRaw("top 20 CustomerId, NamaCustomer")
         ->whereRaw("active_flag = 'Y' and NamaCustomer like '%$customer%' or CustomerId like '%$customer%'")
@@ -115,7 +115,7 @@ class RevisiSPRController extends Controller
         ->get();
       return $this->sendResponse($result, 'Successfully get Customer');
     } else {
-      $result = DB::connection('sqlSrvFPI')
+      $result = DB::connection('sqlSrvBCKI')
         ->table('Customer')
         ->selectRaw("top 20 CustomerId, NamaCustomer")
         ->where('active_flag', '=', 'Y')
@@ -128,7 +128,7 @@ class RevisiSPRController extends Controller
   public function getCustOrder(Request $request)
   {
     $customer = $request->cust_id;
-      $result = DB::connection('sqlSrvFPI')
+      $result = DB::connection('sqlSrvBCKI')
         ->table('CustomerOrder')
         ->selectRaw("top 20 order_id")
         ->whereRaw("CustomerId = '$customer'")
@@ -141,7 +141,7 @@ class RevisiSPRController extends Controller
   {
     $order_id = $request->order_id;
     try{
-      $result = DB::connection('sqlSrvFPI')
+      $result = DB::connection('sqlSrvBCKI')
         ->table('v_list_penjualan')
         ->selectRaw("
           order_id,
@@ -163,7 +163,7 @@ class RevisiSPRController extends Controller
   public function activateRevisiSPR(Request $request) {
     try{
       $active_flag =  $request->active_flag;
-      DB::connection('sqlSrvFPI')
+      DB::connection('sqlSrvBCKI')
         ->table('CustomerOrderRevision')
         ->where('order_id', '=', $request->order_id)
         ->update([
@@ -208,12 +208,12 @@ class RevisiSPRController extends Controller
       }
 
       if ($fileAttachments) {
-        DB::connection('sqlSrvFPI')
+        DB::connection('sqlSrvBCKI')
           ->table('doc_attach')
           ->insert($fileAttachments);
       }
 
-      DB::connection('sqlSrvFPI')
+      DB::connection('sqlSrvBCKI')
         ->table('CustomerOrderRevision')
         ->insert([
           'tr_id' => $revID,
@@ -233,7 +233,7 @@ class RevisiSPRController extends Controller
         ]);
 
       if($request->tr_type == 'CNL'){
-        DB::connection('sqlSrvFPI')
+        DB::connection('sqlSrvBCKI')
           ->table('CustomerOrder')
           ->where('order_id', '=', $request->order_id)
           ->update([
@@ -242,7 +242,7 @@ class RevisiSPRController extends Controller
             'dt_cancel' => $request->tr_date
           ]);
 
-        DB::connection('sqlSrvFPI')
+        DB::connection('sqlSrvBCKI')
           ->table('house_unit')
           ->where('id_house', '=', $request->id_house)
           ->update([
@@ -258,7 +258,7 @@ class RevisiSPRController extends Controller
 
   private function generateSPRRevisiID()
   {
-    $lastData = DB::connection('sqlSrvFPI')
+    $lastData = DB::connection('sqlSrvBCKI')
       ->table('CustomerOrderRevision')
       ->select('tr_id')
       ->orderBy('tr_id', 'desc')

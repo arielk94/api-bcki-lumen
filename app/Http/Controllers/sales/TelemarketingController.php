@@ -85,7 +85,7 @@ class TelemarketingController extends Controller
                 $sqlWhere.= " and telemarketing_status.customer_respon in ('c3', 'c5')";
             }
         }
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('telemarketing_status')
                     ->selectraw("
                         telemarketing_status.id, 
@@ -136,7 +136,7 @@ class TelemarketingController extends Controller
                     
         $datas->map(function ($data) {
             // Ambil file berdasarkan ID dari data utama (id_telemarketing_ref)
-            $data->Files = DB::connection('sqlSrvFPI')
+            $data->Files = DB::connection('sqlSrvBCKI')
                 ->table('telemarketing_file')
                 ->selectRaw("id, nama_document, doc_path, doc_file, type_file, dt_created, created_by")
                 ->where('id_telemarketing_ref', $data->id) // $data->id adalah telemarketing_status.id
@@ -162,7 +162,7 @@ class TelemarketingController extends Controller
             $sqlWhere.= " and Customer.NamaCustomer like '%$NamaCustomer%'";
         }
 
-        $result = DB::connection('sqlSrvFPI')
+        $result = DB::connection('sqlSrvBCKI')
                 ->table('Customer')
                 ->selectRaw('DISTINCT CustomerId,NamaCustomer,Alamat')
                 ->whereRaw($sqlWhere)
@@ -198,7 +198,7 @@ class TelemarketingController extends Controller
         $dateMonth = date("m");
         $gen_cluster_id = '';
 
-        $getLastTrID =  DB::connection('sqlSrvFPI')
+        $getLastTrID =  DB::connection('sqlSrvBCKI')
                         ->table('Customer')
                         ->max('CustomerId');
 
@@ -216,7 +216,7 @@ class TelemarketingController extends Controller
     {
         try
         {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
             ->table('Customer')
             ->where('CustomerId', $request->CustomerId)
             ->first(); //cek ada data
@@ -224,7 +224,7 @@ class TelemarketingController extends Controller
             if($data)
             {
                 $cust_type = $this->insCustType($request->cust_type);
-                $update = DB::connection('sqlSrvFPI')
+                $update = DB::connection('sqlSrvBCKI')
                 ->table('Customer')
                 ->where('CustomerId', $request->CustomerId)
                 ->update([
@@ -271,7 +271,7 @@ class TelemarketingController extends Controller
                 $CustID = $this->genCustID($request->CustomerId);
                 // $cust_type = $this->insCustType($request->cust_type);
 
-                $insert = DB::connection('sqlSrvFPI')
+                $insert = DB::connection('sqlSrvBCKI')
                 ->table('Customer')
                 ->insert([
                     'CustomerId' => $CustID,
@@ -322,24 +322,24 @@ class TelemarketingController extends Controller
 
     public function deleteCustomer(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
         
         try {
             
-            $sales = DB::connection('sqlSrvFPI')
+            $sales = DB::connection('sqlSrvBCKI')
             ->table('Customer')
             ->where('CustomerId', $request->CustomerId)
             ->first();
             
             if ($sales) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                 ->table('Customer')
                 ->where('CustomerId', $request->CustomerId)
                 ->update([
                     'active_flag' => 'N',
                     'dt_modified' => now(),
                 ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
                 
                 return $this->sendResponse('Success Update', 'Successfully Delete Customer');
             } else {
@@ -348,31 +348,31 @@ class TelemarketingController extends Controller
             
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }      
     }
 
     public function activateCustomer(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
         
         try {
             
-            $sales = DB::connection('sqlSrvFPI')
+            $sales = DB::connection('sqlSrvBCKI')
             ->table('Customer')
             ->where('CustomerId', $request->CustomerId)
             ->first();
             
             if ($sales) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                 ->table('Customer')
                 ->where('CustomerId', $request->CustomerId)
                 ->update([
                     'active_flag' => 'Y',
                     'dt_modified' => now(),
                 ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
                 
                 return $this->sendResponse('Success Update', 'Successfully Activate Customer');
             } else {
@@ -381,7 +381,7 @@ class TelemarketingController extends Controller
             
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }      
     }
@@ -390,7 +390,7 @@ class TelemarketingController extends Controller
     {
         try
         {
-            $main_id = DB::connection('sqlSrvFPI')
+            $main_id = DB::connection('sqlSrvBCKI')
                 ->table('telemarketing_status')
                 ->insertGetId([
                     'CustomerId' => $request->CustomerId ? $request->CustomerId : ' ',
@@ -422,7 +422,7 @@ class TelemarketingController extends Controller
         {   
             $CustID = $this->genCustID($request->CustomerId);
                 // $cust_type = $this->insCustType($request->cust_type);
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
             ->table('Customer')
             ->insert([
                 'CustomerId' => $CustID,
@@ -464,7 +464,7 @@ class TelemarketingController extends Controller
                 'PerTanggal' => $request->PerTanggal ? $request->PerTanggal : now()
             ]);
             
-            $main_id = DB::connection('sqlSrvFPI')
+            $main_id = DB::connection('sqlSrvBCKI')
             ->table('telemarketing_status')
             ->insertGetId([
                 'CustomerId' => $CustID,
@@ -492,17 +492,17 @@ class TelemarketingController extends Controller
 
     public function saveFeedbackTelemarketing(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
         
         try {
             
-            $tele = DB::connection('sqlSrvFPI')
+            $tele = DB::connection('sqlSrvBCKI')
             ->table('telemarketing_status')
             ->where('id', $request->id)
             ->first();
             
             if ($tele) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                 ->table('telemarketing_status')
                 ->where('id', $request->id)
                 ->update([
@@ -515,7 +515,7 @@ class TelemarketingController extends Controller
                 // dd($request->id);   
                 $this->sendNotifWaFeedbackTelemarketing($request->id);      
 
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
                 
                 return $this->sendResponse('Success Update', 'Successfully Update Feedback Telemarketing');
             } else {
@@ -524,31 +524,31 @@ class TelemarketingController extends Controller
             
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }      
     }
 
     public function deactivateTelemarketing(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
         
         try {
             
-            $tele = DB::connection('sqlSrvFPI')
+            $tele = DB::connection('sqlSrvBCKI')
             ->table('telemarketing_status')
             ->where('id', $request->id)
             ->first();
             
             if ($tele) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                 ->table('telemarketing_status')
                 ->where('id', $request->id)
                 ->update([
                     'active_flag' => 'N',
                     'tr_date' => now(),
                 ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
                 
                 return $this->sendResponse('Success Update', 'Successfully Deactivate Telemarketing');
             } else {
@@ -557,31 +557,31 @@ class TelemarketingController extends Controller
             
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }      
     }
 
     public function activateTelemarketing(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
         
         try {
             
-            $tele = DB::connection('sqlSrvFPI')
+            $tele = DB::connection('sqlSrvBCKI')
             ->table('telemarketing_status')
             ->where('id', $request->id)
             ->first();
             
             if ($tele) {
-                $save = DB::connection('sqlSrvFPI')
+                $save = DB::connection('sqlSrvBCKI')
                 ->table('telemarketing_status')
                 ->where('id', $request->id)
                 ->update([
                     'active_flag' => 'Y',
                     'tr_date' => now(),
                 ]);
-                DB::connection('sqlSrvFPI')->commit();
+                DB::connection('sqlSrvBCKI')->commit();
                 
                 return $this->sendResponse('Success Update', 'Successfully Activate Telemarketing');
             } else {
@@ -590,7 +590,7 @@ class TelemarketingController extends Controller
             
         }
         catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }      
     }
@@ -605,7 +605,7 @@ class TelemarketingController extends Controller
 
         $max_item_num = 0;
         if (!empty($kept_files)) {
-            $max_item_num = DB::connection('sqlSrvFPI')
+            $max_item_num = DB::connection('sqlSrvBCKI')
                 ->table('telemarketing_file')
                 ->where('id_telemarketing_ref', $main_id)
                 ->whereIn('doc_file', $kept_files)
@@ -613,7 +613,7 @@ class TelemarketingController extends Controller
         }
 
         // 2. Dapatkan file lama dan hapus yang tidak ada di kept_files
-        $listAttch = DB::connection('sqlSrvFPI')
+        $listAttch = DB::connection('sqlSrvBCKI')
             ->table('telemarketing_file')
             ->where('id_telemarketing_ref', $main_id)
             ->get();
@@ -630,7 +630,7 @@ class TelemarketingController extends Controller
         }
 
         if (!empty($files_to_delete_db)) {
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('telemarketing_file')
                 ->whereIn('id', $files_to_delete_db)
                 ->delete();
@@ -641,7 +641,7 @@ class TelemarketingController extends Controller
         $start_item_num = $max_item_num ? $max_item_num + 1 : 1;
         
         // Ambil ID terakhir untuk handle manual increment jika Identity OFF
-        $lastId = DB::connection('sqlSrvFPI')->table('telemarketing_file')->max('id') ?? 0;
+        $lastId = DB::connection('sqlSrvBCKI')->table('telemarketing_file')->max('id') ?? 0;
 
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $key => $file) {
@@ -668,7 +668,7 @@ class TelemarketingController extends Controller
         }
 
         if ($fileAttachments) {
-            DB::connection('sqlSrvFPI')->table('telemarketing_file')->insert($fileAttachments);
+            DB::connection('sqlSrvBCKI')->table('telemarketing_file')->insert($fileAttachments);
         }
     }
 
@@ -676,23 +676,23 @@ class TelemarketingController extends Controller
     {
         $Telepon = $request->Telepon;
 
-        $CustomerId = DB::connection('sqlSrvFPI')
+        $CustomerId = DB::connection('sqlSrvBCKI')
                     ->table('Customer')
                     ->where('Telepon', $Telepon)
                     ->pluck('CustomerId');
         // dd($CustomerId);
-        // $telemarketing_ref = DB::connection('sqlSrvFPI')
+        // $telemarketing_ref = DB::connection('sqlSrvBCKI')
         //             ->table('telemarketing_status')
         //             ->whereIn('CustomerId', $CustomerId)
         //             ->pluck('id');
         // // dd($telemarketing_ref);
-        // $telemarketing_file = DB::connection('sqlSrvFPI')
+        // $telemarketing_file = DB::connection('sqlSrvBCKI')
         //             ->table('telemarketing_file')
         //             ->whereIn('id_telemarketing_ref', $telemarketing_ref)
         //             ->get();
         // dd($telemarketing_file);
 
-        $datas = DB::connection('sqlSrvFPI')
+        $datas = DB::connection('sqlSrvBCKI')
                     ->table('telemarketing_status')
                     ->selectraw("
                         telemarketing_status.id, 
@@ -743,7 +743,7 @@ class TelemarketingController extends Controller
                     
         $datas->map(function ($data) {
             // Ambil file berdasarkan ID dari data utama (id_telemarketing_ref)
-            $data->Files = DB::connection('sqlSrvFPI')
+            $data->Files = DB::connection('sqlSrvBCKI')
                 ->table('telemarketing_file')
                 ->selectRaw("id, nama_document, doc_path, doc_file, type_file, dt_created, created_by")
                 ->where('id_telemarketing_ref', $data->id) // $data->id adalah telemarketing_status.id
@@ -763,7 +763,7 @@ class TelemarketingController extends Controller
     public function sendNotifWaTelemarketing($main_id)
     {
         try {
-            $phone = DB::connection('sqlSrvFPI')
+            $phone = DB::connection('sqlSrvBCKI')
                     ->table('appl_constant')
                     ->where('key_code', 'CUST_CARE')
                     ->pluck('str2');
@@ -833,14 +833,14 @@ class TelemarketingController extends Controller
 
     public function sendNotifWaFeedbackTelemarketing($id){        
         try {
-            // $phone = DB::connection('sqlSrvFPI')
+            // $phone = DB::connection('sqlSrvBCKI')
             //         ->table('appl_constant')
             //         ->where('key_code', 'CUST_CARE')
             //         ->pluck('str2');
 
             // $arrPhone = $phone->toArray();
             // dd($id);
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('telemarketing_status')
                 ->leftJoin('customer', 'telemarketing_status.customerid', '=', 'customer.customerid')
                 ->select('telemarketing_status.*', 'customer.NamaCustomer', 'customer.telepon')

@@ -74,7 +74,7 @@ class PaymentRequestController extends Controller
                 $sqlWhere .= "and a.dt_permit2 = '1900-01-01 00:00:00.000'";
             }
             
-            $inv_list = DB::connection("sqlSrvFPI")
+            $inv_list = DB::connection("sqlSrvBCKI")
                 ->table('purc_inv_mast as a')
                 ->selectRaw("
                             a.office_id,
@@ -166,7 +166,7 @@ class PaymentRequestController extends Controller
                 }
             }
             
-            $inv_list = DB::connection("sqlSrvFPI")
+            $inv_list = DB::connection("sqlSrvBCKI")
                 ->table('payment_request_print as a')
                 ->selectRaw("
                             a.tr_id,
@@ -197,7 +197,7 @@ class PaymentRequestController extends Controller
             $inv_list = collect();
 
             foreach($request->inv_list as $inv){
-                $data_detil = DB::connection("sqlSrvFPI")
+                $data_detil = DB::connection("sqlSrvBCKI")
                             ->table('purc_inv_item as a')
                             ->selectRaw("
                                         a.office_id,
@@ -264,7 +264,7 @@ class PaymentRequestController extends Controller
         $gen_cluster_id = '';
 
         
-       $getLastTrID = DB::connection('sqlSrvFPI')
+       $getLastTrID = DB::connection('sqlSrvBCKI')
                             ->table('payment_request_print')
                             ->select(DB::raw('TRIM(tr_id) as tr_id'))
                             ->where('tr_id', 'like', '%' . $dateNow . '%')
@@ -297,7 +297,7 @@ class PaymentRequestController extends Controller
             $total_amt_pph = 0;
 
             foreach ($request->inv_list as $inv) {
-                $data_office = DB::connection("sqlSrvFPI")
+                $data_office = DB::connection("sqlSrvBCKI")
                     ->table('purc_inv_mast as a')
                     ->selectRaw("
                         a.office_id,
@@ -312,7 +312,7 @@ class PaymentRequestController extends Controller
                     ->where('inv_id', $inv)
                     ->first();
 
-                $data_header = DB::connection("sqlSrvFPI")
+                $data_header = DB::connection("sqlSrvBCKI")
                     ->table('purc_inv_mast as a')
                     ->selectRaw("
                         a.office_id,
@@ -350,7 +350,7 @@ class PaymentRequestController extends Controller
                     ->where('inv_id', $inv)
                     ->first();
 
-                $data_detil = DB::connection("sqlSrvFPI")
+                $data_detil = DB::connection("sqlSrvBCKI")
                     ->table('purc_inv_item as a')
                     ->selectRaw("
                         a.office_id,
@@ -471,7 +471,7 @@ class PaymentRequestController extends Controller
     private function lockUnlockInvoice($noInv, $user_id2, $flag)
     {        
         try {
-            $PoHdr = DB::connection("sqlSrvFPI")
+            $PoHdr = DB::connection("sqlSrvBCKI")
                 ->table('purc_inv_mast')
                 ->where('inv_id', $noInv)
                 ->update([
@@ -500,7 +500,7 @@ class PaymentRequestController extends Controller
     {        
         try {
            
-            $save_item = DB::connection('sqlSrvFPI')
+            $save_item = DB::connection('sqlSrvBCKI')
                     ->table('payment_request_print_log')
                     ->insert([
                         'tr_id' => $noPrint,
@@ -533,7 +533,7 @@ class PaymentRequestController extends Controller
     {        
         try {
            
-            $save_item = DB::connection('sqlSrvFPI')
+            $save_item = DB::connection('sqlSrvBCKI')
                     ->table('payment_request_print')
                     ->insert([
                         'tr_id' => $noPrint,
@@ -566,7 +566,7 @@ class PaymentRequestController extends Controller
         try {
             $tr_id = $request->tr_id ?? '';
 
-            $query = DB::connection("sqlSrvFPI")
+            $query = DB::connection("sqlSrvBCKI")
                             ->table('payment_request_print as prp')
                             ->selectRaw("
                                         pii.office_id,
@@ -618,7 +618,7 @@ class PaymentRequestController extends Controller
             }
             $datas = $query->get();
             
-            $total = DB::connection("sqlSrvFPI")
+            $total = DB::connection("sqlSrvBCKI")
                             ->table('payment_request_print as prp')
                             ->selectRaw("
                                         SUM(amt_subtotal) as amt_subtotal,
@@ -638,7 +638,7 @@ class PaymentRequestController extends Controller
 
             $invIds = $datas->pluck('inv_id')->unique()->toArray();
 
-            $logs = DB::connection("sqlSrvFPI")
+            $logs = DB::connection("sqlSrvBCKI")
                             ->table('payment_request_print_log as a')
                             ->selectRaw("
                                         a.tr_id,
@@ -680,7 +680,7 @@ class PaymentRequestController extends Controller
             $all_success3 = true;
             
             foreach ($request->tr_id as $detail) {
-                $query = DB::connection("sqlSrvFPI")
+                $query = DB::connection("sqlSrvBCKI")
                                 ->table('payment_request_print as prp')
                                 ->selectRaw("prp.inv_id")
                                 ->where('prp.tr_id', $detail)
@@ -725,7 +725,7 @@ class PaymentRequestController extends Controller
     private function deletePrintLock($noInv, $user_id2, $flag)
     {        
         try {
-            $PoHdr = DB::connection("sqlSrvFPI")
+            $PoHdr = DB::connection("sqlSrvBCKI")
                 ->table('payment_request_print')
                 ->where('tr_id', $noInv)
                 ->update([
@@ -754,7 +754,7 @@ class PaymentRequestController extends Controller
     {
         try {            
             if($request->permit_no == 1){
-                $updatePermit = DB::connection("sqlSrvFPI")
+                $updatePermit = DB::connection("sqlSrvBCKI")
                     ->table('purc_inv_mast')
                     ->where('inv_id', $request->inv_id)
                     ->update([
@@ -762,7 +762,7 @@ class PaymentRequestController extends Controller
                                 'dt_permit1' => now('Asia/Jakarta')->format('Y-m-d H:i:s')
                             ]);
             }else if($request->permit_no == 2){
-                $updatePermit = DB::connection("sqlSrvFPI")
+                $updatePermit = DB::connection("sqlSrvBCKI")
                     ->table('purc_inv_mast')
                     ->where('inv_id', $request->inv_id)
                     ->update([

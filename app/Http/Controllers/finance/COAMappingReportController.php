@@ -17,7 +17,7 @@ class COAMappingReportController extends Controller
     public function getDistinctRep(Request $request)
     {
         try {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger_map')
                 ->selectRaw("DISTINCT TRIM(rep_id) as rep_id")
                 ->whereNotNull('rep_id')
@@ -76,7 +76,7 @@ class COAMappingReportController extends Controller
 
             // 3. Query Raw Data dari DB (Menggabungkan Akun & Baris Formula via UNION ALL)
             // Query 3A: Data Akun Berelasi
-            $queryAccounts = DB::connection('sqlSrvFPI')
+            $queryAccounts = DB::connection('sqlSrvBCKI')
                 ->table('v_gledger_report_map')
                 ->join('g_ledger_map', function ($join) {
                     $join->on('v_gledger_report_map.rep_id', '=', 'g_ledger_map.rep_id')
@@ -119,7 +119,7 @@ class COAMappingReportController extends Controller
                 });
 
             // Query 3B: Khusus Baris Formula (sub_cat LIKE '=%')
-            $queryFormulas = DB::connection('sqlSrvFPI')
+            $queryFormulas = DB::connection('sqlSrvBCKI')
                 ->table('v_gledger_report_map')
                 ->select([
                     'rep_id',

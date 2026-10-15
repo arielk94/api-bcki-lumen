@@ -32,7 +32,7 @@ class ChartofAccountController extends Controller
             $sqlWhere .= " and active_flag = '$active_flag'";
         }
 
-        $datas = DB::connection('sqlSrvFPI')->table('g_ledger')
+        $datas = DB::connection('sqlSrvBCKI')->table('g_ledger')
             ->selectraw("
                 TRIM(ac_num) as ac_num, 
                 TRIM(ac_num) + '-' + TRIM(ac_name) as ac_description, 
@@ -56,7 +56,7 @@ class ChartofAccountController extends Controller
     {
         try {    
 
-            $save = DB::connection('sqlSrvFPI')->table('g_ledger')
+            $save = DB::connection('sqlSrvBCKI')->table('g_ledger')
                     ->insert([
                         'ac_num' => $request->ac_num ? $request->ac_num : " ",
                         'ac_par' => $request->ac_par ? $request->ac_par : " ",
@@ -79,14 +79,14 @@ class ChartofAccountController extends Controller
     {
         try {    
 
-            $data = DB::connection('sqlSrvFPI')->table('g_ledger')
+            $data = DB::connection('sqlSrvBCKI')->table('g_ledger')
                     ->selectRaw('*')
                     ->where('ac_num', $request->ac_num)
                     ->first();
 
             if ($data) {
 
-                $save = DB::connection('sqlSrvFPI')->table('g_ledger')
+                $save = DB::connection('sqlSrvBCKI')->table('g_ledger')
                         ->where('ac_num', $request->ac_num)
                         ->update([
                             'active_flag' => $request->status

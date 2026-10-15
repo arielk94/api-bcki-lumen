@@ -22,7 +22,7 @@ class gLedgerMapController extends Controller
                 $sqlWhere .= " AND cat = '" . $request->cat . "'";
             }
 
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger_map')
                 ->whereRaw($sqlWhere)
                 ->orderBy('rep_id', 'ASC')
@@ -46,7 +46,7 @@ class gLedgerMapController extends Controller
     //         // }
 
     //         // Find all matching active accounts in g_ledger that start with $acc_num
-    //         $ledgers = DB::connection('sqlSrvFPI')
+    //         $ledgers = DB::connection('sqlSrvBCKI')
     //             ->table('g_ledger')
     //             ->where('active_flag', 'Y')
     //             ->where('ac_num', 'like', $acc_num . '%')
@@ -66,7 +66,7 @@ class gLedgerMapController extends Controller
     //         $cat = trim($request->cat);
 
     //         // Auto-calculate sequence: use existing sequence for the same category, or increment max sequence
-    //         $existing_seq = DB::connection('sqlSrvFPI')
+    //         $existing_seq = DB::connection('sqlSrvBCKI')
     //             ->table('g_ledger_map')
     //             ->where('rep_id', $rep_id)
     //             ->where('cat', $cat)
@@ -76,7 +76,7 @@ class gLedgerMapController extends Controller
     //         if ($existing_seq !== null) {
     //             $cat_seq = $existing_seq;
     //         } else {
-    //             $max_seq = DB::connection('sqlSrvFPI')
+    //             $max_seq = DB::connection('sqlSrvBCKI')
     //                 ->table('g_ledger_map')
     //                 ->where('rep_id', $rep_id)
     //                 ->max('cat_seq');
@@ -87,7 +87,7 @@ class gLedgerMapController extends Controller
     //             $curr_acc_num = trim($ledger->ac_num);
 
     //             // Avoid inserting if this exact mapping (rep_id, cat, sub_cat, acc_num) already exists
-    //             $exists = DB::connection('sqlSrvFPI')
+    //             $exists = DB::connection('sqlSrvBCKI')
     //                 ->table('g_ledger_map')
     //                 ->where('rep_id', $rep_id)
     //                 ->where('cat', $cat)
@@ -103,7 +103,7 @@ class gLedgerMapController extends Controller
     //             $drcr = !empty($ledger->drcr) ? trim($ledger->drcr) : $request->drcr;
     //             $acc_par = substr($curr_acc_num, 0, 2);
 
-    //             DB::connection('sqlSrvFPI')->table('g_ledger_map')->insert([
+    //             DB::connection('sqlSrvBCKI')->table('g_ledger_map')->insert([
     //                 'rep_id' => $rep_id,
     //                 'rep_type' => $request->rep_type,
     //                 'cat' => $cat,
@@ -156,7 +156,7 @@ class gLedgerMapController extends Controller
         if ($request->filled('cat_seq')) {
             $cat_seq = $request->cat_seq;
         } else {
-            $existing_seq = DB::connection('sqlSrvFPI')
+            $existing_seq = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger_map')
                 ->where('rep_id', $rep_id)
                 ->where('cat', $cat)
@@ -166,7 +166,7 @@ class gLedgerMapController extends Controller
             if ($existing_seq !== null) {
                 $cat_seq = $existing_seq;
             } else {
-                $max_seq = DB::connection('sqlSrvFPI')
+                $max_seq = DB::connection('sqlSrvBCKI')
                     ->table('g_ledger_map')
                     ->where('rep_id', $rep_id)
                     ->max('cat_seq');
@@ -178,7 +178,7 @@ class gLedgerMapController extends Controller
         if ($request->filled('sub_cat_seq')) {
             $sub_cat_seq = $request->sub_cat_seq;
         } else {
-            $existing_sub_seq = DB::connection('sqlSrvFPI')
+            $existing_sub_seq = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger_map')
                 ->where('rep_id', $rep_id)
                 ->where('cat', $cat)
@@ -189,7 +189,7 @@ class gLedgerMapController extends Controller
             if ($existing_sub_seq !== null) {
                 $sub_cat_seq = $existing_sub_seq;
             } else {
-                $max_sub_seq = DB::connection('sqlSrvFPI')
+                $max_sub_seq = DB::connection('sqlSrvBCKI')
                     ->table('g_ledger_map')
                     ->where('rep_id', $rep_id)
                     ->where('cat', $cat)
@@ -202,7 +202,7 @@ class gLedgerMapController extends Controller
         if (empty($acc_num) && empty($acc_name_input) && empty($drcr_input)) {
             
             // Cek duplikasi untuk data kosong
-            $exists = DB::connection('sqlSrvFPI')
+            $exists = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger_map')
                 ->where('rep_id', $rep_id)
                 ->where('cat', $cat)
@@ -212,7 +212,7 @@ class gLedgerMapController extends Controller
 
             if (!$exists) {
                 // Langsung insert satu kali tanpa foreach
-                DB::connection('sqlSrvFPI')->table('g_ledger_map')->insert([
+                DB::connection('sqlSrvBCKI')->table('g_ledger_map')->insert([
                     'rep_id' => $rep_id,
                     'rep_type' => $request->rep_type ?? '',
                     'cat' => $cat,
@@ -230,7 +230,7 @@ class gLedgerMapController extends Controller
 
         } else {
             // 3. KONDISI JIKA BERISI: Jalankan pencarian ledger dan foreach seperti semula
-            $ledgers = DB::connection('sqlSrvFPI')
+            $ledgers = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger')
                 ->where('active_flag', 'Y')
                 ->where('ac_num', 'like', $acc_num . '%')
@@ -250,7 +250,7 @@ class gLedgerMapController extends Controller
                 $curr_acc_num = trim($ledger->ac_num);
 
                 // Hindari duplikasi mapping
-                $exists = DB::connection('sqlSrvFPI')
+                $exists = DB::connection('sqlSrvBCKI')
                     ->table('g_ledger_map')
                     ->where('rep_id', $rep_id)
                     ->where('cat', $cat)
@@ -266,7 +266,7 @@ class gLedgerMapController extends Controller
                 $drcr = !empty($ledger->drcr) ? trim($ledger->drcr) : $drcr_input;
                 $acc_par = !empty($curr_acc_num) ? substr($curr_acc_num, 0, 2) : '';
 
-                DB::connection('sqlSrvFPI')->table('g_ledger_map')->insert([
+                DB::connection('sqlSrvBCKI')->table('g_ledger_map')->insert([
                     'rep_id' => $rep_id,
                     'rep_type' => $request->rep_type ?? '',
                     'cat' => $cat,
@@ -284,7 +284,7 @@ class gLedgerMapController extends Controller
         }
 
         // Propagate show_on_report update to all mappings in the same cat
-        DB::connection('sqlSrvFPI')
+        DB::connection('sqlSrvBCKI')
             ->table('g_ledger_map')
             ->where('rep_id', $rep_id)
             ->where('cat', $cat)
@@ -323,7 +323,7 @@ class gLedgerMapController extends Controller
             $remark = trim($request->remark ?? '');
 
             // Fetch acc_name and drcr from g_ledger
-            $ledger = DB::connection('sqlSrvFPI')
+            $ledger = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger')
                 ->where('ac_num', $acc_num)
                 ->first();
@@ -332,7 +332,7 @@ class gLedgerMapController extends Controller
             $drcr = $ledger ? trim($ledger->drcr) : trim($request->drcr ?? '');
             $acc_par = substr($acc_num, 0, 2);
 
-            $query = DB::connection('sqlSrvFPI')->table('g_ledger_map');
+            $query = DB::connection('sqlSrvBCKI')->table('g_ledger_map');
 
             $original_acc_num_raw = $request->original_acc_num;
             if (is_array($original_acc_num_raw)) {
@@ -373,7 +373,7 @@ class gLedgerMapController extends Controller
                 $old_cat = trim($old_record->cat);
 
                 if ($old_cat_seq != $new_cat_seq) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('g_ledger_map')
                         ->where('rep_id', $old_rep_id)
                         ->where('cat', $old_cat)
@@ -390,7 +390,7 @@ class gLedgerMapController extends Controller
                 $old_sub_cat = trim($old_record->sub_cat);
 
                 if ($old_sub_cat_seq != $new_sub_cat_seq) {
-                    DB::connection('sqlSrvFPI')
+                    DB::connection('sqlSrvBCKI')
                         ->table('g_ledger_map')
                         ->where('rep_id', $old_rep_id)
                         ->where('cat', $old_cat)
@@ -415,7 +415,7 @@ class gLedgerMapController extends Controller
             ]);
 
             // Also map child accounts of the updated $acc_num
-            $ledgers = DB::connection('sqlSrvFPI')
+            $ledgers = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger')
                 ->where('active_flag', 'Y')
                 ->where('ac_num', 'like', $acc_num . '%')
@@ -429,7 +429,7 @@ class gLedgerMapController extends Controller
             if ($request->filled('cat_seq')) {
                 $child_cat_seq = $request->cat_seq;
             } else {
-                $existing_seq = DB::connection('sqlSrvFPI')
+                $existing_seq = DB::connection('sqlSrvBCKI')
                     ->table('g_ledger_map')
                     ->where('rep_id', $rep_id)
                     ->where('cat', $cat)
@@ -439,7 +439,7 @@ class gLedgerMapController extends Controller
                 if ($existing_seq !== null) {
                     $child_cat_seq = $existing_seq;
                 } else {
-                    $max_seq = DB::connection('sqlSrvFPI')
+                    $max_seq = DB::connection('sqlSrvBCKI')
                         ->table('g_ledger_map')
                         ->where('rep_id', $rep_id)
                         ->max('cat_seq');
@@ -451,7 +451,7 @@ class gLedgerMapController extends Controller
             if ($request->filled('sub_cat_seq')) {
                 $child_sub_cat_seq = $request->sub_cat_seq;
             } else {
-                $existing_sub_seq = DB::connection('sqlSrvFPI')
+                $existing_sub_seq = DB::connection('sqlSrvBCKI')
                     ->table('g_ledger_map')
                     ->where('rep_id', $rep_id)
                     ->where('cat', $cat)
@@ -462,7 +462,7 @@ class gLedgerMapController extends Controller
                 if ($existing_sub_seq !== null) {
                     $child_sub_cat_seq = $existing_sub_seq;
                 } else {
-                    $max_sub_seq = DB::connection('sqlSrvFPI')
+                    $max_sub_seq = DB::connection('sqlSrvBCKI')
                         ->table('g_ledger_map')
                         ->where('rep_id', $rep_id)
                         ->where('cat', $cat)
@@ -480,7 +480,7 @@ class gLedgerMapController extends Controller
                 }
 
                 // Check if this exact mapping (rep_id, cat, sub_cat, acc_num) already exists
-                $exists = DB::connection('sqlSrvFPI')
+                $exists = DB::connection('sqlSrvBCKI')
                     ->table('g_ledger_map')
                     ->where('rep_id', $rep_id)
                     ->where('cat', $cat)
@@ -496,7 +496,7 @@ class gLedgerMapController extends Controller
                 $child_drcr = !empty($ledger->drcr) ? trim($ledger->drcr) : $request->drcr;
                 $child_acc_par = substr($curr_acc_num, 0, 2);
 
-                DB::connection('sqlSrvFPI')->table('g_ledger_map')->insert([
+                DB::connection('sqlSrvBCKI')->table('g_ledger_map')->insert([
                     'rep_id' => $rep_id,
                     'rep_type' => $request->rep_type,
                     'cat' => $cat,
@@ -513,7 +513,7 @@ class gLedgerMapController extends Controller
             }
 
             // Propagate show_on_report update to all mappings in the same cat
-            DB::connection('sqlSrvFPI')
+            DB::connection('sqlSrvBCKI')
                 ->table('g_ledger_map')
                 ->where('rep_id', $rep_id)
                 ->where('cat', $cat)
@@ -534,7 +534,7 @@ class gLedgerMapController extends Controller
     //     // 1. Ambil data ledger untuk data utama jika acc_num tidak kosong
     //     $ledger = null;
     //     if (!empty($acc_num)) {
-    //         $ledger = DB::connection('sqlSrvFPI')
+    //         $ledger = DB::connection('sqlSrvBCKI')
     //             ->table('g_ledger')
     //             ->where('ac_num', $acc_num)
     //             ->first();
@@ -545,7 +545,7 @@ class gLedgerMapController extends Controller
     //     $acc_par = !empty($acc_num) ? substr($acc_num, 0, 2) : '';
 
     //     // 2. Siapkan query untuk Update Data Utama
-    //     $query = DB::connection('sqlSrvFPI')->table('g_ledger_map');
+    //     $query = DB::connection('sqlSrvBCKI')->table('g_ledger_map');
 
     //     if ($request->filled('original_acc_num')) {
     //         $query->where([
@@ -581,7 +581,7 @@ class gLedgerMapController extends Controller
     //     if (!empty($acc_num)) {
             
     //         // Fetch child accounts of the updated $acc_num
-    //         $ledgers = DB::connection('sqlSrvFPI')
+    //         $ledgers = DB::connection('sqlSrvBCKI')
     //             ->table('g_ledger')
     //             ->where('active_flag', 'Y')
     //             ->where('ac_num', 'like', $acc_num . '%')
@@ -594,7 +594,7 @@ class gLedgerMapController extends Controller
     //         if ($request->filled('cat_seq')) {
     //             $child_cat_seq = $request->cat_seq;
     //         } else {
-    //             $existing_seq = DB::connection('sqlSrvFPI')
+    //             $existing_seq = DB::connection('sqlSrvBCKI')
     //                 ->table('g_ledger_map')
     //                 ->where('rep_id', $rep_id)
     //                 ->where('cat', $cat)
@@ -604,7 +604,7 @@ class gLedgerMapController extends Controller
     //             if ($existing_seq !== null) {
     //                 $child_cat_seq = $existing_seq;
     //             } else {
-    //                 $max_seq = DB::connection('sqlSrvFPI')
+    //                 $max_seq = DB::connection('sqlSrvBCKI')
     //                     ->table('g_ledger_map')
     //                     ->where('rep_id', $rep_id)
     //                     ->max('cat_seq');
@@ -622,7 +622,7 @@ class gLedgerMapController extends Controller
     //             }
 
     //             // Cek duplikasi mapping child
-    //             $exists = DB::connection('sqlSrvFPI')
+    //             $exists = DB::connection('sqlSrvBCKI')
     //                 ->table('g_ledger_map')
     //                 ->where('rep_id', $rep_id)
     //                 ->where('cat', $cat)
@@ -638,7 +638,7 @@ class gLedgerMapController extends Controller
     //             $child_drcr = !empty($ledger->drcr) ? trim($ledger->drcr) : ($request->drcr ?? '');
     //             $child_acc_par = substr($curr_acc_num, 0, 2);
 
-    //             DB::connection('sqlSrvFPI')->table('g_ledger_map')->insert([
+    //             DB::connection('sqlSrvBCKI')->table('g_ledger_map')->insert([
     //                 'rep_id' => $rep_id,
     //                 'rep_type' => $request->rep_type ?? '',
     //                 'cat' => $cat,
@@ -663,7 +663,7 @@ class gLedgerMapController extends Controller
     public function delete(Request $request)
     {
         try {
-            $query = DB::connection('sqlSrvFPI')->table('g_ledger_map');
+            $query = DB::connection('sqlSrvBCKI')->table('g_ledger_map');
 
             $acc_num_raw = $request->acc_num;
             if (is_array($acc_num_raw)) {
@@ -711,7 +711,7 @@ class gLedgerMapController extends Controller
     // public function getCOA(Request $request)
     // {
     //     try {
-    //         $data = DB::connection('sqlSrvFPI')
+    //         $data = DB::connection('sqlSrvBCKI')
     //             ->table('g_ledger')
     //             ->selectRaw("TRIM(ac_num) as ac_num, TRIM(ac_name) as ac_name, TRIM(drcr) as drcr")
     //             ->where('active_flag', 'Y')
@@ -728,7 +728,7 @@ class gLedgerMapController extends Controller
     public function getDistinctRep(Request $request)
     {
         try {
-            $data = DB::connection('sqlSrvFPI')
+            $data = DB::connection('sqlSrvBCKI')
                 ->table('g_ledger_map')
                 ->selectRaw("DISTINCT TRIM(rep_id) as rep_id")
                 ->whereNotNull('rep_id')

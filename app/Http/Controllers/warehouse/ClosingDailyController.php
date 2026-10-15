@@ -13,7 +13,7 @@ class ClosingDailyController extends Controller
 {
     public function period_daily(Request $request)
     {
-        $current_daily =  DB::connection("sqlSrvFPI")
+        $current_daily =  DB::connection("sqlSrvBCKI")
                             ->table('period')
                             ->selectRaw("MAX(end_date) as close_date, MAX(curr_period) as curr_period")
                             ->where('dept_id', 'PRODWH')
@@ -82,7 +82,7 @@ class ClosingDailyController extends Controller
             //     $sqlWhere = $sqlWhere . "and inv_bal_hist.qty_oh <> 0";
             // }
 
-            $datas = DB::connection("sqlSrvFPI")
+            $datas = DB::connection("sqlSrvBCKI")
                     ->table('inv_bal_hist')
                     ->selectRaw("
                         inv_bal_hist.period, inv_bal_hist.office_id, inv_bal_hist.article_id, inv_bal_hist.defect, inv_bal_hist.batch_id, inv_bal_hist.length, inv_bal_hist.add_id, inv_bal_hist.tor_id, inv_bal_hist.wh_id, inv_bal_hist.bin_id, inv_bal_hist.spk_id,inv_bal_hist.spk_item,inv_bal_hist.qty_awal,inv_bal_hist.qty_oh,inv_bal_hist.qty_rcv,inv_bal_hist.qty_iss,inv_bal_hist.qty_ia,inv_bal_hist.qty_waste, inv_bal_hist.wgt_awal,inv_bal_hist.wgt_oh,inv_bal_hist.wgt_rcv,inv_bal_hist.wgt_iss,inv_bal_hist.wgt_ia,inv_bal_hist.wgt_waste,
@@ -115,12 +115,12 @@ class ClosingDailyController extends Controller
     {
         $arrayReusable = [];
 
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         // try {
             $yesterday_date = Carbon::parse($request->tr_date)->subDays(1)->format('Y-m-d');
 
-            // $current =  DB::connection("sqlSrvFPI")
+            // $current =  DB::connection("sqlSrvBCKI")
             //                 ->table('period')
             //                 ->where('dept_id', 'PRODWH')
             //                 ->where('office_id', $request->office_id)
@@ -130,7 +130,7 @@ class ClosingDailyController extends Controller
                 $period = $request->period;
                 // if ($current->curr_period == $period) {
 
-                //     $current_daily =  DB::connection("sqlSrvFPI")
+                //     $current_daily =  DB::connection("sqlSrvBCKI")
                 //                         ->table('period_daily')
                 //                         ->where('dept_id', 'PRODWH')
                 //                         ->where('office_id', $request->office_id)
@@ -138,7 +138,7 @@ class ClosingDailyController extends Controller
                 //                         ->first();
                                         
                 //     if ($current_daily) {
-                        $trans_details = DB::connection("sqlSrvFPI")
+                        $trans_details = DB::connection("sqlSrvBCKI")
                                         ->select(DB::raw("
                                         SELECT 
                                             TRIM(branch_office.office) as office, 
@@ -217,7 +217,7 @@ class ClosingDailyController extends Controller
                                             OR COALESCE ( inv_bal.qty_ia, 0 ) <> SUM ( CASE WHEN inv_trans_dtl.tr_type IN ( 'IA' ) THEN inv_trans_dtl.qty ELSE 0 END )
                                         "));
 
-                        // DB::connection('sqlSrvFPI')->commit();
+                        // DB::connection('sqlSrvBCKI')->commit();
 
                         return $this->sendResponse($trans_details, 'Successfully get Data');
 
@@ -235,7 +235,7 @@ class ClosingDailyController extends Controller
             // }
         // }
         // catch (\Exception $e) {
-        //     DB::connection('sqlSrvFPI')->rollBack();
+        //     DB::connection('sqlSrvBCKI')->rollBack();
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }
     }
@@ -244,13 +244,13 @@ class ClosingDailyController extends Controller
     {
         $arrayReusable = [];
 
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         // try {
             $yesterday_date = Carbon::parse($request->tr_date)->subDays(1)->format('Y-m-d');
             $last_month = Carbon::parse($request->tr_date)->subMonthNoOverflow(1)->format('Ym');
 
-            // $current =  DB::connection("sqlSrvFPI")
+            // $current =  DB::connection("sqlSrvBCKI")
             //                 ->table('period')
             //                 ->where('dept_id', 'PRODWH')
             //                 ->where('office_id', $request->office_id)
@@ -260,7 +260,7 @@ class ClosingDailyController extends Controller
                 $period = $request->period;
                 // if ($current->curr_period == $period) {
 
-                //     $current_daily =  DB::connection("sqlSrvFPI")
+                //     $current_daily =  DB::connection("sqlSrvBCKI")
                 //                         ->table('period_daily')
                 //                         ->where('dept_id', 'PRODWH')
                 //                         ->where('office_id', $request->office_id)
@@ -268,7 +268,7 @@ class ClosingDailyController extends Controller
                 //                         ->first();
                                         
                 //     if ($current_daily) {
-                        $trans_details = DB::connection("sqlSrvFPI")
+                        $trans_details = DB::connection("sqlSrvBCKI")
                                         ->select(DB::raw("
                                         SELECT 
                                             TRIM(branch_office.office) as office, 
@@ -346,7 +346,7 @@ class ClosingDailyController extends Controller
                                             OR COALESCE ( inv_bal.qty_ia, 0 ) <> SUM ( CASE WHEN inv_trans_dtl.tr_type IN ( 'IA' ) THEN inv_trans_dtl.qty ELSE 0 END )
                                         "));
 
-                        // DB::connection('sqlSrvFPI')->commit();
+                        // DB::connection('sqlSrvBCKI')->commit();
 
                         return $this->sendResponse($trans_details, 'Successfully get Data');
 
@@ -364,20 +364,20 @@ class ClosingDailyController extends Controller
             // }
         // }
         // catch (\Exception $e) {
-        //     DB::connection('sqlSrvFPI')->rollBack();
+        //     DB::connection('sqlSrvBCKI')->rollBack();
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }
     }
 
     public function calculate(Request $request)
     {
-        DB::connection('sqlSrvFPI')->beginTransaction();
+        DB::connection('sqlSrvBCKI')->beginTransaction();
 
         try {
 
             foreach ($request->products as $key => $value) {
 
-                $trans_detail = DB::connection("sqlSrvFPI")
+                $trans_detail = DB::connection("sqlSrvBCKI")
                                 ->table('inv_trans_dtl')
                                 ->selectRaw("
                                 SUM ( CASE WHEN inv_trans_dtl.tr_type IN ( 'MR', 'RC', 'RW', 'SR', 'TR', 'RP' ) THEN inv_trans_dtl.qty ELSE 0 END ) AS qty_rcv_trans,
@@ -402,7 +402,7 @@ class ClosingDailyController extends Controller
                                 ->first();
 
                 if ($trans_detail) {
-                    $inv_bal =  DB::connection("sqlSrvFPI")
+                    $inv_bal =  DB::connection("sqlSrvBCKI")
                                 ->table('inv_bal')
                                 ->where('office_id', $value['office_id'])
                                 ->where('article_id', $value['article_id'])
@@ -422,7 +422,7 @@ class ClosingDailyController extends Controller
 
                         $hitung_wgt_oh = (double) $inv_bal->wgt_awal + (double) $trans_detail->wgt_rcv_trans - (double) $trans_detail->wgt_iss_trans + (double) $trans_detail->wgt_ia_trans - (double) $inv_bal->wgt_waste;
 
-                        DB::connection("sqlSrvFPI")
+                        DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->where('office_id', $value['office_id'])
                         ->where('article_id', $value['article_id'])
@@ -453,19 +453,19 @@ class ClosingDailyController extends Controller
                 }
             }
 
-            DB::connection('sqlSrvFPI')->commit();
+            DB::connection('sqlSrvBCKI')->commit();
 
             return $this->sendResponse('Successfully repair balance', 'Successfully get Data');
 
         } catch (\Exception $e) {
-            DB::connection('sqlSrvFPI')->rollBack();
+            DB::connection('sqlSrvBCKI')->rollBack();
             return $this->sendError($e->getMessage(), 'Error', 500);
         }
     }
 
     public function getDataClosing(Request $request)
     {
-        $datas = DB::connection("sqlSrvFPI")
+        $datas = DB::connection("sqlSrvBCKI")
                     ->table('inv_bal_daily')
                     ->selectRaw("
                     inv_bal_daily.*,
@@ -493,7 +493,7 @@ class ClosingDailyController extends Controller
 
     public function closing(Request $request)
     {
-        // DB::connection('sqlSrvFPI')->beginTransaction();
+        // DB::connection('sqlSrvBCKI')->beginTransaction();
 
         // try {
             $yesterday_date = Carbon::parse($request->tr_date)->subDays(1)->format('Y-m-d');
@@ -508,7 +508,7 @@ class ClosingDailyController extends Controller
 
             $period = $request->period;
 
-            $current =  DB::connection("sqlSrvFPI")
+            $current =  DB::connection("sqlSrvBCKI")
                         ->table('period')
                         ->where('dept_id', 'PRODWH')
                         ->where('office_id', $request->office_id)
@@ -517,7 +517,7 @@ class ClosingDailyController extends Controller
             if ($current_date == $end) {
                 $this->closingMonthlyFast($request, $request->tr_date);
                 $this->updatePeriod($request, $request->tr_date, $period);
-                // DB::connection('sqlSrvFPI')->commit();
+                // DB::connection('sqlSrvBCKI')->commit();
 
                 return $this->sendResponse('Success Closing', 'Successfully Closing Monthly');
             } else {
@@ -526,14 +526,14 @@ class ClosingDailyController extends Controller
 
         // }
         // catch (\Exception $e) {
-        //     DB::connection('sqlSrvFPI')->rollBack();
+        //     DB::connection('sqlSrvBCKI')->rollBack();
         //     return $this->sendError($e->getMessage(), 'Error', 500);
         // }
     }
 
     private function saveInvBalDaily($request, $qty_awal, $wgt_awal, $value)
     {
-        $inv_bal_daily = DB::connection("sqlSrvFPI")
+        $inv_bal_daily = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal_daily')
                         ->where('close_date', $request->tr_date)
                         ->where('office_id', trim($value->office_id))
@@ -550,7 +550,7 @@ class ClosingDailyController extends Controller
                         ->first();
 
         if ($inv_bal_daily) {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
             ->table('inv_bal_daily')
             ->where('close_date', $request->tr_date)
             ->where('office_id', trim($value->office_id))
@@ -584,7 +584,7 @@ class ClosingDailyController extends Controller
             ]);
 
         } else {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('inv_bal_daily')
                 ->insert([
                     'close_date' => $request->tr_date,
@@ -619,7 +619,7 @@ class ClosingDailyController extends Controller
     }
 
     private function savePeriodDaily($request){
-        $period_daily = DB::connection("sqlSrvFPI")
+        $period_daily = DB::connection("sqlSrvBCKI")
                         ->table('period_daily')
                         ->where('office_id', trim($request->office_id))
                         ->where('dept_id', 'PRODWH')
@@ -628,7 +628,7 @@ class ClosingDailyController extends Controller
                         ->first();
 
         if ($period_daily) {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
             ->table('period_daily')
             ->where('office_id', trim($request->office_id))
             ->where('dept_id', 'PRODWH')
@@ -640,7 +640,7 @@ class ClosingDailyController extends Controller
             ]);
 
         } else {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
             ->table('period_daily')
             ->insert([
                 'office_id' => $request->office_id,
@@ -658,7 +658,7 @@ class ClosingDailyController extends Controller
     //     $period = $current ? $current->curr_period : Carbon::parse($end_date)->format('Ym');
     //     $last_period = $current ? $current->prev_period : Carbon::parse($end_date)->subMonthNoOverflow(1)->format('Ym');
 
-    //     $trans_details = DB::connection("sqlSrvFPI")
+    //     $trans_details = DB::connection("sqlSrvBCKI")
     //                     ->select(DB::raw("
     //                     SELECT
     //                         inv_bal.office_id,
@@ -743,7 +743,7 @@ class ClosingDailyController extends Controller
     //     foreach ($trans_details as $key => $val) {
     //         $value = (object) $val;
 
-    //         $inv_bal_hist = DB::connection("sqlSrvFPI")
+    //         $inv_bal_hist = DB::connection("sqlSrvBCKI")
     //                     ->table('inv_bal_hist')
     //                     ->where('period', $last_period)
     //                     ->where('office_id', trim($value->office_id))
@@ -771,7 +771,7 @@ class ClosingDailyController extends Controller
 
     private function saveInvBalHist($request, $qty_awal, $wgt_awal, $value, $period)
     {
-        $inv_bal_hist = DB::connection("sqlSrvFPI")
+        $inv_bal_hist = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal_hist')
                         ->where('period', $period)
                         ->where('office_id', trim($value->office_id))
@@ -788,7 +788,7 @@ class ClosingDailyController extends Controller
                         ->first();
 
         if ($inv_bal_hist) {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
             ->table('inv_bal_hist')
             ->where('period', $period)
             ->where('office_id', trim($value->office_id))
@@ -822,7 +822,7 @@ class ClosingDailyController extends Controller
             ]);
 
         } else {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('inv_bal_hist')
                 ->insert([
                     'period' => $period,
@@ -858,7 +858,7 @@ class ClosingDailyController extends Controller
 
     private function updateInvBal($request, $qty_awal, $wgt_awal, $value, $period)
     {
-        $inv_bal = DB::connection("sqlSrvFPI")
+        $inv_bal = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->where('office_id', trim($value->office_id))
                         ->where('article_id', trim($value->article_id))
@@ -874,7 +874,7 @@ class ClosingDailyController extends Controller
                         ->first();
 
         if ($inv_bal) {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
             ->table('inv_bal')
             ->where('office_id', trim($value->office_id))
             ->where('article_id', trim($value->article_id))
@@ -906,7 +906,7 @@ class ClosingDailyController extends Controller
             ]);
 
         } else {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
                 ->table('inv_bal')
                 ->insert([
                     'office_id' => trim($value->office_id),
@@ -940,7 +940,7 @@ class ClosingDailyController extends Controller
 
     private function updateInvBalDaily($request, $period)
     {
-        $trans_details = DB::connection("sqlSrvFPI")
+        $trans_details = DB::connection("sqlSrvBCKI")
                         ->select(DB::raw("
                         SELECT
                             inv_bal.office_id,
@@ -1023,7 +1023,7 @@ class ClosingDailyController extends Controller
         foreach ($trans_details as $key => $val) {
             $value = (object) $val;
 
-            $inv_bal = DB::connection("sqlSrvFPI")
+            $inv_bal = DB::connection("sqlSrvBCKI")
                         ->table('inv_bal')
                         ->where('office_id', trim($value->office_id))
                         ->where('article_id', trim($value->article_id))
@@ -1039,7 +1039,7 @@ class ClosingDailyController extends Controller
                         ->first();
 
             if ($inv_bal) {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('inv_bal')
                 ->where('office_id', trim($value->office_id))
                 ->where('article_id', trim($value->article_id))
@@ -1069,7 +1069,7 @@ class ClosingDailyController extends Controller
                 ]);
 
             } else {
-                DB::connection("sqlSrvFPI")
+                DB::connection("sqlSrvBCKI")
                 ->table('inv_bal')
                 ->insert([
                     'office_id' => trim($value->office_id),
@@ -1119,14 +1119,14 @@ class ClosingDailyController extends Controller
     //     $begin_date = Carbon::parse($curr_period)->startOfMonth()->format('Y-m-d');
 
 
-    //     $close_period = DB::connection("sqlSrvFPI")
+    //     $close_period = DB::connection("sqlSrvBCKI")
     //                     ->table('period')
     //                     ->where('dept_id', 'PRODWH')
     //                     ->where('office_id', $request->office_id)
     //                     ->first();
 
     //     if ($close_period) {
-    //         DB::connection("sqlSrvFPI")
+    //         DB::connection("sqlSrvBCKI")
     //         ->table('period')
     //         ->where('dept_id', 'PRODWH')
     //         ->where('office_id', $request->office_id)
@@ -1158,14 +1158,14 @@ class ClosingDailyController extends Controller
         $end_date = Carbon::parse($next_period)->endOfMonth()->format('Y-m-d');
 
 
-        $close_period = DB::connection("sqlSrvFPI")
+        $close_period = DB::connection("sqlSrvBCKI")
                         ->table('period')
                         ->where('dept_id', 'PRODWH')
                         ->where('office_id', $request->office_id)
                         ->first();
 
         if ($close_period) {
-            DB::connection("sqlSrvFPI")
+            DB::connection("sqlSrvBCKI")
             ->table('period')
             ->where('dept_id', 'PRODWH')
             ->where('office_id', $request->office_id)
@@ -1188,7 +1188,7 @@ class ClosingDailyController extends Controller
         $period = Carbon::parse($tr_date)->format('Ym');
         $last_period = Carbon::parse($tr_date)->subMonthNoOverflow(1)->format('Ym');
         $user_id = getAuth($request)->user_id2;
-        DB::connection('sqlSrvFPI')->unprepared("
+        DB::connection('sqlSrvBCKI')->unprepared("
             /* ==========================================
             1. DROP TEMP TABLE JIKA ADA
             ========================================== */

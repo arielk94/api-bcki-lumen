@@ -31,7 +31,7 @@ class OtherJournalController extends Controller
             return $this->sendError("Empty transaction id", 'Error', 500);
         }
         try {
-            $connection = DB::connection("sqlSrvFPI");
+            $connection = DB::connection("sqlSrvBCKI");
             $result = $connection->table('jv_trans_hdr as a')
                 ->selectRaw("trim(a.tr_id) as tr_id,a.dt_jv,trim(a.descr) as keterangan,trim(a.paid_to_txt) as paid_to_txt
                 ,b.item_num,trim(b.ac_num) as ac_num, trim(c.ac_name) as ac_name,b.amt_dr,b.amt_cr,trim(b.item_memo) as item_memo,trim(b.tr_id_ref) as tr_id_ref")
@@ -64,8 +64,8 @@ class OtherJournalController extends Controller
             $trId = $data['tr_id'];
         }
         try {
-            DB::connection('sqlSrvFPI')->transaction(function () use ($data, $userId, $trId) {
-                DB::connection('sqlSrvFPI')->table('jv_trans_hdr')->insert([
+            DB::connection('sqlSrvBCKI')->transaction(function () use ($data, $userId, $trId) {
+                DB::connection('sqlSrvBCKI')->table('jv_trans_hdr')->insert([
                     'office_id' => 1,
                     'tr_id' => $trId,
                     'dt_jv' => $data['tanggal'],
@@ -84,7 +84,7 @@ class OtherJournalController extends Controller
                 ]);
                 foreach ($data['details'] as $key => $detail) {
 
-                    DB::connection('sqlSrvFPI')->table('jv_trans_dtl')->insert([
+                    DB::connection('sqlSrvBCKI')->table('jv_trans_dtl')->insert([
                         'office_id' => 1,
                         'tr_id' => $trId,
                         'ac_num' => $detail['account'],
@@ -99,7 +99,7 @@ class OtherJournalController extends Controller
                     ]);
 
                     if (!empty(trim($detail['bank_statment_id']))) {
-                        DB::connection('sqlSrvFPI')->table('bank_note')
+                        DB::connection('sqlSrvBCKI')->table('bank_note')
                             ->where('tr_id', $detail['bank_statment_id'])
                             ->update([
                                 'voucher' => 1,
@@ -108,13 +108,13 @@ class OtherJournalController extends Controller
                     }
                 }
             });
-            $detailJv = DB::connection('sqlSrvFPI')->table('jv_trans_dtl')
+            $detailJv = DB::connection('sqlSrvBCKI')->table('jv_trans_dtl')
                 ->selectRaw("sum(amt_dr) as amt_dr,sum(amt_cr) as amt_cr ")
                 ->where('tr_id', $trId)
                 ->where('office_id', 1)
                 ->first();
             //dd($detailJv);
-            DB::connection('sqlSrvFPI')->table('jv_trans_hdr')
+            DB::connection('sqlSrvBCKI')->table('jv_trans_hdr')
                 ->where('tr_id',  $trId)
                 ->update([
                     'amt_dr' => $detailJv->amt_dr,
@@ -153,7 +153,7 @@ class OtherJournalController extends Controller
             $sqlWhere .= " AND ct.tr_type = '$tr_type' ";
         }
         try {
-            $connection = DB::connection("sqlSrvFPI");
+            $connection = DB::connection("sqlSrvBCKI");
 
             $result = $connection->table('jv_trans_hdr as ct')
                 ->selectRaw("
@@ -192,9 +192,9 @@ class OtherJournalController extends Controller
             return $this->sendResponse(null, 'This periode already closed, cannot be modified');
         }
         try {
-            DB::connection('sqlSrvFPI')->transaction(function () use ($data, $userId) {
+            DB::connection('sqlSrvBCKI')->transaction(function () use ($data, $userId) {
 
-                DB::connection('sqlSrvFPI')->table('jv_trans_hdr')
+                DB::connection('sqlSrvBCKI')->table('jv_trans_hdr')
                     ->where('office_id', 1)
                     ->where('tr_id', $data['tr_id'])
                     ->update([
@@ -211,7 +211,7 @@ class OtherJournalController extends Controller
                         'user_id' => $userId
                     ]);
 
-                $detailJv = DB::connection('sqlSrvFPI')->table('jv_trans_dtl')
+                $detailJv = DB::connection('sqlSrvBCKI')->table('jv_trans_dtl')
                     ->select('tr_id_ref')
                     ->where('tr_id', $data['tr_id'])
                     ->where('office_id', 1)
@@ -219,7 +219,7 @@ class OtherJournalController extends Controller
                 if ($detailJv) {
                     foreach ($detailJv as $key => $detail1) {
                         if (trim($detail1->tr_id_ref) !== "") {
-                            DB::connection('sqlSrvFPI')->table('bank_note')
+                            DB::connection('sqlSrvBCKI')->table('bank_note')
                                 ->where('tr_id', $detail1->tr_id_ref)
                                 ->update([
                                     'voucher' => 0,
@@ -228,14 +228,14 @@ class OtherJournalController extends Controller
                         }
                     };
                 };
-                DB::connection('sqlSrvFPI')->table('jv_trans_dtl')
+                DB::connection('sqlSrvBCKI')->table('jv_trans_dtl')
                     ->where('tr_id', $data['tr_id'])
                     ->where('office_id', 1)
                     ->delete();
 
                 foreach ($data['details'] as $key => $detail) {
 
-                    DB::connection('sqlSrvFPI')->table('jv_trans_dtl')->insert([
+                    DB::connection('sqlSrvBCKI')->table('jv_trans_dtl')->insert([
                         'office_id' => 1,
                         'tr_id' => $data['tr_id'],
                         'ac_num' => $detail['account'],
@@ -249,7 +249,7 @@ class OtherJournalController extends Controller
                         'item_num' => $key + 1,
                     ]);
                     if (!empty($detail['bank_statment_id'])) {
-                        DB::connection('sqlSrvFPI')->table('bank_note')
+                        DB::connection('sqlSrvBCKI')->table('bank_note')
                             ->where('tr_id', $detail['bank_statment_id'])
                             ->update([
                                 'voucher' => 1,
@@ -258,12 +258,12 @@ class OtherJournalController extends Controller
                     }
                 }
             });
-            $detailJv = DB::connection('sqlSrvFPI')->table('jv_trans_dtl')
+            $detailJv = DB::connection('sqlSrvBCKI')->table('jv_trans_dtl')
                 ->selectRaw("sum(amt_dr) as amt_dr,sum(amt_cr) as amt_cr ")
                 ->where('tr_id', $tr_id)
                 ->where('office_id', 1)
                 ->first();
-            DB::connection('sqlSrvFPI')->table('jv_trans_hdr')
+            DB::connection('sqlSrvBCKI')->table('jv_trans_hdr')
                 ->where('tr_id',  $tr_id)
                 ->update([
                     'amt_dr' => $detailJv->amt_dr,
@@ -290,7 +290,7 @@ class OtherJournalController extends Controller
         }
 
         try {
-            $detailJv = DB::connection('sqlSrvFPI')->table('jv_trans_dtl as a')
+            $detailJv = DB::connection('sqlSrvBCKI')->table('jv_trans_dtl as a')
                 ->selectRaw("a.tr_id_ref,b.dt_jv")
                 ->join('jv_trans_hdr as b', function ($join) {
                     $join->on('b.office_id', '=', 'a.office_id')
@@ -305,7 +305,7 @@ class OtherJournalController extends Controller
             if ($detailJv) {
                 foreach ($detailJv as $key => $detail1) {
                     if (trim($detail1->tr_id_ref) !== "") {
-                        DB::connection('sqlSrvFPI')->table('bank_note')
+                        DB::connection('sqlSrvBCKI')->table('bank_note')
                             ->where('tr_id', $detail1->tr_id_ref)
                             ->update([
                                 'voucher' => 0,
@@ -315,12 +315,12 @@ class OtherJournalController extends Controller
                 };
             };
 
-            DB::connection('sqlSrvFPI')->transaction(function () use ($tr_id) {
-                DB::connection('sqlSrvFPI')->table('jv_trans_dtl')
+            DB::connection('sqlSrvBCKI')->transaction(function () use ($tr_id) {
+                DB::connection('sqlSrvBCKI')->table('jv_trans_dtl')
                     ->where('office_id', 1)
                     ->where('tr_id', $tr_id)
                     ->delete();
-                DB::connection('sqlSrvFPI')->table('jv_trans_hdr')
+                DB::connection('sqlSrvBCKI')->table('jv_trans_hdr')
                     ->where('office_id', 1)
                     ->where('tr_id', $tr_id)
                     ->delete();
@@ -339,7 +339,7 @@ class OtherJournalController extends Controller
         //$prefix = "OJV"; //($type == 'OD') ? 'BKM01' : 'BKK01';
         $tahun2digit = date('y', strtotime($tanggal));
         $bulan2digit = date('m', strtotime($tanggal));
-        $last = DB::connection("sqlSrvFPI")
+        $last = DB::connection("sqlSrvBCKI")
             ->table('jv_trans_hdr')
             ->selectRaw('max(tr_num) as kode_akhir ')
             ->where('tr_id', 'like', "%{$tr_type}{$tahun2digit}{$bulan2digit}%")
@@ -387,7 +387,7 @@ class OtherJournalController extends Controller
         // dd($credit);
         //dd($sqlWhere);
         try {
-            $result = DB::connection("sqlSrvFPI")
+            $result = DB::connection("sqlSrvBCKI")
                 ->table('bank_note as bn')
                 ->selectRaw("
                         bn.tr_id , bn.bank_acc, ge.ac_name,bn.dt_trans,bn.descr,format(bn.db_amt,'#,0') as db_amt,format(bn.cr_amt,'#,0') as cr_amt,trim(bn.pay_id) pay_id

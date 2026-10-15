@@ -58,7 +58,7 @@ class JournalCheckingController extends Controller
     }
     function JournalToTrans($currYear)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $OtherJurnal = $connection->table('journal_voucher as a')
             ->selectRaw("distinct a.jv_num, trim(source) source, trim(source_num) source_num, a.tr_date, trim(a.remark) remark")
             ->leftjoin('jv_trans_hdr as b', 'a.source_num', '=', 'b.tr_id')
@@ -128,7 +128,7 @@ class JournalCheckingController extends Controller
     }
     function TransToJournal($currYear)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $OtherJurnal = $connection->table('jv_trans_hdr as a')
             ->selectRaw("distinct trim(a.tr_id) tr_id, 'Other Journal Voucher' source, trim(a.tr_id) source_num, a.dt_jv tr_date, trim(a.descr) remark")
             ->leftjoin('journal_voucher as b', 'b.source_num', '=', 'a.tr_id')
@@ -198,7 +198,7 @@ class JournalCheckingController extends Controller
     }
     function BalanceJournal($currYear)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $result01 = $connection->table('g_ledger_year as a')
             ->selectRaw(
                 "a.office_id,trim(a.year_id) year_id,b.month_id,trim(a.ac_num) ac_num,trim(b.ac_name) ac_name,a.dr_01 dr_bal,a.cr_01 cr_bal,b.amt_dr,b.amt_cr"
@@ -410,7 +410,7 @@ class JournalCheckingController extends Controller
     }
     function JournalToTransValue($currYear)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         // ############# subquery  Purchase Invoice #############
         $subPI = $connection->table('journal_voucher')
             ->selectRaw(
@@ -658,7 +658,7 @@ class JournalCheckingController extends Controller
     }
     function BalanceJournal1($currYear)
     {
-        $connection = DB::connection("sqlSrvFPI");
+        $connection = DB::connection("sqlSrvBCKI");
         $ResultBalance = $connection->table('v_journal_voucher as a')
             ->selectRaw("distinct a.jv_num, trim(source) source, trim(source_num) source_num, a.tr_date, trim(a.remark) remark")
             ->whereRaw('round(amt_dr,0) <> round(amt_cr,0)')
@@ -693,7 +693,7 @@ class JournalCheckingController extends Controller
                     foreach ($chunk as $detail) {
                         $formattedNumber = str_pad($detail->month_id, 2, '0', STR_PAD_LEFT);
 
-                        DB::connection('sqlSrvFPI')->table('g_ledger_year')
+                        DB::connection('sqlSrvBCKI')->table('g_ledger_year')
                             ->where('office_id', $detail->office_id)
                             ->where('year_id', $detail->year_id)
                             ->where('ac_num', $detail->ac_num)
@@ -717,7 +717,7 @@ class JournalCheckingController extends Controller
                 //     ];
                 // }
 
-                // DB::connection('sqlSrvFPI')->table('g_ledger_year')->upsert(
+                // DB::connection('sqlSrvBCKI')->table('g_ledger_year')->upsert(
                 //     $payload,
                 //     ['office_id', 'year_id', 'ac_num'],  // composite key
                 //     collect($payload)->flatMap(fn($row) => array_keys($row))->unique()
@@ -772,9 +772,9 @@ class JournalCheckingController extends Controller
                     $this->serviceAcc->JrnlCustPayment($officeId, $TrID, $tahun4digit, $userId); //- Payment Posting
                 } else if ($source == 'Purchase Invoice') {
                     //ambil inv_type dari tabel purc_rcv_mast, jika kosong pakai purcinv jika ada N pakai purcinvnonpo
-                    $invType = DB::connection('sqlSrvFPI')->table('purc_inv_mast')->where('tr_id', $TrID)->value('inv_type');
+                    $invType = DB::connection('sqlSrvBCKI')->table('purc_inv_mast')->where('tr_id', $TrID)->value('inv_type');
                     if ($invType == 'N') {
-                        $inv = DB::connection('sqlSrvFPI')->selectOne("
+                        $inv = DB::connection('sqlSrvBCKI')->selectOne("
                                 SELECT qc_opname.*, 
                                 vendor.tax1,
                                 vendor.tax2,
@@ -795,20 +795,20 @@ class JournalCheckingController extends Controller
                             ", [trim($TrID)]);
 
                         if ($inv) {
-                            DB::connection('sqlSrvFPI')->beginTransaction();
+                            DB::connection('sqlSrvBCKI')->beginTransaction();
 
                             try {
-                                // $ppn = DB::connection('sqlSrvFPI')
+                                // $ppn = DB::connection('sqlSrvBCKI')
                                 //     ->table('appl_constant')
                                 //     ->where('key_code', 'PPN')
                                 //     ->first();
 
-                                // $pct21 = DB::connection('sqlSrvFPI')
+                                // $pct21 = DB::connection('sqlSrvBCKI')
                                 //     ->table('appl_constant')
                                 //     ->where('key_code', 'PPH21')
                                 //     ->first();
 
-                                // $pct23 = DB::connection('sqlSrvFPI')
+                                // $pct23 = DB::connection('sqlSrvBCKI')
                                 //     ->table('appl_constant')
                                 //     ->where('key_code', 'PPH23')
                                 //     ->first();
@@ -824,7 +824,7 @@ class JournalCheckingController extends Controller
                                 // $amt_pph21 = $percent_ppn_21 / 100;
                                 // $amt_pph23 = $percent_ppn_23 / 100;
 
-                                DB::connection('sqlSrvFPI')->table('purc_inv_mast')->where('tr_id', $TrID)->update([
+                                DB::connection('sqlSrvBCKI')->table('purc_inv_mast')->where('tr_id', $TrID)->update([
                                     // 'tax1' => trim($inv->tax1), // type PPN
                                     // 'tax2' => trim($inv->tax2), // PPH 23 type
                                     // 'pct_pph' => $percent_ppn_23, // PCT PPH 23
@@ -839,9 +839,9 @@ class JournalCheckingController extends Controller
                                     'pct_pph' => 2,
 
                                 ]);
-                                DB::connection('sqlSrvFPI')->table('purc_inv_item')->where('tr_id', $TrID)->delete();
+                                DB::connection('sqlSrvBCKI')->table('purc_inv_item')->where('tr_id', $TrID)->delete();
 
-                                $qc_opname_dtls = DB::connection('sqlSrvFPI')->select("
+                                $qc_opname_dtls = DB::connection('sqlSrvBCKI')->select("
                                     SELECT
                                         qc_opname_dtl.*,
                                         commodity.com_desc
@@ -861,7 +861,7 @@ class JournalCheckingController extends Controller
                                     //     ['E', 'E', 'N', 'T'],
                                     //     0
                                     // );
-                                    DB::connection('sqlSrvFPI')
+                                    DB::connection('sqlSrvBCKI')
                                         ->table('purc_inv_item')
                                         ->insert([
                                             'office_id' => 1,
@@ -888,7 +888,7 @@ class JournalCheckingController extends Controller
                                 }
 
                                 if ($inv->amt_adj != 0) {
-                                    $seq_num = DB::connection('sqlSrvFPI')->table('purc_inv_item')
+                                    $seq_num = DB::connection('sqlSrvBCKI')->table('purc_inv_item')
                                         ->select('seq_num')
                                         ->where('tr_id', $TrID)
                                         ->max('seq_num');
@@ -903,7 +903,7 @@ class JournalCheckingController extends Controller
                                     //     0
                                     // );
                                     
-                                    DB::connection('sqlSrvFPI')
+                                    DB::connection('sqlSrvBCKI')
                                     ->table('purc_inv_item')
                                     ->insert([
                                         'office_id' => 1,
@@ -929,11 +929,11 @@ class JournalCheckingController extends Controller
                                     ]);
                                 }
 
-                                DB::connection('sqlSrvFPI')->commit();
+                                DB::connection('sqlSrvBCKI')->commit();
 
                                 $this->updateInvMaster($TrID, $inv->inv_id, 0.11, 0.025, 0.02, $inv);
                             } catch (\Exception $e) {
-                                DB::connection('sqlSrvFPI')->rollBack();
+                                DB::connection('sqlSrvBCKI')->rollBack();
                                 return $this->sendError($e->getMessage(), 'Error', 500);
                             }
                         }
@@ -957,7 +957,7 @@ class JournalCheckingController extends Controller
 
     private function updateInvMaster($TrID, $invId, $amt_ppn, $amt_pph21, $amt_pph23, $inv)
     {
-        $sum_amt = DB::connection('sqlSrvFPI')->selectOne("
+        $sum_amt = DB::connection('sqlSrvBCKI')->selectOne("
                         SELECT 
                             SUM(amt_item) as amt
                         FROM purc_inv_item WITH (NOLOCK)
@@ -983,7 +983,7 @@ class JournalCheckingController extends Controller
 
         $terbilang = terbilang($total);
 
-        DB::connection('sqlSrvFPI')->update(
+        DB::connection('sqlSrvBCKI')->update(
             "UPDATE purc_inv_mast
              SET amt_subtotal = ?, inv_said = ? , amt_ppn = ? , amt_pph = ? , amt_pph21 = ?, amt_total = ?
              WHERE office_id = 1  AND tr_id = ?",
