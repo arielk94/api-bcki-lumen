@@ -8,11 +8,11 @@ return [
 
         'sqlSrvBCKI' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST_FPI', 'localhost'),
-            'port' => env('DB_PORT_FPI', '1433'),
-            'database' => env('DB_DATABASE_FPI', 'forge'),
-            'username' => env('DB_USERNAME_FPI', 'forge'),
-            'password' => env('DB_PASSWORD_FPI', ''),
+            'host' => env('DB_HOST_BCKI', 'localhost'),
+            'port' => env('DB_PORT_BCKI', '1433'),
+            'database' => env('DB_DATABASE_BCKI', 'forge'),
+            'username' => env('DB_USERNAME_BCKI', 'forge'),
+            'password' => env('DB_PASSWORD_BCKI', ''),
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
