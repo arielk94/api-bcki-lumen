@@ -64,7 +64,7 @@ class gLedgerYearController extends Controller
             ,dr_03_frg,cr_03_frg,dr_04_frg,cr_04_frg,dr_05_frg,cr_05_frg,dr_06_frg,cr_06_frg
             ,dr_07_frg,cr_07_frg,dr_08_frg,cr_08_frg,dr_09_frg,cr_09_frg,dr_10_frg,cr_10_frg
             ,dr_11_frg,cr_11_frg,dr_12_frg,cr_12_frg,dr_bal_frg,cr_bal_frg
-            FROM fpi_ol.dbo.g_ledger_year a inner join g_ledger b on a.ac_num=b.ac_num
+            FROM bcki_ol.dbo.g_ledger_year a inner join g_ledger b on a.ac_num=b.ac_num
             WHERE $sqlWhere
         "));
 
