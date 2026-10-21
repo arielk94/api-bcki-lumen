@@ -853,7 +853,7 @@ class TelemarketingController extends Controller
             $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
             "Halo Bpk/Ibu " . $data->NamaCustomer . "\n\n".
             "Terima kasih telah menghubungi kami. Laporan kendala/keluhan Anda dengan No. Tiket : " . $data->id . " saat ini telah direspon.\n\n" .
-            "Silakan cek di https://fasindo-customer-care.kencana.org untuk melihat respon lengkapnya.\n\n" .
+            // "Silakan cek di https://fasindo-customer-care.kencana.org untuk melihat respon lengkapnya.\n\n" .
             "Terima kasih atas kesabaran dan kerja samanya.";
 
             /*Halo Bpk/Ibu [Nama Customer],
