@@ -549,7 +549,7 @@ class PurchaseAprvMobile extends Controller
                     'updated_at' => Carbon::now(),
                 ]);
 
-                $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+                $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
                 "Silahkan lakukan Approval untuk {$type_name} Nomor: {$po_id}\n";
                 // dd($message);
                 $url = 'https://notifapi.com/send_message';

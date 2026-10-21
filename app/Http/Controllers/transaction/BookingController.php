@@ -210,7 +210,7 @@ class BookingController extends Controller
                 'updated_at' => now(),
             ]);
             
-            $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+            $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
             "Silahkan lakukan Approval untuk booking Nomor: {$book_id}\n" .
             "Silahkan login pada https://viva.kencana.org/approve/{$getEmp}/{$getLink} untuk Approval 1.\nTerima kasih.";
             // dd($message);

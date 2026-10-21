@@ -1278,10 +1278,10 @@ class KasbonController extends Controller
             'updated_at' => now(),
           ]);
 
-        // $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+        // $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
         // "Silahkan lakukan Approval 2 untuk Kasbon ID: {$kb_id}\n" .
         // "Silahkan login pada https://viva.kencana.org/approve/{$getEmp}/{$getLink} untuk Approval 2.\nTerima kasih.";
-        $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+        $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
           "Silahkan lakukan Approval untuk Kasbon ID: {$kb_id}\n";
 
         $url = 'https://notifapi.com/send_message';

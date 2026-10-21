@@ -279,7 +279,7 @@ class ApprovalSPBController extends Controller
                 'updated_at' => now(),
             ]);
             
-            $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+            $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
             "Silahkan lakukan Approval untuk SPB ID: {$spkId}\n";
             // dd($message);
             $url = 'https://notifapi.com/send_message';

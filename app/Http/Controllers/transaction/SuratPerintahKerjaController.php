@@ -933,7 +933,7 @@ class SuratPerintahKerjaController extends Controller
                 'updated_at' => now(),
             ]);
             
-            $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+            $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
             "Silahkan lakukan Approval untuk SPK ID: {$spkId}\n";
             $url = 'https://notifapi.com/send_message';
             $data = array(

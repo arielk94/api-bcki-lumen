@@ -992,7 +992,7 @@ class PurchaseRequestAprv extends Controller
                 //     $phone = $data2->phone;
                 // }
 
-                // $message = '*FASINDO PROPERTI INDONESIA*'.'\n\n'.'Silahkan lakukan Approval 2 untuk '.$type_name.' Nomor : ' . $po_id . '\n' . 'Silahkan login pada https://viva.kencana.org/approve untuk Approval 2. Terima kasih '; 
+                // $message = '*BANGUN CIPTA KARYA INDONESIA*'.'\n\n'.'Silahkan lakukan Approval 2 untuk '.$type_name.' Nomor : ' . $po_id . '\n' . 'Silahkan login pada https://viva.kencana.org/approve untuk Approval 2. Terima kasih '; 
                 // /https://viva.kencana.org/approve/09210216/VIVA23081509mardian4673958770904091
                 $getLink = "bcki" . Carbon::now()->format('ymdH') . rand(10000, 99999);
                 DB::connection('sqlsrv')
@@ -1004,7 +1004,7 @@ class PurchaseRequestAprv extends Controller
                     'updated_at' => Carbon::now(),
                 ]);
 
-                $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+                $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
                 "Silahkan lakukan Approval untuk {$type_name} Nomor: {$po_id}\n";
                 // dd($message);
                 $url = 'https://notifapi.com/send_message';

@@ -270,7 +270,7 @@ class KasbonAprvController extends Controller
                 //     $phone = $data2->phone;
                 // }
 
-                // $message = '*FASINDO PROPERTI INDONESIA*'.'\n\n'.'Silahkan lakukan Approval 2 untuk '.$type_name.' Nomor : ' . $po_id . '\n' . 'Silahkan login pada https://viva.kencana.org/approve untuk Approval 2. Terima kasih '; 
+                // $message = '*BANGUN CIPTA KARYA INDONESIA*'.'\n\n'.'Silahkan lakukan Approval 2 untuk '.$type_name.' Nomor : ' . $po_id . '\n' . 'Silahkan login pada https://viva.kencana.org/approve untuk Approval 2. Terima kasih '; 
                 // /https://viva.kencana.org/approve/09210216/VIVA23081509mardian4673958770904091
                 $getLink = "bcki" . now()->format('ymdH') . rand(10000, 99999);
                 DB::connection('sqlsrv')
@@ -282,7 +282,7 @@ class KasbonAprvController extends Controller
                     'updated_at' => now(),
                 ]);
 
-                $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+                $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
                 "Silahkan lakukan Approval 2 untuk {$type_name} Nomor: {$po_id}\n" .
                 "Silahkan login pada https://viva.kencana.org/approve/{$getEmp}/{$getLink} untuk Approval 2.\nTerima kasih.";
                 // dd($message);
@@ -911,10 +911,10 @@ class KasbonAprvController extends Controller
                 'updated_at' => now(),
             ]);
             
-            // $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+            // $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
             // "Silahkan lakukan Approval 2 untuk Kasbon ID: {$spkId}\n" .
             // "Silahkan login pada https://viva.kencana.org/approve/{$getEmp}/{$getLink} untuk Approval 2.\nTerima kasih.";
-            $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+            $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
             "Silahkan lakukan Approval untuk Kasbon ID: {$spkId}\n";
             
             $url = 'https://notifapi.com/send_message';

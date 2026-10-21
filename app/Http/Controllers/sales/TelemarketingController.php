@@ -769,7 +769,7 @@ class TelemarketingController extends Controller
                     ->pluck('str2');
 
             $arrPhone = $phone->toArray();
-            $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+            $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
             "Notifikasi Komplain Baru\n\n".
             "Telah diterima komplain baru dari customer dengan detail sebagai berikut:\n\n" .
             "No. Tiket : " . $main_id . "\n" .
@@ -850,7 +850,7 @@ class TelemarketingController extends Controller
             // dd($data);
             $arrPhone = [$data->telepon]; // Menggunakan nomor telepon dari data yang diambil
 
-            $message = "*FASINDO PROPERTI INDONESIA*\n\n" .
+            $message = "*BANGUN CIPTA KARYA INDONESIA*\n\n" .
             "Halo Bpk/Ibu " . $data->NamaCustomer . "\n\n".
             "Terima kasih telah menghubungi kami. Laporan kendala/keluhan Anda dengan No. Tiket : " . $data->id . " saat ini telah direspon.\n\n" .
             "Silakan cek di https://fasindo-customer-care.kencana.org untuk melihat respon lengkapnya.\n\n" .
