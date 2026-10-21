@@ -1001,6 +1001,12 @@ $router->group(['middleware' => 'check.auth'], function () use ($router) {
             $router->post('/batchSetPrice', 'finance\SettingPriceController@batchSetPrice');
         });
 
+        $router->group(['prefix' => 'mobile'], function ($router) {
+            $router->post('/getEntity', 'mobile\MenuController@getEntityUser');
+            $router->post('/getMenu', 'mobile\MenuController@getMenu');
+            $router->post('/getEnvConf', 'mobile\MenuController@getEnvConf');
+        });
+
         $router->group(['prefix' => 'prpo'], function ($router) {
             $router->post('/getList', 'purchasing\PurchaseAprvMobile@getList');
             $router->post('/approve', 'purchasing\PurchaseAprvMobile@approve');
